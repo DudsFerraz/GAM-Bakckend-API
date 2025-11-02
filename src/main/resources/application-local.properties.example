@@ -1,0 +1,8 @@
+spring.datasource.url=jdbc:
+spring.datasource.username=
+spring.datasource.password=
+
+api.security.jwt.secret-key=
+
+spring.jpa.show-sql=
+spring.jpa.properties.hibernate.format_sql=
