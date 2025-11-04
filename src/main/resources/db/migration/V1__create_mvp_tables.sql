@@ -18,7 +18,8 @@ $$ LANGUAGE plpgsql;
 create table accounts(
     id UUID primary key,
     email varchar(255) unique not null,
-    password text not null,
+    password_hash text not null,
+    display_name varchar(50) not null,
     permission_level permission_level_enum default 'MEMBER',
 
     created_at timestamptz not null default now(),
