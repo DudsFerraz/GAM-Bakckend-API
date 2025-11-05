@@ -2,6 +2,7 @@ package br.org.gam.api.Entities.account.services.createAccount.service;
 
 import br.org.gam.api.Entities.account.common.IAccountMapper;
 import br.org.gam.api.Entities.account.domain.Account;
+import br.org.gam.api.Entities.account.exception.AccountConflictException;
 import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountDTO;
 import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountResponseDTO;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
@@ -26,6 +27,10 @@ public class CreateAccountService implements ICreateAccountService{
     @Transactional
     @Override
     public CreateAccountResponseDTO createAccount(CreateAccountDTO dto) {
+        if (accountRepo.existsByEmail(dto.email())){
+            throw new AccountConflictException("Email '" + dto.email() + "' already registered.");
+        }
+
         String hashedPassword = passwordEncoder.encode(dto.password());
 
         Account newAccount = new Account(dto.email(), hashedPassword, dto.displayName());
