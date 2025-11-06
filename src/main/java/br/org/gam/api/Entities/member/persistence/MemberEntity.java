@@ -1,7 +1,9 @@
 package br.org.gam.api.Entities.member.persistence;
 
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
-import br.org.gam.api.Entities.member.MemberStatusEnum;
+import br.org.gam.api.Entities.member.common.MemberStatusEnum;
+import br.org.gam.api.common.Name;
+import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.persistence.*;
@@ -25,19 +27,23 @@ public class MemberEntity {
     @Id
     private UUID id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false, unique = true)
+    private AccountEntity account;
+
+    @Embedded
+    private Name name;
+
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
     @Column(name = "phone_number")
-    private String phoneNumber;
+    private MyPhoneNumber phoneNumber;
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status")
     private MemberStatusEnum status;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false, unique = true)
-    private AccountEntity account;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

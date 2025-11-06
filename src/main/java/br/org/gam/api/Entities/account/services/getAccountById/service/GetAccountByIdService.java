@@ -1,10 +1,12 @@
 package br.org.gam.api.Entities.account.services.getAccountById.service;
 
 import br.org.gam.api.Entities.account.common.IAccountMapper;
+import br.org.gam.api.Entities.account.domain.Account;
 import br.org.gam.api.Entities.account.exception.AccountNotFoundException;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.account.persistence.IAccountRepository;
 import br.org.gam.api.Entities.account.services.getAccountById.dto.GetAccountByIdDTO;
+import br.org.gam.api.Entities.account.services.getAccountInstance.IGetAccountInstanceService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,19 +14,19 @@ import java.util.UUID;
 @Service
 public class GetAccountByIdService implements IGetAccountByIdService {
 
-    private final IAccountRepository accountRepo;
     private final IAccountMapper accountMapper;
+    private final IGetAccountInstanceService getAccountInstanceService;
 
-    public GetAccountByIdService(IAccountRepository accountRepo, IAccountMapper accountMapper) {
-        this.accountRepo = accountRepo;
+    public GetAccountByIdService(IAccountMapper accountMapper, IGetAccountInstanceService getAccountInstanceService) {
         this.accountMapper = accountMapper;
+        this.getAccountInstanceService = getAccountInstanceService;
     }
 
     @Override
     public GetAccountByIdDTO getAccountById(UUID id) {
-        AccountEntity entity = accountRepo.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException("Could not find account with id " + id) );
 
-        return accountMapper.fromEntityToGetAccountDTO(entity);
+        AccountEntity accountEntity = getAccountInstanceService.getAccountEntityById(id);
+        return accountMapper.fromEntityToGetAccountByIdDTO(accountEntity);
     }
+
 }

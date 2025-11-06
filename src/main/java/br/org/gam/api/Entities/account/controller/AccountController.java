@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.account.controller;
 
+import br.org.gam.api.Entities.account.services.changePermissionLevel.IChangePermissionLevelService;
 import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountDTO;
 import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountResponseDTO;
 import br.org.gam.api.Entities.account.services.getAccountById.dto.GetAccountByIdDTO;
@@ -25,14 +26,16 @@ public class AccountController {
 
     private final ICreateAccountService createAccountService;
     private final IGetAccountByIdService getAccountByIdService;
-    private final ISearchAccountsService getAccountsService;
+    private final ISearchAccountsService searchAccountsService;
     private final SpecificationFilterConverter specificationFilterConverter;
+    private final IChangePermissionLevelService changePermissionLevelService;
 
-    public AccountController(ICreateAccountService createAccountService, IGetAccountByIdService getAccountByIdService, ISearchAccountsService getAccountsService, SpecificationFilterConverter specificationFilterConverter) {
+    public AccountController(ICreateAccountService createAccountService, IGetAccountByIdService getAccountByIdService, ISearchAccountsService searchAccountsService, SpecificationFilterConverter specificationFilterConverter, IChangePermissionLevelService changePermissionLevelService) {
         this.createAccountService = createAccountService;
         this.getAccountByIdService = getAccountByIdService;
-        this.getAccountsService = getAccountsService;
+        this.searchAccountsService = searchAccountsService;
         this.specificationFilterConverter = specificationFilterConverter;
+        this.changePermissionLevelService = changePermissionLevelService;
     }
 
 
@@ -57,7 +60,7 @@ public class AccountController {
     @GetMapping()
     public ResponseEntity<Page<GetAccountByIdDTO>> getAllAccounts(Pageable pageable) {
         return ResponseEntity.ok(
-                getAccountsService.getAccounts(List.of(), pageable)
+                searchAccountsService.searchAccounts(List.of(), pageable)
         );
     }
 
@@ -68,7 +71,28 @@ public class AccountController {
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
         return ResponseEntity.ok(
-                getAccountsService.getAccounts(filters, pageable)
+                searchAccountsService.searchAccounts(filters, pageable)
         );
+    }
+
+    @PatchMapping("/{id}/setVisitor")
+    public ResponseEntity changePermissionLevelToVisitor(@PathVariable UUID id){
+
+        changePermissionLevelService.setToVisitor(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/setMember")
+    public ResponseEntity changePermissionLevelToMember(@PathVariable UUID id){
+
+        changePermissionLevelService.setToMember(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/setCoord")
+    public ResponseEntity changePermissionLevelToCoord(@PathVariable UUID id){
+
+        changePermissionLevelService.setToCoord(id);
+        return ResponseEntity.noContent().build();
     }
 }

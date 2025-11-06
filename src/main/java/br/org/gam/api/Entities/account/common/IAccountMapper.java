@@ -15,5 +15,5 @@ public interface IAccountMapper {
 
     CreateAccountResponseDTO fromEntityToCreateAccountResponseDTO(AccountEntity accountEntity);
 
-    GetAccountByIdDTO fromEntityToGetAccountDTO(AccountEntity accountEntity);
+    GetAccountByIdDTO fromEntityToGetAccountByIdDTO(AccountEntity accountEntity);
 }

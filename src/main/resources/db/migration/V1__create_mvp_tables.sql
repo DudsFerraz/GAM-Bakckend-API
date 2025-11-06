@@ -1,7 +1,7 @@
 create extension if not exists "uuid-ossp";
 
 
-create type permission_level_enum as enum ('COORDINATOR', 'MEMBER');
+create type permission_level_enum as enum ('COORDINATOR', 'MEMBER', 'VISITOR');
 create type member_status_enum as enum ('ACTIVE', 'INACTIVE', 'PENDENT');
 
 
@@ -35,7 +35,8 @@ create trigger set_accounts_updated_at
 create table members(
     id UUID primary key,
     account_id UUID unique not null,
-    name varchar(255) not null,
+    first_name varchar(255) not null,
+    surname varchar(255) not null,
     birth_date date not null,
     phone_number varchar(30),
     status member_status_enum default 'PENDENT',

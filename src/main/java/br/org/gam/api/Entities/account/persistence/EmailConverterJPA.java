@@ -5,8 +5,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.springframework.stereotype.Component;
 
-@Component
-@Converter()
+@Converter(autoApply = true)
 public class EmailConverterJPA implements AttributeConverter<Email, String> {
 
     @Override

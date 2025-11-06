@@ -5,14 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateAccountDTO(
-        @NotNull
-        Email email,
+        @NotNull Email email,
 
-        @NotBlank
-        @NotNull
-        String password,
+        @NotNull @NotBlank String password,
 
-        @NotBlank
-        @NotNull
-        String displayName) {
+        @NotNull @NotBlank String displayName) {
 }

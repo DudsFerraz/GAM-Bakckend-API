@@ -25,12 +25,12 @@ public class SearchAccountsService implements ISearchAccountsService {
     }
 
     @Override
-    public Page<GetAccountByIdDTO> getAccounts(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<GetAccountByIdDTO> searchAccounts(List<SpecificationFilter> filters, Pageable pageable) {
         Specification<AccountEntity> spec = SpecificationBuilder.build(filters);
 
         Page<AccountEntity> entitiesPage = accountRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(accountMapper::fromEntityToGetAccountDTO);
+        return entitiesPage.map(accountMapper::fromEntityToGetAccountByIdDTO);
     }
 
 

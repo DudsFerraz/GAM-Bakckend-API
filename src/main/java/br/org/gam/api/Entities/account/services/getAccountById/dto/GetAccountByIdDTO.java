@@ -10,6 +10,5 @@ public record GetAccountByIdDTO(
         Email email,
         String displayName,
         PermissionLevelEnum permissionLevel
-
 ) {
 }

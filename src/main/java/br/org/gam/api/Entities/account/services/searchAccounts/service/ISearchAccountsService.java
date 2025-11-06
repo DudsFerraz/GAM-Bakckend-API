@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface ISearchAccountsService {
 
-    public Page<GetAccountByIdDTO> getAccounts(List<SpecificationFilter> filters, Pageable pageable);
+    public Page<GetAccountByIdDTO> searchAccounts(List<SpecificationFilter> filters, Pageable pageable);
 }

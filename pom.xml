@@ -126,6 +126,12 @@
 			<version>${org.mapstruct.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>8.13.41</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
