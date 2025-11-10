@@ -1,9 +1,8 @@
 package br.org.gam.api.Entities.account.persistence;
 
-import br.org.gam.api.Entities.account.common.Email;
+import br.org.gam.api.Entities.account.Email;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.stereotype.Component;
 
 @Converter(autoApply = true)
 public class EmailConverterJPA implements AttributeConverter<Email, String> {

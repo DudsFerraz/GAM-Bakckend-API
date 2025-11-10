@@ -1,7 +1,7 @@
 package br.org.gam.api.Entities.account.services.getAccountInstance;
 
-import br.org.gam.api.Entities.account.common.IAccountMapper;
-import br.org.gam.api.Entities.account.domain.Account;
+import br.org.gam.api.Entities.account.IAccountMapper;
+import br.org.gam.api.Entities.account.Account;
 import br.org.gam.api.Entities.account.exception.AccountNotFoundException;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.account.persistence.IAccountRepository;

@@ -1,15 +1,16 @@
 package br.org.gam.api.Entities.member.controller;
 
 import br.org.gam.api.Entities.member.services.activation.IActivationService;
-import br.org.gam.api.Entities.member.services.getMemberById.dto.GetMemberByIdDTO;
-import br.org.gam.api.Entities.member.services.getMemberById.service.IGetMemberByIdService;
-import br.org.gam.api.Entities.member.services.registerMember.dto.RegisterMemberDTO;
-import br.org.gam.api.Entities.member.services.registerMember.dto.RegisterMemberResponseDTO;
-import br.org.gam.api.Entities.member.services.registerMember.service.IRegisterMemberService;
-import br.org.gam.api.Entities.member.services.searchMembers.service.ISearchMembersService;
+import br.org.gam.api.Entities.member.services.getMemberById.GetMemberByIdDTO;
+import br.org.gam.api.Entities.member.services.getMemberById.IGetMemberByIdService;
+import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberDTO;
+import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberResponseDTO;
+import br.org.gam.api.Entities.member.services.registerMember.IRegisterMemberService;
+import br.org.gam.api.Entities.member.services.searchMembers.ISearchMembersService;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,12 @@ public class MemberController {
     private final ISearchMembersService searchMembersService;
     private final IActivationService activationService;
 
-    public MemberController(IRegisterMemberService registerMemberService, IGetMemberByIdService getMemberByIdService, SpecificationFilterConverter specificationFilterConverter, ISearchMembersService searchMembersService, IActivationService activationService) {
+    public MemberController(IRegisterMemberService registerMemberService,
+                            IGetMemberByIdService getMemberByIdService,
+                            @Qualifier("memberSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
+                            ISearchMembersService searchMembersService,
+                            IActivationService activationService) {
+
         this.registerMemberService = registerMemberService;
         this.getMemberByIdService = getMemberByIdService;
         this.specificationFilterConverter = specificationFilterConverter;
@@ -51,7 +57,7 @@ public class MemberController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<GetMemberByIdDTO> getMemberById(@PathVariable UUID id) {
         GetMemberByIdDTO dto = getMemberByIdService.getMemberById(id);
         return ResponseEntity.ok(dto);

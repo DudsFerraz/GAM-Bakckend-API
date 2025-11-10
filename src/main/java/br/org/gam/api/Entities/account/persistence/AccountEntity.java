@@ -1,7 +1,7 @@
 package br.org.gam.api.Entities.account.persistence;
 
-import br.org.gam.api.Entities.account.common.Email;
-import br.org.gam.api.Entities.account.common.PermissionLevelEnum;
+import br.org.gam.api.Entities.account.Email;
+import br.org.gam.api.common.PermissionLevelEnum;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.persistence.Entity;
@@ -18,8 +18,8 @@ import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "accounts")
@@ -28,6 +28,7 @@ public class AccountEntity {
     private static final TimeBasedEpochGenerator uuidV7Generator = Generators.timeBasedEpochGenerator();
 
     @Id
+    @Column(name = "id")
     private UUID id;
 
     @Convert(converter = EmailConverterJPA.class)
@@ -54,6 +55,7 @@ public class AccountEntity {
 
     @PrePersist
     public void prePersist() {
+        System.out.println("prePersist");
         if (this.id == null) {
             this.id = uuidV7Generator.generate();
         }

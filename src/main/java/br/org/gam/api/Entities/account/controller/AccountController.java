@@ -1,15 +1,16 @@
 package br.org.gam.api.Entities.account.controller;
 
 import br.org.gam.api.Entities.account.services.changePermissionLevel.IChangePermissionLevelService;
-import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountDTO;
-import br.org.gam.api.Entities.account.services.createAccount.dto.CreateAccountResponseDTO;
-import br.org.gam.api.Entities.account.services.getAccountById.dto.GetAccountByIdDTO;
-import br.org.gam.api.Entities.account.services.createAccount.service.ICreateAccountService;
-import br.org.gam.api.Entities.account.services.getAccountById.service.IGetAccountByIdService;
-import br.org.gam.api.Entities.account.services.searchAccounts.service.ISearchAccountsService;
+import br.org.gam.api.Entities.account.services.createAccount.CreateAccountDTO;
+import br.org.gam.api.Entities.account.services.createAccount.CreateAccountResponseDTO;
+import br.org.gam.api.Entities.account.services.getAccountById.GetAccountByIdDTO;
+import br.org.gam.api.Entities.account.services.createAccount.ICreateAccountService;
+import br.org.gam.api.Entities.account.services.getAccountById.IGetAccountByIdService;
+import br.org.gam.api.Entities.account.services.searchAccounts.ISearchAccountsService;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,12 @@ public class AccountController {
     private final SpecificationFilterConverter specificationFilterConverter;
     private final IChangePermissionLevelService changePermissionLevelService;
 
-    public AccountController(ICreateAccountService createAccountService, IGetAccountByIdService getAccountByIdService, ISearchAccountsService searchAccountsService, SpecificationFilterConverter specificationFilterConverter, IChangePermissionLevelService changePermissionLevelService) {
+    public AccountController(ICreateAccountService createAccountService,
+                             IGetAccountByIdService getAccountByIdService,
+                             ISearchAccountsService searchAccountsService,
+                             @Qualifier("accountSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
+                             IChangePermissionLevelService changePermissionLevelService) {
+
         this.createAccountService = createAccountService;
         this.getAccountByIdService = getAccountByIdService;
         this.searchAccountsService = searchAccountsService;
@@ -52,7 +58,7 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetAccountByIdDTO> getAccount(@PathVariable UUID id) {
+    public ResponseEntity<GetAccountByIdDTO> getAccountById(@PathVariable UUID id) {
         GetAccountByIdDTO dto = getAccountByIdService.getAccountById(id);
         return ResponseEntity.ok(dto);
     }

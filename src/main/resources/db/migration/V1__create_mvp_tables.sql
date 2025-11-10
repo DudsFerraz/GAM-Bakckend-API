@@ -53,16 +53,39 @@ create trigger set_members_updated_at
 
 
 
+CREATE TABLE locations (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255),
+    street VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(20),
+    country_code VARCHAR(3) NOT NULL,
+    latitude NUMERIC(10, 8),
+    longitude NUMERIC(11, 8),
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+create trigger set_locations_updated_at
+    before update on locations
+    for each row
+    execute procedure trigger_set_updated_at();
+
+
 create table events(
     id UUID primary key,
     title varchar(255) not null,
     description text,
-    location varchar(255) not null,
+    location_id UUID,
+    required_permission_level permission_level_enum not null,
     begin_date timestamptz not null,
     end_date timestamptz not null,
 
     created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now()
+    updated_at timestamptz not null default now(),
+
+    constraint fk_event_location foreign key(location_id) references locations(id) on delete restrict
 );
 create trigger set_events_updated_at
     before update on events
@@ -72,8 +95,9 @@ create trigger set_events_updated_at
 
 
 create table presences(
-    member_id UUID,
-    event_id UUID,
+    member_id UUID not null,
+    event_id UUID not null,
+    observations text,
 
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now(),

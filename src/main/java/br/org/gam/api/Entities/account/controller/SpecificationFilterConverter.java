@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.Entities.account.common.PermissionLevelEnum;
+import br.org.gam.api.common.PermissionLevelEnum;
 import br.org.gam.api.common.specification.GenericSpecificationFilterConverter;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import br.org.gam.api.common.specification.SpecificationFilterDTO;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-@Component
+@Component("accountSpecificationFilterConverter")
 class SpecificationFilterConverter {
     private static final Map<String, Function<String, Object>> PARSER_MAP = new HashMap<>();
 

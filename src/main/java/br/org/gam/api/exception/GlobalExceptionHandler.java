@@ -2,8 +2,15 @@ package br.org.gam.api.exception;
 
 import br.org.gam.api.Entities.account.exception.AccountConflictException;
 import br.org.gam.api.Entities.account.exception.AccountNotFoundException;
+import br.org.gam.api.Entities.event.exception.EventNotFoundException;
+import br.org.gam.api.Entities.location.exception.LocationNotFoundException;
 import br.org.gam.api.Entities.member.exception.MemberAccountConflictException;
 
+import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -21,7 +29,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -72,6 +82,43 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            @NonNull HttpMessageNotReadableException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request) {
+
+        String friendlyMessage = "JSON Request malformed or eligible.";
+        Throwable cause = ex.getCause();
+
+        try {
+            if (cause instanceof UnrecognizedPropertyException upx) {
+                friendlyMessage = String.format("Unrecognizable field on request: '%s'", upx.getPropertyName());
+            }
+            else if (cause instanceof MismatchedInputException mie) {
+
+                String fieldName = mie.getPath().stream()
+                        .map(JsonMappingException.Reference::getFieldName)
+                        .filter(java.util.Objects::nonNull)
+                        .collect(Collectors.joining("."));
+
+                String expectedType = mie.getTargetType().getSimpleName();
+
+                friendlyMessage = String.format(
+                        "Invalid format for field '%s'. Expected a value compatible with '%s'.",
+                        fieldName,
+                        expectedType
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Unable to generate user friendly message for HttpMessageNotReadableException", e);
+        }
+
+        ApiErrorDTO errorDTO = new ApiErrorDTO(HttpStatus.BAD_REQUEST, friendlyMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
+    }
+
     // =====================================================================================
     // == 401 UNAUTHORIZED - Authentication errors (Missing credentials)
     // =====================================================================================
@@ -94,15 +141,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // == 404 NOT FOUND - Resource not found
     // =====================================================================================
 
-    @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<ApiErrorDTO> accountNotFoundHandler(AccountNotFoundException e) {
+    @ExceptionHandler({
+            AccountNotFoundException.class,
+            MemberNotFoundException.class,
+            EventNotFoundException.class,
+            LocationNotFoundException.class
+    })
+    public ResponseEntity<ApiErrorDTO> resourceNotFoundHandler(RuntimeException e) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
-//    @ExceptionHandler(MemberNotFoundException.class)
-//    public ResponseEntity<ApiErrorDTO> memberNotFoundHandler(MemberNotFoundException e) {
-//        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-//    }
 
     // =====================================================================================
     // == 409 CONFLICT - State conflict (e.g., duplicate resource)

@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.Entities.account.common.Email;
+import br.org.gam.api.Entities.account.Email;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

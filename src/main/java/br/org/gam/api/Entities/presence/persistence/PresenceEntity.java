@@ -2,22 +2,25 @@ package br.org.gam.api.Entities.presence.persistence;
 
 import br.org.gam.api.Entities.event.persistence.EventEntity;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
+import br.org.gam.api.Entities.presence.PresenceId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+@Setter
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
 @Table(name = "presences")
 public class PresenceEntity {
 
     @EmbeddedId
-    private PresenceEntityId.PresenceId id;
+    private PresenceId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("memberId")
@@ -28,6 +31,9 @@ public class PresenceEntity {
     @MapsId("eventId")
     @JoinColumn(name = "event_id")
     private EventEntity event;
+
+    @Column(name = "observations")
+    private String observations;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

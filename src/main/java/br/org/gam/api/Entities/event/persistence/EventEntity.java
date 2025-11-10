@@ -1,20 +1,23 @@
 package br.org.gam.api.Entities.event.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import br.org.gam.api.Entities.location.persistence.LocationEntity;
+import br.org.gam.api.common.PermissionLevelEnum;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Setter
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
 @Table(name = "events")
 public class EventEntity {
     @Id
@@ -26,8 +29,13 @@ public class EventEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "location", nullable = false)
-    private String location;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private LocationEntity location;
+
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "required_permission_level")
+    private PermissionLevelEnum requiredPermissionLevel;
 
     @Column(name = "begin_date", nullable = false)
     private Instant beginDate;

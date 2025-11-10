@@ -1,6 +1,8 @@
 package br.org.gam.api.common.myPhoneNumber;
 
 import br.org.gam.api.exception.InvalidPhoneNumberException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
@@ -39,7 +41,17 @@ public record MyPhoneNumber(
         }
     }
 
+    @JsonCreator
+    public static MyPhoneNumber fromString(String rawInput) {
+        try {
+            return MyPhoneNumber.parse(rawInput, "BR");
+        } catch (InvalidPhoneNumberException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
+
     @Override
+    @JsonValue
     public String toString() {
         return e164format;
     }
