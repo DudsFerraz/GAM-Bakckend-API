@@ -1,24 +1,22 @@
 package br.org.gam.api.Entities.presence;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 @Embeddable
-@Getter
-@NoArgsConstructor
-@EqualsAndHashCode
-public class PresenceId implements Serializable {
+public record PresenceId(
+        @NotNull UUID memberId,
+        @NotNull UUID eventId
+) implements Serializable {
+    public PresenceId() {
+        this(null, null);
+    }
 
-    @Column(name = "member_id")
-    private UUID memberId;
-
-    @Column(name = "event_id")
-    private UUID eventId;
-
+    public PresenceId(@NotNull UUID memberId, @NotNull UUID eventId) {
+        this.memberId = memberId;
+        this.eventId = eventId;
+    }
 }

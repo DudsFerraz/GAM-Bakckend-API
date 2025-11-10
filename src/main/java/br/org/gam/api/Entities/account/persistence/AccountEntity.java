@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.account.persistence;
 
-import br.org.gam.api.Entities.account.Email;
+import br.org.gam.api.Entities.account.MyEmail;
 import br.org.gam.api.common.PermissionLevelEnum;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
@@ -33,7 +33,7 @@ public class AccountEntity {
 
     @Convert(converter = EmailConverterJPA.class)
     @Column(name = "email", unique = true, nullable = false)
-    private Email email;
+    private MyEmail email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -55,7 +55,6 @@ public class AccountEntity {
 
     @PrePersist
     public void prePersist() {
-        System.out.println("prePersist");
         if (this.id == null) {
             this.id = uuidV7Generator.generate();
         }

@@ -1,11 +1,12 @@
 package br.org.gam.api.Entities.account.services.createAccount;
 
-import br.org.gam.api.Entities.account.Email;
+import br.org.gam.api.Entities.account.MyEmail;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateAccountDTO(
-        @NotNull Email email,
+        @NotNull @Valid MyEmail email,
 
         @NotNull @NotBlank String password,
 

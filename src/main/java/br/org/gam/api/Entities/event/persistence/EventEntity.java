@@ -2,6 +2,8 @@ package br.org.gam.api.Entities.event.persistence;
 
 import br.org.gam.api.Entities.location.persistence.LocationEntity;
 import br.org.gam.api.common.PermissionLevelEnum;
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "events")
 public class EventEntity {
+
+    private static final TimeBasedEpochGenerator uuidV7Generator = Generators.timeBasedEpochGenerator();
+
     @Id
     private UUID id;
 
@@ -50,4 +55,11 @@ public class EventEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            this.id = uuidV7Generator.generate();
+        }
+    }
 }

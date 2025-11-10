@@ -7,10 +7,13 @@ import br.org.gam.api.Entities.location.exception.LocationNotFoundException;
 import br.org.gam.api.Entities.member.exception.MemberAccountConflictException;
 
 import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
+import br.org.gam.api.Entities.presence.exception.PresenceConflictException;
+import br.org.gam.api.Entities.presence.exception.PresenceNotFoundException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.hibernate.id.IdentifierGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -145,7 +149,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             AccountNotFoundException.class,
             MemberNotFoundException.class,
             EventNotFoundException.class,
-            LocationNotFoundException.class
+            LocationNotFoundException.class,
+            PresenceNotFoundException.class,
     })
     public ResponseEntity<ApiErrorDTO> resourceNotFoundHandler(RuntimeException e) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
@@ -155,19 +160,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // == 409 CONFLICT - State conflict (e.g., duplicate resource)
     // =====================================================================================
 
-    @ExceptionHandler(AccountConflictException.class)
-    public ResponseEntity<ApiErrorDTO> accountConflictHandler(AccountConflictException e) {
+    @ExceptionHandler({
+            AccountConflictException.class,
+            MemberAccountConflictException.class,
+            PresenceConflictException.class,
+    })
+    public ResponseEntity<ApiErrorDTO> resourceConflictHandler(RuntimeException e) {
         return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(MemberAccountConflictException.class)
-    public ResponseEntity<ApiErrorDTO> memberAccountConflictHandler(MemberAccountConflictException e) {
-        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
-    }
+    //fazer conflict generico igual o not found
 
     // =====================================================================================
     // == 500 INTERNAL SERVER ERROR - Generic error
     // =====================================================================================
+
+    @ExceptionHandler(JpaSystemException.class)
+    public ResponseEntity<ApiErrorDTO> jpaSystemExceptionHandler(JpaSystemException e) {
+        Throwable cause = e.getMostSpecificCause();
+
+        if (cause instanceof IdentifierGenerationException) {
+            log.error("FATAL: An entity without ID tried to be persisted. Verify @PrePersist or @GeneratedValue.", e);
+
+            String message = String.format(
+                    "Internal Server Error: ID generation failed. %s",
+                    cause.getMessage()
+            );
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        }
+
+        log.error("Unhandled JpaSystemException captured: ", e);
+        String message = "Unexpected persistence layer error.";
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDTO> genericExceptionHandler(Exception e) {

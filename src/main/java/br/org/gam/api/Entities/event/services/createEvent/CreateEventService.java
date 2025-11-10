@@ -27,10 +27,32 @@ public class CreateEventService implements ICreateEventService {
         this.locationMapper = locationMapper;
     }
 
+//    @Override
+//    public CreateEventResponseDTO createEvent(CreateEventDTO dto) {
+//        Location eventLocation = null;
+//        if(dto.locationId() != null){
+//            eventLocation = getLocationInstanceService.getLocationDomainById(dto.locationId());
+//        }
+//
+//        Event newEvent = Event.create(dto.title(), dto.description(), eventLocation, dto.requiredPermissionLevel(),
+//                                      dto.beginDate(), dto.endDate());
+//
+//        EventEntity newEventEntity = eventMapper.fromDomainToEntity(newEvent);
+//
+//        if (dto.locationId() != null) {
+//            LocationEntity managedLocation = getLocationInstanceService.getLocationEntityById(dto.locationId());
+//            newEventEntity.setLocation(managedLocation);
+//        }
+//
+//        EventEntity savedEventEntity = eventRepository.save(newEventEntity);
+//        return eventMapper.fromEntityToCreateEventResponseDTO(savedEventEntity);
+//    }
+
     @Override
+
     public CreateEventResponseDTO createEvent(CreateEventDTO dto) {
         Location eventLocation = null;
-        if(dto.locationId() != null){
+        if(dto.locationId() != null) {
             eventLocation = getLocationInstanceService.getLocationDomainById(dto.locationId());
         }
 
@@ -38,13 +60,8 @@ public class CreateEventService implements ICreateEventService {
                                       dto.beginDate(), dto.endDate());
 
         EventEntity newEventEntity = eventMapper.fromDomainToEntity(newEvent);
-
-        if (dto.locationId() != null) {
-            LocationEntity managedLocation = getLocationInstanceService.getLocationEntityById(dto.locationId());
-            newEventEntity.setLocation(managedLocation);
-        }
-
         EventEntity savedEventEntity = eventRepository.save(newEventEntity);
+
         return eventMapper.fromEntityToCreateEventResponseDTO(savedEventEntity);
     }
 

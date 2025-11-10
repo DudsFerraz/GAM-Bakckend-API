@@ -33,7 +33,6 @@ public class CreateAccountService implements ICreateAccountService {
 
         Account newAccount = Account.create(dto.email(), hashedPassword, dto.displayName());
         AccountEntity newAccountEntity = accountMapper.fromDomainToEntity(newAccount);
-        System.out.println("bp");
         AccountEntity savedAccountEntity = accountRepo.save(newAccountEntity);
 
         return accountMapper.fromEntityToCreateAccountResponseDTO(savedAccountEntity);

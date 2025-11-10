@@ -53,7 +53,6 @@ public class MemberEntity {
     @Column(name = "status")
     private MemberStatusEnum status;
 
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

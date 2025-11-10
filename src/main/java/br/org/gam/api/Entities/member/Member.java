@@ -1,7 +1,6 @@
 package br.org.gam.api.Entities.member;
 
 import br.org.gam.api.Entities.account.Account;
-import br.org.gam.api.Entities.account.Email;
 import br.org.gam.api.common.Name;
 import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
 

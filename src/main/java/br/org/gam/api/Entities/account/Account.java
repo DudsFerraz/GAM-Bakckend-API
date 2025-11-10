@@ -8,7 +8,7 @@ import java.util.UUID;
 public class Account {
     private UUID id;
 
-    private Email email;
+    private MyEmail email;
 
     private String passwordHash;
 
@@ -19,10 +19,10 @@ public class Account {
     /**
      * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO (JPA/MapStruct).</b>
      * <br> <br>
-     * <b> Use o método fábrica {@link #create(Email email, String passwordHash, String displayName)}.
+     * <b> Use o método fábrica {@link #create(MyEmail email, String passwordHash, String displayName)}.
      */
     @Deprecated
-    Account(UUID id, Email email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
+    Account(UUID id, MyEmail email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -30,14 +30,14 @@ public class Account {
         this.permissionLevel = permissionLevel;
     }
 
-    private Account(Email email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
+    private Account(MyEmail email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
         this.permissionLevel = permissionLevel;
     }
 
-    public static Account create(Email email, String passwordHash, String displayName) {
+    public static Account create(MyEmail email, String passwordHash, String displayName) {
         Objects.requireNonNull(email, "Email cannot be null.");
         Objects.requireNonNull(passwordHash, "Password hash cannot be null.");
         Objects.requireNonNull(displayName, "Display name cannot be null.");
@@ -67,7 +67,7 @@ public class Account {
         return id;
     }
 
-    public Email getEmail() {
+    public MyEmail getEmail() {
         return email;
     }
 

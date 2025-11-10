@@ -1,7 +1,5 @@
 package br.org.gam.api.Entities.location;
 
-import br.org.gam.api.Entities.account.Email;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;

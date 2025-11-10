@@ -1,6 +1,5 @@
 package br.org.gam.api.Entities.event;
 
-import br.org.gam.api.Entities.account.Email;
 import br.org.gam.api.Entities.location.Location;
 import br.org.gam.api.common.PermissionLevelEnum;
 
@@ -46,7 +45,7 @@ public class Event {
         Objects.requireNonNull(title, "Title cannot be null");
         Objects.requireNonNull(beginDate, "Begin date cannot be null");
         Objects.requireNonNull(endDate, "End date cannot be null");
-        if (beginDate.isAfter(endDate)) throw new IllegalArgumentException("A data final deve ser após a data inicial.");
+        if (beginDate.isAfter(endDate)) throw new IllegalArgumentException("endDate must be after beginDate.");
 
         String cleanTitle = title.trim();
 
