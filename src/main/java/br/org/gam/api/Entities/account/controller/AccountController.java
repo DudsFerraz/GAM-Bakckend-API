@@ -1,10 +1,10 @@
 package br.org.gam.api.Entities.account.controller;
 
 import br.org.gam.api.Entities.account.services.changePermissionLevel.IChangePermissionLevelService;
-import br.org.gam.api.Entities.account.services.createAccount.CreateAccountDTO;
-import br.org.gam.api.Entities.account.services.createAccount.CreateAccountResponseDTO;
+import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccountDTO;
+import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccountResponseDTO;
 import br.org.gam.api.Entities.account.services.getAccountById.GetAccountByIdDTO;
-import br.org.gam.api.Entities.account.services.createAccount.ICreateAccountService;
+import br.org.gam.api.Entities.account.services.registerAccount.IRegisterAccountService;
 import br.org.gam.api.Entities.account.services.getAccountById.IGetAccountByIdService;
 import br.org.gam.api.Entities.account.services.searchAccounts.ISearchAccountsService;
 import br.org.gam.api.common.specification.SearchDTO;
@@ -25,36 +25,17 @@ import java.util.UUID;
 @RequestMapping("/account")
 public class AccountController {
 
-    private final ICreateAccountService createAccountService;
     private final IGetAccountByIdService getAccountByIdService;
     private final ISearchAccountsService searchAccountsService;
     private final SpecificationFilterConverter specificationFilterConverter;
-    private final IChangePermissionLevelService changePermissionLevelService;
 
-    public AccountController(ICreateAccountService createAccountService,
-                             IGetAccountByIdService getAccountByIdService,
+    public AccountController(IGetAccountByIdService getAccountByIdService,
                              ISearchAccountsService searchAccountsService,
-                             @Qualifier("accountSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
-                             IChangePermissionLevelService changePermissionLevelService) {
+                             @Qualifier("accountSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter) {
 
-        this.createAccountService = createAccountService;
         this.getAccountByIdService = getAccountByIdService;
         this.searchAccountsService = searchAccountsService;
         this.specificationFilterConverter = specificationFilterConverter;
-        this.changePermissionLevelService = changePermissionLevelService;
-    }
-
-
-    @PostMapping
-    public ResponseEntity<CreateAccountResponseDTO> createAccount(@Valid @RequestBody CreateAccountDTO dto) {
-        CreateAccountResponseDTO responseDTO = createAccountService.createAccount(dto);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(responseDTO.id())
-                .toUri();
-
-        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @GetMapping("/{id}")
@@ -81,24 +62,24 @@ public class AccountController {
         );
     }
 
-    @PatchMapping("/{id}/setVisitor")
-    public ResponseEntity changePermissionLevelToVisitor(@PathVariable UUID id){
-
-        changePermissionLevelService.setToVisitor(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}/setMember")
-    public ResponseEntity changePermissionLevelToMember(@PathVariable UUID id){
-
-        changePermissionLevelService.setToMember(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}/setCoord")
-    public ResponseEntity changePermissionLevelToCoord(@PathVariable UUID id){
-
-        changePermissionLevelService.setToCoord(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @PatchMapping("/{id}/setVisitor")
+//    public ResponseEntity changePermissionLevelToVisitor(@PathVariable UUID id){
+//
+//        changePermissionLevelService.setToVisitor(id);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @PatchMapping("/{id}/setMember")
+//    public ResponseEntity changePermissionLevelToMember(@PathVariable UUID id){
+//
+//        changePermissionLevelService.setToMember(id);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @PatchMapping("/{id}/setCoord")
+//    public ResponseEntity changePermissionLevelToCoord(@PathVariable UUID id){
+//
+//        changePermissionLevelService.setToCoord(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }

@@ -31,20 +31,18 @@ public class MemberController {
     private final IGetMemberByIdService getMemberByIdService;
     private final SpecificationFilterConverter specificationFilterConverter;
     private final ISearchMembersService searchMembersService;
-    private final IActivationService activationService;
     private final IGetPresencesByMemberService getPresencesByMemberService;
 
     public MemberController(IRegisterMemberService registerMemberService,
                             IGetMemberByIdService getMemberByIdService,
                             @Qualifier("memberSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
                             ISearchMembersService searchMembersService,
-                            IActivationService activationService, IGetPresencesByMemberService getPresencesByMemberService) {
+                             IGetPresencesByMemberService getPresencesByMemberService) {
 
         this.registerMemberService = registerMemberService;
         this.getMemberByIdService = getMemberByIdService;
         this.specificationFilterConverter = specificationFilterConverter;
         this.searchMembersService = searchMembersService;
-        this.activationService = activationService;
         this.getPresencesByMemberService = getPresencesByMemberService;
     }
 
@@ -78,19 +76,19 @@ public class MemberController {
         );
     }
 
-    @PatchMapping("/{id}/activate")
-    public ResponseEntity activate(@PathVariable UUID id) {
-
-        activationService.activate(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/deactivate")
-    public ResponseEntity deactivate(@PathVariable UUID id) {
-
-        activationService.deactivate(id);
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/{id}/activate")
+//    public ResponseEntity activate(@PathVariable UUID id) {
+//
+//        activationService.activate(id);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @PatchMapping("/{id}/deactivate")
+//    public ResponseEntity deactivate(@PathVariable UUID id) {
+//
+//        activationService.deactivate(id);
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/{memberId}/presences")
     public ResponseEntity<Page<GetPresenceByIdDTO>> getMemberPresences(@PathVariable UUID memberId,

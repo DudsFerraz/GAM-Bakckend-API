@@ -1,38 +1,30 @@
 package br.org.gam.api.Entities.account.persistence;
 
 import br.org.gam.api.Entities.account.MyEmail;
-import br.org.gam.api.common.PermissionLevelEnum;
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
+import br.org.gam.api.common.persistence.FullAuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.type.SqlTypes;
-
-import java.time.Instant;
+import org.hibernate.annotations.SQLRestriction;
 import java.util.UUID;
 
+@SQLRestriction("deleted_at is NULL")
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "accounts")
-public class AccountEntity {
-
-    private static final TimeBasedEpochGenerator uuidV7Generator = Generators.timeBasedEpochGenerator();
+public class AccountEntity extends FullAuditableEntity {
 
     @Id
     @Column(name = "id")
     private UUID id;
 
     @Convert(converter = EmailConverterJPA.class)
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private MyEmail email;
 
     @Column(name = "password_hash", nullable = false)
@@ -40,23 +32,4 @@ public class AccountEntity {
 
     @Column(name = "display_name", nullable = false)
     private String displayName;
-
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "permission_level")
-    private PermissionLevelEnum permissionLevel;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = uuidV7Generator.generate();
-        }
-    }
 }

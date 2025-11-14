@@ -1,66 +1,41 @@
 package br.org.gam.api.Entities.account;
 
-import br.org.gam.api.common.PermissionLevelEnum;
+import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class Account {
     private UUID id;
-
     private MyEmail email;
-
     private String passwordHash;
-
     private String displayName;
 
-    private PermissionLevelEnum permissionLevel;
-
     /**
-     * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO (JPA/MapStruct).</b>
+     * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO E JPA/MapStruct.</b>
      * <br> <br>
-     * <b> Use o método fábrica {@link #create(MyEmail email, String passwordHash, String displayName)}.
+     * <b> Use o método fábrica {@link #register(MyEmail email, String passwordHash, String displayName)}.
      */
     @Deprecated
-    Account(UUID id, MyEmail email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
+    Account(UUID id, MyEmail email, String passwordHash, String displayName) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
-        this.permissionLevel = permissionLevel;
     }
 
-    private Account(MyEmail email, String passwordHash, String displayName, PermissionLevelEnum permissionLevel) {
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.displayName = displayName;
-        this.permissionLevel = permissionLevel;
-    }
-
-    public static Account create(MyEmail email, String passwordHash, String displayName) {
+    public static Account register(MyEmail email, String passwordHash, String displayName) {
         Objects.requireNonNull(email, "Email cannot be null.");
         Objects.requireNonNull(passwordHash, "Password hash cannot be null.");
         Objects.requireNonNull(displayName, "Display name cannot be null.");
         if (passwordHash.isBlank()) throw new IllegalArgumentException("Password hash cannot be blank.");
         if (displayName.isBlank()) throw new IllegalArgumentException("Display name cannot be blank.");
 
+        UUID id = UUIDGenerator.generateUUIDV7();
 
-        PermissionLevelEnum permissionLevel = PermissionLevelEnum.VISITOR;
         String cleanDisplayName = displayName.trim();
 
-        return new Account(email, passwordHash, cleanDisplayName, permissionLevel);
-    }
-
-    public void setPermissionLevelToMember() {
-        this.permissionLevel = PermissionLevelEnum.MEMBER;
-    }
-
-    public void setPermissionLevelToCoord() {
-        this.permissionLevel = PermissionLevelEnum.COORDINATOR;
-    }
-
-    public void setPermissionLevelToVisitor() {
-        this.permissionLevel = PermissionLevelEnum.VISITOR;
+        return new Account(id, email, passwordHash, cleanDisplayName);
     }
 
     public UUID getId() {
@@ -73,10 +48,6 @@ public class Account {
 
     public String getPasswordHash() {
         return passwordHash;
-    }
-
-    public PermissionLevelEnum getPermissionLevel() {
-        return permissionLevel;
     }
 
     public String getDisplayName() {

@@ -1,6 +1,5 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.common.PermissionLevelEnum;
 import br.org.gam.api.common.specification.GenericSpecificationFilterConverter;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import br.org.gam.api.common.specification.SpecificationFilterDTO;
@@ -21,7 +20,6 @@ class SpecificationFilterConverter {
         PARSER_MAP.put("id", UUID::fromString);
         PARSER_MAP.put("displayName", val -> val);
         PARSER_MAP.put("email", val -> val);
-        PARSER_MAP.put("permissionLevel", val -> PermissionLevelEnum.valueOf(val.toUpperCase()));
         PARSER_MAP.put("createdAt", OffsetDateTime::parse);
         PARSER_MAP.put("updatedAt", OffsetDateTime::parse);
     }

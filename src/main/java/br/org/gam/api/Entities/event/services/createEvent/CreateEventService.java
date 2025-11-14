@@ -56,7 +56,7 @@ public class CreateEventService implements ICreateEventService {
             eventLocation = getLocationInstanceService.getLocationDomainById(dto.locationId());
         }
 
-        Event newEvent = Event.create(dto.title(), dto.description(), eventLocation, dto.requiredPermissionLevel(),
+        Event newEvent = Event.create(dto.title(), dto.description(), eventLocation,
                                       dto.beginDate(), dto.endDate());
 
         EventEntity newEventEntity = eventMapper.fromDomainToEntity(newEvent);

@@ -1,7 +1,6 @@
 package br.org.gam.api.Entities.event.persistence;
 
 import br.org.gam.api.Entities.location.persistence.LocationEntity;
-import br.org.gam.api.common.PermissionLevelEnum;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.persistence.*;
@@ -38,9 +37,9 @@ public class EventEntity {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private LocationEntity location;
 
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "required_permission_level")
-    private PermissionLevelEnum requiredPermissionLevel;
+//    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+//    @Column(name = "required_permission_level")
+//    private PermissionLevelEnum requiredPermissionLevel;
 
     @Column(name = "begin_date", nullable = false)
     private Instant beginDate;
