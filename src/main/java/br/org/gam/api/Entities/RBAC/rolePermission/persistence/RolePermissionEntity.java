@@ -33,18 +33,4 @@ public class RolePermissionEntity extends JunctionAuditableEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_id", nullable = false)
     private PermissionEntity permission;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    @Column(name = "deleted_by")
-    private UUID deletedBy;
 }

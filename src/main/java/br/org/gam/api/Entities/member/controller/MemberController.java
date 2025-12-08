@@ -1,14 +1,13 @@
 package br.org.gam.api.Entities.member.controller;
 
-import br.org.gam.api.Entities.member.services.activation.IActivationService;
 import br.org.gam.api.Entities.member.services.getMemberById.GetMemberByIdDTO;
-import br.org.gam.api.Entities.member.services.getMemberById.IGetMemberByIdService;
+import br.org.gam.api.Entities.member.services.getMemberById.GetMemberById;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberDTO;
-import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberResponseDTO;
-import br.org.gam.api.Entities.member.services.registerMember.IRegisterMemberService;
-import br.org.gam.api.Entities.member.services.searchMembers.ISearchMembersService;
+import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
+import br.org.gam.api.Entities.member.services.registerMember.RegisterMember;
+import br.org.gam.api.Entities.member.services.searchMembers.SearchMembers;
 import br.org.gam.api.Entities.presence.services.getPresenceById.GetPresenceByIdDTO;
-import br.org.gam.api.Entities.presence.services.getPresencesByMember.IGetPresencesByMemberService;
+import br.org.gam.api.Entities.presence.services.getPresencesByMember.GetPresencesByMember;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -27,17 +26,17 @@ import java.util.UUID;
 @RequestMapping("/member")
 public class MemberController {
 
-    private final IRegisterMemberService registerMemberService;
-    private final IGetMemberByIdService getMemberByIdService;
+    private final RegisterMember registerMemberService;
+    private final GetMemberById getMemberByIdService;
     private final SpecificationFilterConverter specificationFilterConverter;
-    private final ISearchMembersService searchMembersService;
-    private final IGetPresencesByMemberService getPresencesByMemberService;
+    private final SearchMembers searchMembersService;
+    private final GetPresencesByMember getPresencesByMemberService;
 
-    public MemberController(IRegisterMemberService registerMemberService,
-                            IGetMemberByIdService getMemberByIdService,
+    public MemberController(RegisterMember registerMemberService,
+                            GetMemberById getMemberByIdService,
                             @Qualifier("memberSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
-                            ISearchMembersService searchMembersService,
-                             IGetPresencesByMemberService getPresencesByMemberService) {
+                            SearchMembers searchMembersService,
+                            GetPresencesByMember getPresencesByMemberService) {
 
         this.registerMemberService = registerMemberService;
         this.getMemberByIdService = getMemberByIdService;
@@ -47,9 +46,9 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<RegisterMemberResponseDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
+    public ResponseEntity<RegisterMemberRDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
 
-        RegisterMemberResponseDTO responseDTO = registerMemberService.registerMember(dto);
+        RegisterMemberRDTO responseDTO = registerMemberService.registerMember(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

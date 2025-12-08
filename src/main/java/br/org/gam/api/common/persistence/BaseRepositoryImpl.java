@@ -3,7 +3,6 @@ package br.org.gam.api.common.persistence;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Table;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.domain.AuditorAware;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BaseRepositoryImpl<T extends ISoftDeletable, ID> extends SimpleJpaRepository<T, ID>
-                            implements IBaseRepository<T, ID>, ApplicationContextAware {
+public class BaseRepositoryImpl<T extends SoftDeletable, ID> extends SimpleJpaRepository<T, ID>
+                            implements BaseRepository<T, ID>, ApplicationContextAware {
     private ApplicationContext applicationContext;
     private final EntityManager entityManager;
 

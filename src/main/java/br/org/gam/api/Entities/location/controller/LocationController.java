@@ -1,11 +1,11 @@
 package br.org.gam.api.Entities.location.controller;
 
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationDTO;
-import br.org.gam.api.Entities.location.services.createLocation.CreateLocationResponseDTO;
-import br.org.gam.api.Entities.location.services.createLocation.ICreateLocationService;
-import br.org.gam.api.Entities.location.services.getAllLocations.IGetAllLocationsService;
+import br.org.gam.api.Entities.location.services.createLocation.CreateLocationRDTO;
+import br.org.gam.api.Entities.location.services.createLocation.CreateLocation;
+import br.org.gam.api.Entities.location.services.getAllLocations.GetAllLocations;
 import br.org.gam.api.Entities.location.services.getLocationById.GetLocationByIdDTO;
-import br.org.gam.api.Entities.location.services.getLocationById.IGetLocationByIdService;
+import br.org.gam.api.Entities.location.services.getLocationById.GetLocationById;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +20,11 @@ import java.util.UUID;
 @RequestMapping("/location")
 public class LocationController {
 
-    private final ICreateLocationService createLocationService;
-    private final IGetLocationByIdService getLocationByIdService;
-    private final IGetAllLocationsService getAllLocationsService;
+    private final CreateLocation createLocationService;
+    private final GetLocationById getLocationByIdService;
+    private final GetAllLocations getAllLocationsService;
 
-    public LocationController(ICreateLocationService createLocationService, IGetAllLocationsService getAllLocationsService, IGetLocationByIdService getLocationByIdService) {
+    public LocationController(CreateLocation createLocationService, GetAllLocations getAllLocationsService, GetLocationById getLocationByIdService) {
         this.createLocationService = createLocationService;
         this.getAllLocationsService = getAllLocationsService;
         this.getLocationByIdService = getLocationByIdService;
@@ -32,8 +32,8 @@ public class LocationController {
 
 
     @PostMapping
-    public ResponseEntity<CreateLocationResponseDTO> createLocation(@RequestBody @Valid CreateLocationDTO dto) {
-        CreateLocationResponseDTO responseDTO = createLocationService.createLocation(dto);
+    public ResponseEntity<CreateLocationRDTO> createLocation(@RequestBody @Valid CreateLocationDTO dto) {
+        CreateLocationRDTO responseDTO = createLocationService.createLocation(dto);
 
         URI httpLocation  = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

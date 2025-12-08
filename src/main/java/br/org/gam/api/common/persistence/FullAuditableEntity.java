@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class FullAuditableEntity implements ISoftDeletable {
+public abstract class FullAuditableEntity implements SoftDeletable {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

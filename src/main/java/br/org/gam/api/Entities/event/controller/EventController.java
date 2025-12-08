@@ -1,13 +1,13 @@
 package br.org.gam.api.Entities.event.controller;
 
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventDTO;
-import br.org.gam.api.Entities.event.services.createEvent.CreateEventResponseDTO;
-import br.org.gam.api.Entities.event.services.createEvent.ICreateEventService;
+import br.org.gam.api.Entities.event.services.createEvent.CreateEventRDTO;
+import br.org.gam.api.Entities.event.services.createEvent.CreateEvent;
 import br.org.gam.api.Entities.event.services.getEventById.GetEventByIdDTO;
-import br.org.gam.api.Entities.event.services.getEventById.IGetEventByIdService;
-import br.org.gam.api.Entities.event.services.searchEvents.ISearchEventsService;
+import br.org.gam.api.Entities.event.services.getEventById.GetEventById;
+import br.org.gam.api.Entities.event.services.searchEvents.SearchEvents;
 import br.org.gam.api.Entities.presence.services.getPresenceById.GetPresenceByIdDTO;
-import br.org.gam.api.Entities.presence.services.getPresencesByEvent.IGetPresencesByEventService;
+import br.org.gam.api.Entities.presence.services.getPresencesByEvent.GetPresencesByEvent;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -25,16 +25,16 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/event")
 public class EventController {
-    private final ICreateEventService createEventService;
-    private final IGetEventByIdService getEventByIdService;
-    private final ISearchEventsService searchEventService;
+    private final CreateEvent createEventService;
+    private final GetEventById getEventByIdService;
+    private final SearchEvents searchEventService;
     private final SpecificationFilterConverter specificationFilterConverter;
-    private final IGetPresencesByEventService getPresencesByEventService;
+    private final GetPresencesByEvent getPresencesByEventService;
 
-    public EventController(ICreateEventService createEventService,
-                           IGetEventByIdService getEventByIdService,
-                           ISearchEventsService searchEventService,
-                           @Qualifier("eventSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter, IGetPresencesByEventService getPresencesByEventService) {
+    public EventController(CreateEvent createEventService,
+                           GetEventById getEventByIdService,
+                           SearchEvents searchEventService,
+                           @Qualifier("eventSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter, GetPresencesByEvent getPresencesByEventService) {
 
         this.createEventService = createEventService;
         this.getEventByIdService = getEventByIdService;
@@ -44,9 +44,9 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateEventResponseDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
+    public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
-        CreateEventResponseDTO responseDTO = createEventService.createEvent(dto);
+        CreateEventRDTO responseDTO = createEventService.createEvent(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

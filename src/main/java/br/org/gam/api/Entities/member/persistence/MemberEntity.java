@@ -1,7 +1,7 @@
 package br.org.gam.api.Entities.member.persistence;
 
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
-import br.org.gam.api.Entities.member.MemberStatusEnum;
+import br.org.gam.api.Entities.member.MemberStatus;
 import br.org.gam.api.common.Name;
 import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
 import com.fasterxml.uuid.Generators;
@@ -51,7 +51,7 @@ public class MemberEntity {
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status")
-    private MemberStatusEnum status;
+    private MemberStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

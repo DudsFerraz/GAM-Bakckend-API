@@ -1,11 +1,11 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.Entities.account.services.loginAccount.ILoginAccountService;
+import br.org.gam.api.Entities.account.services.loginAccount.LoginAccount;
 import br.org.gam.api.Entities.account.services.loginAccount.LoginAccountDTO;
-import br.org.gam.api.Entities.account.services.loginAccount.LoginAccountResponseDTO;
-import br.org.gam.api.Entities.account.services.registerAccount.IRegisterAccountService;
+import br.org.gam.api.Entities.account.services.loginAccount.LoginAccountRDTO;
+import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccount;
 import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccountDTO;
-import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccountResponseDTO;
+import br.org.gam.api.Entities.account.services.registerAccount.RegisterAccountRDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,17 +19,17 @@ import java.net.URI;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final IRegisterAccountService registerAccountService;
-    private final ILoginAccountService loginAccountService;
+    private final RegisterAccount registerAccountService;
+    private final LoginAccount loginAccount;
 
-    public AuthController(IRegisterAccountService registerAccountService, ILoginAccountService loginAccountService) {
+    public AuthController(RegisterAccount registerAccountService, LoginAccount loginAccount) {
         this.registerAccountService = registerAccountService;
-        this.loginAccountService = loginAccountService;
+        this.loginAccount = loginAccount;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterAccountResponseDTO> createAccount(@Valid @RequestBody RegisterAccountDTO dto) {
-        RegisterAccountResponseDTO responseDTO = registerAccountService.registerAccount(dto);
+    public ResponseEntity<RegisterAccountRDTO> createAccount(@Valid @RequestBody RegisterAccountDTO dto) {
+        RegisterAccountRDTO responseDTO = registerAccountService.registerAccount(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -40,10 +40,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginAccountResponseDTO> login(@RequestBody @Valid LoginAccountDTO dto) {
+    public ResponseEntity<LoginAccountRDTO> login(@RequestBody @Valid LoginAccountDTO dto) {
 
         return ResponseEntity.ok(
-                loginAccountService.loginAccount(dto)
+                loginAccount.loginAccount(dto)
         );
     }
 

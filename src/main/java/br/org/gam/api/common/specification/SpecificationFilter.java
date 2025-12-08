@@ -3,7 +3,7 @@ package br.org.gam.api.common.specification;
 public record SpecificationFilter(
         String field,
         Object value,
-        ComparationMethodsEnum comparationMethod
+        ComparationMethods comparationMethod
 ) {
 
     public boolean isValid() {

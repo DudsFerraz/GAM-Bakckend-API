@@ -14,7 +14,7 @@ public class Member {
     private Name name;
     private LocalDate birthDate;
     private MyPhoneNumber phoneNumber;
-    private MemberStatusEnum status;
+    private MemberStatus status;
 
     /**
      * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO (JPA/MapStruct).</b>
@@ -22,7 +22,7 @@ public class Member {
      * <b> Use o método fábrica {@link #register(Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber)}.
      */
     @Deprecated
-    Member(UUID id, Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber, MemberStatusEnum status) {
+    Member(UUID id, Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber, MemberStatus status) {
         this.id = id;
         this.account = account;
         this.name = name;
@@ -31,7 +31,7 @@ public class Member {
         this.status = status;
     }
 
-    private Member(Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber, MemberStatusEnum status) {
+    private Member(Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber, MemberStatus status) {
         this.account = account;
         this.name = name;
         this.birthDate = birthDate;
@@ -47,17 +47,17 @@ public class Member {
         if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Birth date cannot be in the future.");
 
 
-        MemberStatusEnum status = MemberStatusEnum.PENDENT;
+        MemberStatus status = MemberStatus.PENDENT;
 
         return new Member(account, name, birthDate, phoneNumber, status);
     }
 
     public void activate(){
-        this.status = MemberStatusEnum.ACTIVE;
+        this.status = MemberStatus.ACTIVE;
     }
 
     public void deactivate(){
-        this.status = MemberStatusEnum.INACTIVE;
+        this.status = MemberStatus.INACTIVE;
     }
 
     public UUID getId() {
@@ -80,7 +80,7 @@ public class Member {
         return phoneNumber;
     }
 
-    public MemberStatusEnum getStatus() {
+    public MemberStatus getStatus() {
         return status;
     }
 

@@ -1,7 +1,7 @@
 package br.org.gam.api.common.config;
 
 import br.org.gam.api.Entities.account.MyEmail;
-import br.org.gam.api.Entities.account.persistence.IAccountRepository;
+import br.org.gam.api.Entities.account.persistence.AccountRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccountUserDetailsService implements UserDetailsService {
 
-    private final IAccountRepository accountRepo;
+    private final AccountRepository accountRepo;
 
-    public AccountUserDetailsService(@Lazy IAccountRepository accountRepo) {
+    public AccountUserDetailsService(@Lazy AccountRepository accountRepo) {
         this.accountRepo = accountRepo;
     }
 

@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "permissions")
-public class PermissionEntity extends JunctionAuditableEntity {
+public class PermissionEntity extends FullAuditableEntity {
 
     @Id
     @Column(name = "id")

@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotNull;
 public record SpecificationFilterDTO(
         @NotNull @NotBlank String field,
         @NotNull @NotBlank String value,
-        @NotNull ComparationMethodsEnum comparationMethod
+        @NotNull ComparationMethods comparationMethod
 ) {
 }

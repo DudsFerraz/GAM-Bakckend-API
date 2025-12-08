@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.member.controller;
 
-import br.org.gam.api.Entities.member.MemberStatusEnum;
+import br.org.gam.api.Entities.member.MemberStatus;
 import br.org.gam.api.common.specification.GenericSpecificationFilterConverter;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import br.org.gam.api.common.specification.SpecificationFilterDTO;
@@ -23,7 +23,7 @@ class SpecificationFilterConverter {
         PARSER_MAP.put("account.id", UUID::fromString);
         PARSER_MAP.put("birthDate", LocalDate::parse);
         PARSER_MAP.put("phoneNumber", val -> val);
-        PARSER_MAP.put("status", val -> MemberStatusEnum.valueOf(val.toUpperCase()));
+        PARSER_MAP.put("status", val -> MemberStatus.valueOf(val.toUpperCase()));
         PARSER_MAP.put("createdAt", OffsetDateTime::parse);
         PARSER_MAP.put("updatedAt", OffsetDateTime::parse);
 

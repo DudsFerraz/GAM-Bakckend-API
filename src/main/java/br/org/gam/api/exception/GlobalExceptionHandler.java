@@ -1,5 +1,9 @@
 package br.org.gam.api.exception;
 
+import br.org.gam.api.Entities.RBAC.accountRole.exception.AccountRoleNotFoundException;
+import br.org.gam.api.Entities.RBAC.permission.exception.PermissionNotFoundException;
+import br.org.gam.api.Entities.RBAC.role.exception.RoleNotFoundException;
+import br.org.gam.api.Entities.RBAC.rolePermission.exception.RolePermissionNotFoundException;
 import br.org.gam.api.Entities.account.exception.AccountConflictException;
 import br.org.gam.api.Entities.account.exception.AccountNotFoundException;
 import br.org.gam.api.Entities.event.exception.EventNotFoundException;
@@ -10,7 +14,6 @@ import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
 import br.org.gam.api.Entities.presence.exception.PresenceConflictException;
 import br.org.gam.api.Entities.presence.exception.PresenceNotFoundException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.hibernate.id.IdentifierGenerationException;
@@ -33,7 +36,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,6 +153,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             EventNotFoundException.class,
             LocationNotFoundException.class,
             PresenceNotFoundException.class,
+            RoleNotFoundException.class,
+            AccountRoleNotFoundException.class,
+            PermissionNotFoundException.class,
+            RolePermissionNotFoundException.class,
     })
     public ResponseEntity<ApiErrorDTO> resourceNotFoundHandler(RuntimeException e) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
