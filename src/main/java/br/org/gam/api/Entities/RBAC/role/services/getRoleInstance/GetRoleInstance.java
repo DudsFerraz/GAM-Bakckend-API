@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface GetRoleInstance {
     Role getRoleDomainById(UUID id);
     RoleEntity getRoleEntityById(UUID id);
+    RoleEntity EntityByName(String name);
 }

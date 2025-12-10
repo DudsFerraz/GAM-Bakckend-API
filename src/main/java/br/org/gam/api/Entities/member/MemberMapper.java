@@ -2,7 +2,7 @@ package br.org.gam.api.Entities.member;
 
 import br.org.gam.api.Entities.account.AccountMapper;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
-import br.org.gam.api.Entities.member.services.getMemberById.GetMemberByIdDTO;
+import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,9 +17,9 @@ public interface MemberMapper {
 
     Member fromEntityToDomain(MemberEntity memberEntity);
 
-    RegisterMemberRDTO fromEntityToRegisterMemberResponseDTO(MemberEntity memberEntity);
+    RegisterMemberRDTO fromEntityToRegisterMemberRDTO(MemberEntity memberEntity);
 
     @Mapping(source = "account.id", target = "accountId")
     @Mapping(source = "name.fullName", target = "name")
-    GetMemberByIdDTO fromEntityToGetMemberByIdDTO(MemberEntity memberEntity);
+    GetMemberRDTO fromEntityToGetMemberRDTO(MemberEntity memberEntity);
 }

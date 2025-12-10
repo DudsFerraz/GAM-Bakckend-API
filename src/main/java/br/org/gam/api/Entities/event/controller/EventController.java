@@ -3,11 +3,11 @@ package br.org.gam.api.Entities.event.controller;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventRDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEvent;
-import br.org.gam.api.Entities.event.services.getEventById.GetEventByIdDTO;
-import br.org.gam.api.Entities.event.services.getEventById.GetEventById;
+import br.org.gam.api.Entities.event.services.getEvent.GetEventRDTO;
+import br.org.gam.api.Entities.event.services.getEvent.GetEvent;
 import br.org.gam.api.Entities.event.services.searchEvents.SearchEvents;
-import br.org.gam.api.Entities.presence.services.getPresenceById.GetPresenceByIdDTO;
-import br.org.gam.api.Entities.presence.services.getPresencesByEvent.GetPresencesByEvent;
+import br.org.gam.api.Entities.presence.services.getPresence.GetPresence;
+import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -26,27 +26,28 @@ import java.util.UUID;
 @RequestMapping("/event")
 public class EventController {
     private final CreateEvent createEventService;
-    private final GetEventById getEventByIdService;
+    private final GetEvent getEventService;
     private final SearchEvents searchEventService;
     private final SpecificationFilterConverter specificationFilterConverter;
-    private final GetPresencesByEvent getPresencesByEventService;
+    private final GetPresence getPresence;
 
     public EventController(CreateEvent createEventService,
-                           GetEventById getEventByIdService,
+                           GetEvent getEventService,
                            SearchEvents searchEventService,
-                           @Qualifier("eventSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter, GetPresencesByEvent getPresencesByEventService) {
+                           @Qualifier("eventSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
+                           GetPresence getPresence) {
 
         this.createEventService = createEventService;
-        this.getEventByIdService = getEventByIdService;
+        this.getEventService = getEventService;
         this.searchEventService = searchEventService;
         this.specificationFilterConverter = specificationFilterConverter;
-        this.getPresencesByEventService = getPresencesByEventService;
+        this.getPresence = getPresence;
     }
 
     @PostMapping
     public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
-        CreateEventRDTO responseDTO = createEventService.createEvent(dto);
+        CreateEventRDTO responseDTO = createEventService.create(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -57,29 +58,29 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetEventByIdDTO> getEventById(@PathVariable UUID id){
+    public ResponseEntity<GetEventRDTO> getEventById(@PathVariable UUID id){
 
-        GetEventByIdDTO responseDTO = getEventByIdService.getEventById(id);
+        GetEventRDTO responseDTO = getEventService.byId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<GetEventByIdDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
-                                                              Pageable pageable){
+    public ResponseEntity<Page<GetEventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
+                                                           Pageable pageable){
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
         return ResponseEntity.ok(
-                searchEventService.searchEvents(filters, pageable)
+                searchEventService.search(filters, pageable)
         );
     }
 
     @GetMapping("/{eventId}/presences")
-    public ResponseEntity<Page<GetPresenceByIdDTO>> getEventPresences(@PathVariable UUID eventId,
-                                                                      Pageable pageable){
+    public ResponseEntity<Page<GetPresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
+                                                                   Pageable pageable){
 
         return ResponseEntity.ok(
-                getPresencesByEventService.getEventPresences(eventId, pageable)
+                getPresence.allByEvent(eventId, pageable)
         );
     }
 }

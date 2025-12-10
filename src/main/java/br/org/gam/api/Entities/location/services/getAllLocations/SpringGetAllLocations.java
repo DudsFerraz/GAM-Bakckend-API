@@ -2,7 +2,7 @@ package br.org.gam.api.Entities.location.services.getAllLocations;
 
 import br.org.gam.api.Entities.location.LocationMapper;
 import br.org.gam.api.Entities.location.persistence.LocationRepository;
-import br.org.gam.api.Entities.location.services.getLocationById.GetLocationByIdDTO;
+import br.org.gam.api.Entities.location.services.getLocationById.GetLocationRDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,9 @@ public class SpringGetAllLocations implements GetAllLocations {
     }
 
     @Override
-    public Page<GetLocationByIdDTO> getAllLocations(Pageable pageable) {
+    public Page<GetLocationRDTO> get(Pageable pageable) {
 
         return locationRepo.findAll(pageable)
-                .map(locationMapper::fromEntityToGetLocationByIdDTO);
+                .map(locationMapper::fromEntityToGetLocationRDTO);
     }
 }

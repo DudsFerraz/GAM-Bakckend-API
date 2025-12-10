@@ -1,12 +1,13 @@
 package br.org.gam.api.Entities.member.controller;
 
-import br.org.gam.api.Entities.member.services.getMemberById.GetMemberByIdDTO;
-import br.org.gam.api.Entities.member.services.getMemberById.GetMemberById;
+import br.org.gam.api.Entities.member.services.activation.Activation;
+import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
+import br.org.gam.api.Entities.member.services.getMember.GetMember;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMember;
 import br.org.gam.api.Entities.member.services.searchMembers.SearchMembers;
-import br.org.gam.api.Entities.presence.services.getPresenceById.GetPresenceByIdDTO;
+import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
 import br.org.gam.api.Entities.presence.services.getPresencesByMember.GetPresencesByMember;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
@@ -26,29 +27,31 @@ import java.util.UUID;
 @RequestMapping("/member")
 public class MemberController {
 
-    private final RegisterMember registerMemberService;
-    private final GetMemberById getMemberByIdService;
+    private final RegisterMember registerMember;
+    private final GetMember getMember;
     private final SpecificationFilterConverter specificationFilterConverter;
-    private final SearchMembers searchMembersService;
-    private final GetPresencesByMember getPresencesByMemberService;
+    private final SearchMembers searchMembers;
+    private final GetPresencesByMember getPresencesByMember;
+    private final Activation activation;
 
-    public MemberController(RegisterMember registerMemberService,
-                            GetMemberById getMemberByIdService,
+    public MemberController(RegisterMember registerMember,
+                            GetMember getMember,
                             @Qualifier("memberSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
-                            SearchMembers searchMembersService,
-                            GetPresencesByMember getPresencesByMemberService) {
+                            SearchMembers searchMembers,
+                            GetPresencesByMember getPresencesByMember, Activation activation) {
 
-        this.registerMemberService = registerMemberService;
-        this.getMemberByIdService = getMemberByIdService;
+        this.registerMember = registerMember;
+        this.getMember = getMember;
         this.specificationFilterConverter = specificationFilterConverter;
-        this.searchMembersService = searchMembersService;
-        this.getPresencesByMemberService = getPresencesByMemberService;
+        this.searchMembers = searchMembers;
+        this.getPresencesByMember = getPresencesByMember;
+        this.activation = activation;
     }
 
     @PostMapping
     public ResponseEntity<RegisterMemberRDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
 
-        RegisterMemberRDTO responseDTO = registerMemberService.registerMember(dto);
+        RegisterMemberRDTO responseDTO = registerMember.register(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -59,42 +62,42 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetMemberByIdDTO> getMemberById(@PathVariable UUID id) {
-        GetMemberByIdDTO dto = getMemberByIdService.getMemberById(id);
+    public ResponseEntity<GetMemberRDTO> getMemberById(@PathVariable UUID id) {
+        GetMemberRDTO dto = getMember.byId(id);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<GetMemberByIdDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
-                                                                Pageable pageable) {
+    public ResponseEntity<Page<GetMemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
+                                                             Pageable pageable) {
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
         return ResponseEntity.ok(
-                searchMembersService.searchMembers(filters, pageable)
+                searchMembers.search(filters, pageable)
         );
     }
 
-//    @PatchMapping("/{id}/activate")
-//    public ResponseEntity activate(@PathVariable UUID id) {
-//
-//        activationService.activate(id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PatchMapping("/{id}/deactivate")
-//    public ResponseEntity deactivate(@PathVariable UUID id) {
-//
-//        activationService.deactivate(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity activate(@PathVariable UUID id) {
+
+        activation.activate(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity deactivate(@PathVariable UUID id) {
+
+        activation.deactivate(id);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/{memberId}/presences")
-    public ResponseEntity<Page<GetPresenceByIdDTO>> getMemberPresences(@PathVariable UUID memberId,
-                                                                       Pageable pageable) {
+    public ResponseEntity<Page<GetPresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
+                                                                    Pageable pageable) {
 
         return ResponseEntity.ok(
-                getPresencesByMemberService.getMemberPresences(memberId, pageable)
+                getPresencesByMember.getMemberPresences(memberId, pageable)
         );
     }
 }

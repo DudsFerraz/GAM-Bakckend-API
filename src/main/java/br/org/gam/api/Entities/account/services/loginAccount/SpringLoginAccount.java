@@ -20,7 +20,7 @@ public class SpringLoginAccount implements LoginAccount {
     }
 
     @Override
-    public LoginAccountRDTO loginAccount(LoginAccountDTO dto) {
+    public LoginAccountRDTO login(LoginAccountDTO dto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         dto.email().value(),

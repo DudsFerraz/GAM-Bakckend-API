@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.member.services.searchMembers;
 import br.org.gam.api.Entities.member.MemberMapper;
 import br.org.gam.api.Entities.member.persistence.MemberRepository;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
-import br.org.gam.api.Entities.member.services.getMemberById.GetMemberByIdDTO;
+import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
 import br.org.gam.api.common.specification.SpecificationBuilder;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import org.springframework.data.domain.Page;
@@ -25,12 +25,12 @@ public class SpringSearchMembers implements SearchMembers {
     }
 
     @Override
-    public Page<GetMemberByIdDTO> searchMembers(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<GetMemberRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Specification<MemberEntity> spec = SpecificationBuilder.build(filters);
 
         Page<MemberEntity> entitiesPage = memberRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(memberMapper::fromEntityToGetMemberByIdDTO);
+        return entitiesPage.map(memberMapper::fromEntityToGetMemberRDTO);
     }
 
 

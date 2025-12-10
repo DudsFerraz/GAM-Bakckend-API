@@ -1,16 +1,12 @@
 package br.org.gam.api.Entities.event.persistence;
 
+import br.org.gam.api.Entities.RBAC.permission.persistence.PermissionEntity;
 import br.org.gam.api.Entities.location.persistence.LocationEntity;
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
+import br.org.gam.api.common.persistence.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,9 +16,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Table(name = "events")
-public class EventEntity {
-
-    private static final TimeBasedEpochGenerator uuidV7Generator = Generators.timeBasedEpochGenerator();
+public class EventEntity extends FullAuditableEntity {
 
     @Id
     private UUID id;
@@ -37,28 +31,13 @@ public class EventEntity {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private LocationEntity location;
 
-//    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-//    @Column(name = "required_permission_level")
-//    private PermissionLevelEnum requiredPermissionLevel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "required_permission_id", referencedColumnName = "id")
+    private PermissionEntity requiredPermission;
 
     @Column(name = "begin_date", nullable = false)
     private Instant beginDate;
 
     @Column(name = "end_date", nullable = false)
     private Instant endDate;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = uuidV7Generator.generate();
-        }
-    }
 }

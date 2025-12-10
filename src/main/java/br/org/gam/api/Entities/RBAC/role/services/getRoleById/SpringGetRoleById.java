@@ -9,18 +9,18 @@ import java.util.UUID;
 
 @Service
 public class SpringGetRoleById implements GetRoleById {
-    private final GetRoleInstance getRoleInstanceService;
+    private final GetRoleInstance getRoleInstance;
     private final RoleMapper roleMapper;
 
-    public SpringGetRoleById(GetRoleInstance getRoleInstanceService, RoleMapper roleMapper) {
-        this.getRoleInstanceService = getRoleInstanceService;
+    public SpringGetRoleById(GetRoleInstance getRoleInstance, RoleMapper roleMapper) {
+        this.getRoleInstance = getRoleInstance;
         this.roleMapper = roleMapper;
     }
 
     @Override
-    public GetRoleByIdDTO getRoleById(UUID id) {
+    public GetRoleByIdRDTO getRoleById(UUID id) {
 
-        RoleEntity roleEntity = getRoleInstanceService.getRoleEntityById(id);
+        RoleEntity roleEntity = getRoleInstance.getRoleEntityById(id);
         return roleMapper.fromEntityToGetRoleByIdDTO(roleEntity);
     }
 }

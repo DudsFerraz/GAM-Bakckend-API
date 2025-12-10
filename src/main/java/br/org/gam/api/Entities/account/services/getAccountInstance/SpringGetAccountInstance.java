@@ -21,7 +21,7 @@ public class SpringGetAccountInstance implements GetAccountInstance {
     }
 
     @Override
-    public Account getAccountDomainById(UUID id) {
+    public Account domainById(UUID id) {
         return accountRepo.findById(id)
                 .map(accountMapper::fromEntityToDomain)
                 .orElseThrow(() -> new AccountNotFoundException("Could not find account with id " + id));
@@ -29,7 +29,7 @@ public class SpringGetAccountInstance implements GetAccountInstance {
     }
 
     @Override
-    public AccountEntity getAccountEntityById(UUID id) {
+    public AccountEntity entityById(UUID id) {
         return accountRepo.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException("Could not find account with id " + id));
     }

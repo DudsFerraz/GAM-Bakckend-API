@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.event.services.searchEvents;
 import br.org.gam.api.Entities.event.EventMapper;
 import br.org.gam.api.Entities.event.persistence.EventEntity;
 import br.org.gam.api.Entities.event.persistence.EventRepository;
-import br.org.gam.api.Entities.event.services.getEventById.GetEventByIdDTO;
+import br.org.gam.api.Entities.event.services.getEvent.GetEventRDTO;
 import br.org.gam.api.common.specification.SpecificationBuilder;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import org.springframework.data.domain.Page;
@@ -24,11 +24,11 @@ public class SpringSearchEvents implements SearchEvents {
     }
 
     @Override
-    public Page<GetEventByIdDTO> searchEvents(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<GetEventRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Specification<EventEntity> spec = SpecificationBuilder.build(filters);
 
         Page<EventEntity> entitiesPage = eventRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(eventMapper::fromEntityToGetEventByIdDTO);
+        return entitiesPage.map(eventMapper::fromEntityToGetEventRDTO);
     }
 }

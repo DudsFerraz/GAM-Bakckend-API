@@ -24,7 +24,7 @@ public class SpringRegisterAccount implements RegisterAccount {
 
     @Transactional
     @Override
-    public RegisterAccountRDTO registerAccount(RegisterAccountDTO dto) {
+    public RegisterAccountRDTO register(RegisterAccountDTO dto) {
         if (accountRepo.existsByEmail(dto.email())){
             throw new AccountConflictException("Email '" + dto.email() + "' already registered.");
         }
@@ -35,6 +35,6 @@ public class SpringRegisterAccount implements RegisterAccount {
         AccountEntity newAccountEntity = accountMapper.fromDomainToEntity(newAccount);
         AccountEntity savedAccountEntity = accountRepo.save(newAccountEntity);
 
-        return accountMapper.fromEntityToRegisterAccountResponseDTO(savedAccountEntity);
+        return accountMapper.fromEntityToRegisterAccountRDTO(savedAccountEntity);
     }
 }

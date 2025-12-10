@@ -21,14 +21,14 @@ public class SpringGetLocationInstance implements GetLocationInstance {
     }
 
     @Override
-    public Location getLocationDomainById(UUID id) {
+    public Location domainById(UUID id) {
         return locationRepo.findById(id)
                 .map(locationMapper::fromEntityToDomain)
                 .orElseThrow(() -> new LocationNotFoundException("Could not find location with id " + id));
     }
 
     @Override
-    public LocationEntity getLocationEntityById(UUID id) {
+    public LocationEntity entityById(UUID id) {
         return locationRepo.findById(id)
                 .orElseThrow(() -> new LocationNotFoundException("Could not find location with id " + id));
     }

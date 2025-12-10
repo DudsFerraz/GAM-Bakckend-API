@@ -1,7 +1,7 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.Entities.account.services.getAccountById.GetAccountByIdDTO;
-import br.org.gam.api.Entities.account.services.getAccountById.GetAccountById;
+import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
+import br.org.gam.api.Entities.account.services.getAccount.GetAccount;
 import br.org.gam.api.Entities.account.services.searchAccounts.SearchAccounts;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
@@ -19,40 +19,40 @@ import java.util.UUID;
 @RequestMapping("/account")
 public class AccountController {
 
-    private final GetAccountById getAccountById;
+    private final GetAccount getAccount;
     private final SearchAccounts searchAccountsService;
     private final SpecificationFilterConverter specificationFilterConverter;
 
-    public AccountController(GetAccountById getAccountById,
+    public AccountController(GetAccount getAccount,
                              SearchAccounts searchAccountsService,
                              @Qualifier("accountSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter) {
 
-        this.getAccountById = getAccountById;
+        this.getAccount = getAccount;
         this.searchAccountsService = searchAccountsService;
         this.specificationFilterConverter = specificationFilterConverter;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetAccountByIdDTO> getAccountById(@PathVariable UUID id) {
-        GetAccountByIdDTO dto = getAccountById.getAccountById(id);
+    public ResponseEntity<GetAccountRDTO> getAccountById(@PathVariable UUID id) {
+        GetAccountRDTO dto = getAccount.byId(id);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping()
-    public ResponseEntity<Page<GetAccountByIdDTO>> getAllAccounts(Pageable pageable) {
+    public ResponseEntity<Page<GetAccountRDTO>> getAllAccounts(Pageable pageable) {
         return ResponseEntity.ok(
-                searchAccountsService.searchAccounts(List.of(), pageable)
+                searchAccountsService.search(List.of(), pageable)
         );
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<GetAccountByIdDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
+    public ResponseEntity<Page<GetAccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
                                                                Pageable pageable) {
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
         return ResponseEntity.ok(
-                searchAccountsService.searchAccounts(filters, pageable)
+                searchAccountsService.search(filters, pageable)
         );
     }
 

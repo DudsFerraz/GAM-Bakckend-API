@@ -6,6 +6,6 @@ import br.org.gam.api.Entities.member.persistence.MemberEntity;
 import java.util.UUID;
 
 public interface GetMemberInstance {
-    Member getMemberDomainById(UUID id);
-    MemberEntity getMemberEntityById(UUID id);
+    Member domainById(UUID id);
+    MemberEntity entityById(UUID id);
 }

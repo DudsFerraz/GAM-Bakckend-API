@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.account.services.searchAccounts;
 import br.org.gam.api.Entities.account.AccountMapper;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.account.persistence.AccountRepository;
-import br.org.gam.api.Entities.account.services.getAccountById.GetAccountByIdDTO;
+import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
 import br.org.gam.api.common.specification.SpecificationBuilder;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import org.springframework.data.domain.Page;
@@ -25,12 +25,12 @@ public class SpringSearchAccounts implements SearchAccounts {
     }
 
     @Override
-    public Page<GetAccountByIdDTO> searchAccounts(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<GetAccountRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Specification<AccountEntity> spec = SpecificationBuilder.build(filters);
 
         Page<AccountEntity> entitiesPage = accountRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(accountMapper::fromEntityToGetAccountByIdDTO);
+        return entitiesPage.map(accountMapper::fromEntityToGetAccountRDTO);
     }
 
 

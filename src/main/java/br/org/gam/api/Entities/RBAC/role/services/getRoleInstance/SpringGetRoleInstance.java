@@ -31,4 +31,10 @@ public class SpringGetRoleInstance implements GetRoleInstance {
         return roleRepo.findById(id)
                 .orElseThrow(() -> new RoleNotFoundException("Could not find role with id" + id));
     }
+
+    @Override
+    public RoleEntity EntityByName(String name) {
+        return roleRepo.findByName(name)
+                .orElseThrow(() -> new RoleNotFoundException("Could not find role with name" + name));
+    }
 }

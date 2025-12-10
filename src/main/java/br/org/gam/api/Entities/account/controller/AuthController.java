@@ -29,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterAccountRDTO> createAccount(@Valid @RequestBody RegisterAccountDTO dto) {
-        RegisterAccountRDTO responseDTO = registerAccountService.registerAccount(dto);
+        RegisterAccountRDTO responseDTO = registerAccountService.register(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -43,7 +43,7 @@ public class AuthController {
     public ResponseEntity<LoginAccountRDTO> login(@RequestBody @Valid LoginAccountDTO dto) {
 
         return ResponseEntity.ok(
-                loginAccount.loginAccount(dto)
+                loginAccount.login(dto)
         );
     }
 

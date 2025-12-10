@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.presence;
 import br.org.gam.api.Entities.event.EventMapper;
 import br.org.gam.api.Entities.member.MemberMapper;
 import br.org.gam.api.Entities.presence.persistence.PresenceEntity;
-import br.org.gam.api.Entities.presence.services.getPresenceById.GetPresenceByIdDTO;
+import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
 import br.org.gam.api.Entities.presence.services.registerPresence.RegisterPresenceRDTO;
 import org.mapstruct.Mapper;
 
@@ -11,6 +11,6 @@ import org.mapstruct.Mapper;
 public interface PresenceMapper {
     Presence fromEntityToDomain(PresenceEntity presenceEntity);
     PresenceEntity fromDomainToEntity(Presence presence);
-    RegisterPresenceRDTO fromEntityToRegisterPresenceResponseDTO(PresenceEntity presenceEntity);
-    GetPresenceByIdDTO fromEntityToGetPresenceByIdDTO(PresenceEntity presenceEntity);
+    RegisterPresenceRDTO fromEntityToRegisterPresenceRDTO(PresenceEntity presenceEntity);
+    GetPresenceRDTO fromEntityToGetPresenceRDTO(PresenceEntity presenceEntity);
 }

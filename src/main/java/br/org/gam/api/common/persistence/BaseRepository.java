@@ -1,5 +1,6 @@
 package br.org.gam.api.common.persistence;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

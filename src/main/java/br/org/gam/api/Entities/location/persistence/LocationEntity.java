@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.location.persistence;
 
+import br.org.gam.api.common.persistence.FullAuditableEntity;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.persistence.*;
@@ -18,9 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "locations")
-public class LocationEntity {
-
-    private static final TimeBasedEpochGenerator uuidV7Generator = Generators.timeBasedEpochGenerator();
+public class LocationEntity extends FullAuditableEntity {
 
     @Id
     @Column(name = "id")
@@ -49,19 +48,4 @@ public class LocationEntity {
 
     @Column(name = "longitude", precision = 11, scale = 8)
     private BigDecimal longitude;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = uuidV7Generator.generate();
-        }
-    }
 }

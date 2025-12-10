@@ -27,12 +27,12 @@ public class SpringRegisterMember implements RegisterMember {
 
     @Transactional
     @Override
-    public RegisterMemberRDTO registerMember(RegisterMemberDTO dto) {
+    public RegisterMemberRDTO register(RegisterMemberDTO dto) {
         if (memberRepo.existsByAccountId(dto.accountId())){
             throw new MemberAccountConflictException("A member is already linked to this account.");
         }
 
-        Account relatedAccount = getAccountInstance.getAccountDomainById(dto.accountId());
+        Account relatedAccount = getAccountInstance.domainById(dto.accountId());
 
         Name name = new Name(dto.firstName(), dto.surname());
 
@@ -41,6 +41,6 @@ public class SpringRegisterMember implements RegisterMember {
         MemberEntity newMemberEntity = memberMapper.fromDomainToEntity(newMember);
         MemberEntity savedMemberEntity = memberRepo.save(newMemberEntity);
 
-        return memberMapper.fromEntityToRegisterMemberResponseDTO(savedMemberEntity);
+        return memberMapper.fromEntityToRegisterMemberRDTO(savedMemberEntity);
     }
 }

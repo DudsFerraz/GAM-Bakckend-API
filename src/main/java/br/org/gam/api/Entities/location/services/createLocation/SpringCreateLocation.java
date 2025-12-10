@@ -20,13 +20,13 @@ public class SpringCreateLocation implements CreateLocation {
 
     @Transactional
     @Override
-    public CreateLocationRDTO createLocation(CreateLocationDTO dto) {
+    public CreateLocationRDTO create(CreateLocationDTO dto) {
 
-        Location newLocation = Location.create(dto.name(), dto.street(), dto.city(), dto.state(), dto.postalCode(),
+        Location newLocation = Location.register(dto.name(), dto.street(), dto.city(), dto.state(), dto.postalCode(),
                                                 dto.countryCode(), dto.latitude(), dto.longitude());
         LocationEntity locationEntity = locationMapper.fromDomainToEntity(newLocation);
         LocationEntity savedLocationEntity = locationRepo.save(locationEntity);
 
-        return locationMapper.fromEntityToCreateLocationResponseDTO(savedLocationEntity);
+        return locationMapper.fromEntityToCreateLocationRDTO(savedLocationEntity);
     }
 }

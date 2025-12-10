@@ -1,5 +1,7 @@
 package br.org.gam.api.Entities.location;
 
+import br.org.gam.api.common.persistence.UUIDGenerator;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,7 +20,7 @@ public class Location {
     /**
      * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO (JPA/MapStruct).</b>
      * <br> <br>
-     * <b> Use o método fábrica {@link #create(String name, String street, String city, String state, String postalCode, String countryCode,
+     * <b> Use o método fábrica {@link #register(String name, String street, String city, String state, String postalCode, String countryCode,
      *                      BigDecimal latitude, BigDecimal longitude)}.
      */
     @Deprecated
@@ -34,28 +36,24 @@ public class Location {
         this.longitude = longitude;
     }
 
-    private Location(String name, String street, String city, String state, String postalCode, String countryCode,
-                     BigDecimal latitude, BigDecimal longitude) {
-
-        this.name = name;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.postalCode = postalCode;
-        this.countryCode = countryCode;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public static Location create(String name, String street, String city, String state, String postalCode,
-                                  String countryCode, BigDecimal latitude, BigDecimal longitude){
+    public static Location register(String name, String street, String city, String state, String postalCode,
+                                    String countryCode, BigDecimal latitude, BigDecimal longitude){
 
         Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(city, "City cannot be null");
         Objects.requireNonNull(state, "State cannot be null");
         Objects.requireNonNull(countryCode, "CountryCode cannot be null");
 
-        return new Location(name, street, city, state, postalCode, countryCode, latitude, longitude);
+        name = name.trim();
+        if(street != null && !street.isBlank()) street = street.trim();
+        city = city.trim();
+        state = state.trim();
+        if(postalCode!=null && !postalCode.isBlank()) postalCode = postalCode.trim();
+        countryCode = countryCode.trim();
+
+        UUID id = UUIDGenerator.generateUUIDV7();
+
+        return new Location(id, name, street, city, state, postalCode, countryCode, latitude, longitude);
     }
 
     public UUID getId() {

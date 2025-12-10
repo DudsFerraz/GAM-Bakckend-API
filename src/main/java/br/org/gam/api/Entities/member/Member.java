@@ -3,6 +3,7 @@ package br.org.gam.api.Entities.member;
 import br.org.gam.api.Entities.account.Account;
 import br.org.gam.api.common.Name;
 import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
+import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -31,14 +32,6 @@ public class Member {
         this.status = status;
     }
 
-    private Member(Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber, MemberStatus status) {
-        this.account = account;
-        this.name = name;
-        this.birthDate = birthDate;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-    }
-
     public static Member register(Account account, Name name, LocalDate birthDate, MyPhoneNumber phoneNumber){
         Objects.requireNonNull(account, "Account cannot be null.");
         Objects.requireNonNull(name, "Name cannot be null.");
@@ -46,10 +39,11 @@ public class Member {
         Objects.requireNonNull(phoneNumber, "Phone number cannot be null.");
         if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Birth date cannot be in the future.");
 
-
         MemberStatus status = MemberStatus.PENDENT;
 
-        return new Member(account, name, birthDate, phoneNumber, status);
+        UUID id = UUIDGenerator.generateUUIDV7();
+
+        return new Member(id, account, name, birthDate, phoneNumber, status);
     }
 
     public void activate(){

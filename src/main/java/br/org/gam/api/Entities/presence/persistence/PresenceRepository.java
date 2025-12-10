@@ -1,15 +1,17 @@
 package br.org.gam.api.Entities.presence.persistence;
 
-import br.org.gam.api.Entities.presence.PresenceId;
+import br.org.gam.api.common.persistence.BaseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public interface PresenceRepository extends JpaRepository<PresenceEntity, PresenceId>,
+public interface PresenceRepository extends BaseRepository<PresenceEntity, UUID>,
                                              JpaSpecificationExecutor<PresenceEntity> {
     Page<PresenceEntity> findAllByMember_Id(UUID memberId, Pageable pageable);
     Page<PresenceEntity> findAllByEvent_Id(UUID eventId, Pageable pageable);
+    Optional<PresenceEntity> findByMember_IdAndEvent_Id(UUID memberId, UUID eventId);
+    boolean existsByMember_IdAndEvent_Id(UUID memberId, UUID eventId);
 }
