@@ -1,6 +1,6 @@
 package br.org.gam.api.common.config;
 
-import br.org.gam.api.Entities.account.MyEmail;
+import br.org.gam.api.Entities.account.myEmail.MyEmail;
 import br.org.gam.api.Entities.account.persistence.AccountRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;

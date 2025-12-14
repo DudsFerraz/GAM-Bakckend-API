@@ -35,7 +35,7 @@ public class SpringAddAccountRole implements AddAccountRole {
     public AccountRoleRDTO byDTO(AccountRoleDTO dto) {
 
         Account account = getAccountInstance.domainById(dto.accountId());
-        Role role = getRoleInstance.getRoleDomainById(dto.roleId());
+        Role role = getRoleInstance.domainById(dto.roleId());
 
         if (accountRoleRepo.existsByAccount_IdAndRole_Id(account.getId(), role.getId())) {
             throw new AccountAlreadyHasRoleException(
@@ -52,7 +52,7 @@ public class SpringAddAccountRole implements AddAccountRole {
     @Transactional
     @Override
     public AccountRoleRDTO byRoleName(String roleName, UUID accountId) {
-        UUID roleId = getRoleInstance.EntityByName(roleName).getId();
+        UUID roleId = getRoleInstance.entityByName(roleName).getId();
 
         return byDTO(new AccountRoleDTO(roleId, accountId));
     }

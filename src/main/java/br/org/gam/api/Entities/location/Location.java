@@ -45,11 +45,14 @@ public class Location {
         Objects.requireNonNull(countryCode, "CountryCode cannot be null");
 
         name = name.trim();
-        if(street != null && !street.isBlank()) street = street.trim();
         city = city.trim();
         state = state.trim();
-        if(postalCode!=null && !postalCode.isBlank()) postalCode = postalCode.trim();
         countryCode = countryCode.trim();
+
+        if (street == null) street = "";
+        street = street.trim();
+        if (postalCode == null) postalCode = "";
+        postalCode = postalCode.trim();
 
         UUID id = UUIDGenerator.generateUUIDV7();
 

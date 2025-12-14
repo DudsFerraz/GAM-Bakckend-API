@@ -6,6 +6,7 @@ import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -52,6 +53,10 @@ public class Member {
 
     public void deactivate(){
         this.status = MemberStatus.INACTIVE;
+    }
+
+    public int getAge(){
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
 
     public UUID getId() {

@@ -1,5 +1,7 @@
 package br.org.gam.api.Entities.account.services.searchAccounts;
 
+import br.org.gam.api.Entities.RBAC.accountRole.services.getAccountRoles.GetAccountRoles;
+import br.org.gam.api.Entities.RBAC.accountRole.services.getAccountRoles.GetAccountRolesRDTO;
 import br.org.gam.api.Entities.account.AccountMapper;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.account.persistence.AccountRepository;
@@ -18,10 +20,12 @@ public class SpringSearchAccounts implements SearchAccounts {
 
     private final AccountRepository accountRepo;
     private final AccountMapper accountMapper;
+    private final GetAccountRoles getAccountRoles;
 
-    public SpringSearchAccounts(AccountRepository accountRepo, AccountMapper accountMapper) {
+    public SpringSearchAccounts(AccountRepository accountRepo, AccountMapper accountMapper, GetAccountRoles getAccountRoles) {
         this.accountRepo = accountRepo;
         this.accountMapper = accountMapper;
+        this.getAccountRoles = getAccountRoles;
     }
 
     @Override
@@ -30,8 +34,11 @@ public class SpringSearchAccounts implements SearchAccounts {
 
         Page<AccountEntity> entitiesPage = accountRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(accountMapper::fromEntityToGetAccountRDTO);
+        return entitiesPage
+                .map(acc -> {
+                    GetAccountRolesRDTO accountRolesRDTO = getAccountRoles.get(acc.getId());
+                    return accountMapper.fromEntityToGetAccountRDTO(acc, accountRolesRDTO);
+                });
     }
-
 
 }

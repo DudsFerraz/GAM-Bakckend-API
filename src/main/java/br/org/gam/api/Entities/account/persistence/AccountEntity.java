@@ -1,6 +1,7 @@
 package br.org.gam.api.Entities.account.persistence;
 
-import br.org.gam.api.Entities.account.MyEmail;
+import br.org.gam.api.Entities.account.myEmail.EmailConverterJPA;
+import br.org.gam.api.Entities.account.myEmail.MyEmail;
 import br.org.gam.api.common.persistence.FullAuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;

@@ -1,7 +1,6 @@
 package br.org.gam.api.Entities.event;
 
 import br.org.gam.api.Entities.RBAC.permission.Permission;
-import br.org.gam.api.Entities.RBAC.permission.PermissionMapper;
 import br.org.gam.api.Entities.location.Location;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 
@@ -40,12 +39,14 @@ public class Event {
         Objects.requireNonNull(endDate, "End date cannot be null");
         if (!endDate.isAfter(beginDate)) throw new IllegalArgumentException("endDate must be after beginDate.");
 
-        String cleanTitle = title.trim();
-        String cleanDescription = description.trim();
+        title = title.trim();
+
+        if (description == null) description = "";
+        description = description.trim();
 
         UUID id = UUIDGenerator.generateUUIDV7();
 
-        return new Event(id, cleanTitle, cleanDescription, location, requiredPermission ,beginDate, endDate);
+        return new Event(id, title, description, location, requiredPermission ,beginDate, endDate);
     }
 
     public UUID getId() {

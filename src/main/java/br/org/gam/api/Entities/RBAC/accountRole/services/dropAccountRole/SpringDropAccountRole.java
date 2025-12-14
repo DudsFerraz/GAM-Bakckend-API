@@ -33,7 +33,7 @@ public class SpringDropAccountRole implements DropAccountRole {
     @Transactional
     @Override
     public void byRoleName(String roleName, UUID accountId) {
-        UUID roleId = getRoleInstance.EntityByName(roleName).getId();
+        UUID roleId = getRoleInstance.entityByName(roleName).getId();
 
         byDTO(new AccountRoleDTO(roleId, accountId));
     }

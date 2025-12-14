@@ -22,12 +22,10 @@ public class PresenceEntity extends FullAuditableEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("memberId")
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("eventId")
     @JoinColumn(name = "event_id")
     private EventEntity event;
 

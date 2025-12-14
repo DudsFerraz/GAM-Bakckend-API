@@ -8,10 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @SQLRestriction("deleted_at IS NULL")

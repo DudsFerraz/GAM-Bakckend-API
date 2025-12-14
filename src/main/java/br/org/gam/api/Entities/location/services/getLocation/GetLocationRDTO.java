@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.location.services.getLocationById;
+package br.org.gam.api.Entities.location.services.getLocation;
 
 import org.springframework.lang.Nullable;
 

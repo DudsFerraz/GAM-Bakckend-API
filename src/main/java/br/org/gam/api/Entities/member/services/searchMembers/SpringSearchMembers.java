@@ -1,5 +1,7 @@
 package br.org.gam.api.Entities.member.services.searchMembers;
 
+import br.org.gam.api.Entities.account.services.getAccount.GetAccount;
+import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
 import br.org.gam.api.Entities.member.MemberMapper;
 import br.org.gam.api.Entities.member.persistence.MemberRepository;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
@@ -18,10 +20,12 @@ public class SpringSearchMembers implements SearchMembers {
 
     private final MemberRepository memberRepo;
     private final MemberMapper memberMapper;
+    private final GetAccount getAccount;
 
-    public SpringSearchMembers(MemberRepository memberRepo, MemberMapper memberMapper) {
+    public SpringSearchMembers(MemberRepository memberRepo, MemberMapper memberMapper, GetAccount getAccount) {
         this.memberRepo = memberRepo;
         this.memberMapper = memberMapper;
+        this.getAccount = getAccount;
     }
 
     @Override
@@ -30,7 +34,12 @@ public class SpringSearchMembers implements SearchMembers {
 
         Page<MemberEntity> entitiesPage = memberRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(memberMapper::fromEntityToGetMemberRDTO);
+        return entitiesPage
+                .map(entity -> {
+                    int age = memberMapper.fromEntityToDomain(entity).getAge();
+                    GetAccountRDTO accountRDTO = getAccount.byId(entity.getAccount().getId());
+                    return memberMapper.fromEntityToGetMemberRDTO(entity, age, accountRDTO);
+                });
     }
 
 

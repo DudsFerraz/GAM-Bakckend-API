@@ -55,7 +55,4 @@ public class AccountController {
                 searchAccountsService.search(filters, pageable)
         );
     }
-
-//    @GetMapping
-//    public ResponseEntity<>
 }

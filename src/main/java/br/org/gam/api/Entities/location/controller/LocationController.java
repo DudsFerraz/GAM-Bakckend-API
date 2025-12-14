@@ -3,9 +3,8 @@ package br.org.gam.api.Entities.location.controller;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationDTO;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationRDTO;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocation;
-import br.org.gam.api.Entities.location.services.getAllLocations.GetAllLocations;
-import br.org.gam.api.Entities.location.services.getLocationById.GetLocationRDTO;
-import br.org.gam.api.Entities.location.services.getLocationById.GetLocation;
+import br.org.gam.api.Entities.location.services.getLocation.GetLocationRDTO;
+import br.org.gam.api.Entities.location.services.getLocation.GetLocation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,20 +19,17 @@ import java.util.UUID;
 @RequestMapping("/location")
 public class LocationController {
 
-    private final CreateLocation createLocationService;
-    private final GetLocation getLocationService;
-    private final GetAllLocations getAllLocationsService;
+    private final CreateLocation createLocation;
+    private final GetLocation getLocation;
 
-    public LocationController(CreateLocation createLocationService, GetAllLocations getAllLocationsService, GetLocation getLocationService) {
-        this.createLocationService = createLocationService;
-        this.getAllLocationsService = getAllLocationsService;
-        this.getLocationService = getLocationService;
+    public LocationController(CreateLocation createLocation, GetLocation getLocation) {
+        this.createLocation = createLocation;
+        this.getLocation = getLocation;
     }
-
 
     @PostMapping
     public ResponseEntity<CreateLocationRDTO> createLocation(@RequestBody @Valid CreateLocationDTO dto) {
-        CreateLocationRDTO responseDTO = createLocationService.create(dto);
+        CreateLocationRDTO responseDTO = createLocation.create(dto);
 
         URI httpLocation  = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -45,14 +41,14 @@ public class LocationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GetLocationRDTO> getLocationById(@PathVariable UUID id) {
-        GetLocationRDTO responseDTO = getLocationService.byId(id);
+        GetLocationRDTO responseDTO = getLocation.byId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
     public ResponseEntity<Page<GetLocationRDTO>> getAllLocations(Pageable pageable) {
         return ResponseEntity.ok(
-                getAllLocationsService.get(pageable)
+                getLocation.all(pageable)
         );
     }
 }

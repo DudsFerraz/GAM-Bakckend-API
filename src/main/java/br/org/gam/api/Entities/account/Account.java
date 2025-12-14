@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.account;
 
+import br.org.gam.api.Entities.account.myEmail.MyEmail;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.util.Objects;
@@ -33,9 +34,9 @@ public class Account {
 
         UUID id = UUIDGenerator.generateUUIDV7();
 
-        String cleanDisplayName = displayName.trim();
+        displayName = displayName.trim();
 
-        return new Account(id, email, passwordHash, cleanDisplayName);
+        return new Account(id, email, passwordHash, displayName);
     }
 
     public UUID getId() {

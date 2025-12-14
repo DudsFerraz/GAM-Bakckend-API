@@ -1,6 +1,5 @@
 package br.org.gam.api.Entities.RBAC.role;
 
-import br.org.gam.api.Entities.account.MyEmail;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.util.Objects;
@@ -16,6 +15,7 @@ public class Role {
      * <br> <br>
      * <b> Use o método fábrica {@link #register(String name, String description)}.
      */
+    @Deprecated
     public Role(UUID id, String name, String description) {
         this.id = id;
         this.name = name;
@@ -28,12 +28,12 @@ public class Role {
         if (name.isBlank()) throw new IllegalArgumentException("name cannot be blank");
         if (description.isBlank()) throw new IllegalArgumentException("description cannot be blank");
 
-        String cleanName = name.trim();
-        String cleanDescription = description.trim();
+        name = name.trim();
+        description = description.trim();
 
         UUID id = UUIDGenerator.generateUUIDV7();
 
-        return new Role(id, cleanName, cleanDescription);
+        return new Role(id, name, description);
     }
 
 

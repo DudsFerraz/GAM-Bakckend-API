@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.RBAC.permission.services.getPermissionById;
+package br.org.gam.api.Entities.RBAC.permission.services.getPermission;
 
 import br.org.gam.api.Entities.RBAC.permission.PermissionMapper;
 import br.org.gam.api.Entities.RBAC.permission.persistence.PermissionEntity;
@@ -8,19 +8,19 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class SpringGetPermissionById implements GetPermissionById {
+public class SpringGetPermission implements GetPermission {
     private final GetPermissionInstance getPermissionInstance;
     private final PermissionMapper permissionMapper;
 
-    public SpringGetPermissionById(GetPermissionInstance getPermissionInstance, PermissionMapper permissionMapper) {
+    public SpringGetPermission(GetPermissionInstance getPermissionInstance, PermissionMapper permissionMapper) {
         this.getPermissionInstance = getPermissionInstance;
         this.permissionMapper = permissionMapper;
     }
 
     @Override
-    public GetPermissionByIdRDTO GetPermissionById(UUID id) {
+    public GetPermissionRDTO byId(UUID id) {
 
-        PermissionEntity permissionEntity = getPermissionInstance.getPermissionEntityById(id);
-        return permissionMapper.fromEntityToGetPermissionByIdRDTO(permissionEntity);
+        PermissionEntity permissionEntity = getPermissionInstance.entityById(id);
+        return permissionMapper.fromEntityToGetPermissionRDTO(permissionEntity);
     }
 }

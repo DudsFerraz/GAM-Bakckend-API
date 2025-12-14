@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.RBAC.role.services.getRoleById;
+package br.org.gam.api.Entities.RBAC.role.services.getRole;
 
 import br.org.gam.api.Entities.RBAC.role.RoleMapper;
 import br.org.gam.api.Entities.RBAC.role.persistence.RoleEntity;
@@ -8,19 +8,19 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class SpringGetRoleById implements GetRoleById {
+public class SpringGetRole implements GetRole {
     private final GetRoleInstance getRoleInstance;
     private final RoleMapper roleMapper;
 
-    public SpringGetRoleById(GetRoleInstance getRoleInstance, RoleMapper roleMapper) {
+    public SpringGetRole(GetRoleInstance getRoleInstance, RoleMapper roleMapper) {
         this.getRoleInstance = getRoleInstance;
         this.roleMapper = roleMapper;
     }
 
     @Override
-    public GetRoleByIdRDTO getRoleById(UUID id) {
+    public GetRoleRDTO byId(UUID id) {
 
-        RoleEntity roleEntity = getRoleInstance.getRoleEntityById(id);
-        return roleMapper.fromEntityToGetRoleByIdDTO(roleEntity);
+        RoleEntity roleEntity = getRoleInstance.entityById(id);
+        return roleMapper.fromEntityToGetRoleRDTO(roleEntity);
     }
 }

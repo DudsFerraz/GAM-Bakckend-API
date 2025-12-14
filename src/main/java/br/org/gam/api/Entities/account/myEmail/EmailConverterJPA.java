@@ -1,6 +1,5 @@
-package br.org.gam.api.Entities.account.persistence;
+package br.org.gam.api.Entities.account.myEmail;
 
-import br.org.gam.api.Entities.account.MyEmail;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

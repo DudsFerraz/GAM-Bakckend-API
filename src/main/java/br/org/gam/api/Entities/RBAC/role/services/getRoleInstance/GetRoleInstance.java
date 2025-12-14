@@ -6,7 +6,7 @@ import br.org.gam.api.Entities.RBAC.role.persistence.RoleEntity;
 import java.util.UUID;
 
 public interface GetRoleInstance {
-    Role getRoleDomainById(UUID id);
-    RoleEntity getRoleEntityById(UUID id);
-    RoleEntity EntityByName(String name);
+    Role domainById(UUID id);
+    RoleEntity entityById(UUID id);
+    RoleEntity entityByName(String name);
 }

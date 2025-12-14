@@ -29,9 +29,9 @@ public class Presence {
     public static Presence register(Member member, Event event, String observations) {
         Objects.requireNonNull(member, "Present member must not be null");
         Objects.requireNonNull(event, "Presence event must not be null");
-        if (observations != null || observations.isBlank()) {
-            observations = observations.trim();
-        }
+
+        if (observations == null) observations = "";
+        observations = observations.trim();
 
         UUID id = UUIDGenerator.generateUUIDV7();
 

@@ -32,7 +32,7 @@ public class SpringCreateEvent implements CreateEvent {
     public CreateEventRDTO create(CreateEventDTO dto) {
 
         Location eventLocation = getLocationInstanceService.domainById(dto.locationId());
-        Permission requiredPermission = getPermissionInstance.getPermissionDomainById(dto.requiredPermissionId());
+        Permission requiredPermission = getPermissionInstance.domainById(dto.requiredPermissionId());
 
         Event newEvent = Event.register(dto.title(), dto.description(), eventLocation, requiredPermission,
                                       dto.beginDate(), dto.endDate());

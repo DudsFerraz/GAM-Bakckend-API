@@ -2,7 +2,6 @@ package br.org.gam.api.Entities.RBAC.accountRole;
 
 import br.org.gam.api.Entities.RBAC.role.Role;
 import br.org.gam.api.Entities.account.Account;
-import br.org.gam.api.Entities.account.MyEmail;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 
 import java.util.Objects;

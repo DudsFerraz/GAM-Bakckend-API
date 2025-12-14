@@ -7,8 +7,8 @@ import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMember;
 import br.org.gam.api.Entities.member.services.searchMembers.SearchMembers;
+import br.org.gam.api.Entities.presence.services.getPresence.GetPresence;
 import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
-import br.org.gam.api.Entities.presence.services.getPresencesByMember.GetPresencesByMember;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -31,21 +31,20 @@ public class MemberController {
     private final GetMember getMember;
     private final SpecificationFilterConverter specificationFilterConverter;
     private final SearchMembers searchMembers;
-    private final GetPresencesByMember getPresencesByMember;
     private final Activation activation;
+    private final GetPresence getPresence;
 
-    public MemberController(RegisterMember registerMember,
-                            GetMember getMember,
+    public MemberController(RegisterMember registerMember, GetMember getMember, SearchMembers searchMembers,
                             @Qualifier("memberSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
-                            SearchMembers searchMembers,
-                            GetPresencesByMember getPresencesByMember, Activation activation) {
+                            Activation activation, GetPresence getPresence
+    ) {
 
         this.registerMember = registerMember;
         this.getMember = getMember;
         this.specificationFilterConverter = specificationFilterConverter;
         this.searchMembers = searchMembers;
-        this.getPresencesByMember = getPresencesByMember;
         this.activation = activation;
+        this.getPresence = getPresence;
     }
 
     @PostMapping
@@ -97,7 +96,7 @@ public class MemberController {
                                                                     Pageable pageable) {
 
         return ResponseEntity.ok(
-                getPresencesByMember.getMemberPresences(memberId, pageable)
+                getPresence.allByMember(memberId, pageable)
         );
     }
 }

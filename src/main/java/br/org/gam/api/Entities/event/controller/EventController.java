@@ -25,21 +25,21 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/event")
 public class EventController {
-    private final CreateEvent createEventService;
-    private final GetEvent getEventService;
-    private final SearchEvents searchEventService;
+    private final CreateEvent createEvent;
+    private final GetEvent getEvent;
+    private final SearchEvents searchEvent;
     private final SpecificationFilterConverter specificationFilterConverter;
     private final GetPresence getPresence;
 
-    public EventController(CreateEvent createEventService,
-                           GetEvent getEventService,
-                           SearchEvents searchEventService,
+    public EventController(CreateEvent createEvent,
+                           GetEvent getEvent,
+                           SearchEvents searchEvent,
                            @Qualifier("eventSpecificationFilterConverter") SpecificationFilterConverter specificationFilterConverter,
                            GetPresence getPresence) {
 
-        this.createEventService = createEventService;
-        this.getEventService = getEventService;
-        this.searchEventService = searchEventService;
+        this.createEvent = createEvent;
+        this.getEvent = getEvent;
+        this.searchEvent = searchEvent;
         this.specificationFilterConverter = specificationFilterConverter;
         this.getPresence = getPresence;
     }
@@ -47,7 +47,7 @@ public class EventController {
     @PostMapping
     public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
-        CreateEventRDTO responseDTO = createEventService.create(dto);
+        CreateEventRDTO responseDTO = createEvent.create(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -60,7 +60,7 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<GetEventRDTO> getEventById(@PathVariable UUID id){
 
-        GetEventRDTO responseDTO = getEventService.byId(id);
+        GetEventRDTO responseDTO = getEvent.byId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -71,7 +71,7 @@ public class EventController {
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
         return ResponseEntity.ok(
-                searchEventService.search(filters, pageable)
+                searchEvent.search(filters, pageable)
         );
     }
 

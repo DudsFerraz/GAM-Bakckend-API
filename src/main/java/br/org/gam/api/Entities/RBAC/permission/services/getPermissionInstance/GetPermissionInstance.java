@@ -6,6 +6,6 @@ import br.org.gam.api.Entities.RBAC.permission.persistence.PermissionEntity;
 import java.util.UUID;
 
 public interface GetPermissionInstance {
-    Permission getPermissionDomainById(UUID id);
-    PermissionEntity getPermissionEntityById(UUID id);
+    Permission domainById(UUID id);
+    PermissionEntity entityById(UUID id);
 }
