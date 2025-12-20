@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.account.persistence;
 
+import br.org.gam.api.Entities.RBAC.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.Entities.account.myEmail.EmailConverterJPA;
 import br.org.gam.api.Entities.account.myEmail.MyEmail;
 import br.org.gam.api.common.persistence.FullAuditableEntity;
@@ -9,7 +10,10 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.Set;
 import java.util.UUID;
 
 @SQLRestriction("deleted_at is NULL")
@@ -33,4 +37,8 @@ public class AccountEntity extends FullAuditableEntity {
 
     @Column(name = "display_name", nullable = false)
     private String displayName;
+
+    @OneToMany(mappedBy = "account")
+    @BatchSize(size = 20)
+    private Set<AccountRoleEntity> accountRoles;
 }

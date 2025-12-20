@@ -13,6 +13,9 @@ import br.org.gam.api.Entities.member.exception.MemberAccountConflictException;
 import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
 import br.org.gam.api.Entities.presence.exception.PresenceConflictException;
 import br.org.gam.api.Entities.presence.exception.PresenceNotFoundException;
+import br.org.gam.api.common.auth.exception.InvalidTokenFormatException;
+import br.org.gam.api.common.auth.exception.RefreshTokenExpiredException;
+import br.org.gam.api.common.auth.exception.TokenNotFoundException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
@@ -176,6 +179,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     //fazer conflict generico igual o not found
+
+
+    // =====================================================================================
+    // == AUTHENTICATION / TOKEN ERRORS
+    // =====================================================================================
+
+    @ExceptionHandler({
+            TokenNotFoundException.class,
+            InvalidTokenFormatException.class
+    })
+    public ResponseEntity<ApiErrorDTO> handleTokenExceptions(RuntimeException e) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Invalid or expired refresh token. Please sign in again.");
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ApiErrorDTO> handleTokenExpired(RefreshTokenExpiredException e) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+    }
 
     // =====================================================================================
     // == 500 INTERNAL SERVER ERROR - Generic error

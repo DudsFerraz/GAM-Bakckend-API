@@ -11,4 +11,8 @@ public class UUIDGenerator {
     public static UUID generateUUIDV7(){
         return uuidV7Generator.generate();
     }
+
+    public static UUID generateUUIDV4(){
+        return UUID.randomUUID();
+    }
 }

@@ -1,4 +1,4 @@
-package br.org.gam.api.common.config;
+package br.org.gam.api.common.auth;
 
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,17 +10,15 @@ import java.util.UUID;
 public class AccountDetails implements UserDetails {
 
     private final UUID id;
-    private final String email; // É o "username"
+    private final String email; // "username"
     private final String password;
-    // Futuramente, aqui entrarão 'Roles' e 'Permissions'
-    // private final Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    public AccountDetails(AccountEntity account) {
+    public AccountDetails(AccountEntity account, Collection<? extends GrantedAuthority> authorities) {
         this.id = account.getId();
         this.email = account.getEmail().value();
         this.password = account.getPasswordHash();
-        // Por enquanto, sem permissões
-        // this.authorities = ...
+        this.authorities = authorities;
     }
 
     public UUID getId() {
@@ -29,8 +27,7 @@ public class AccountDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO: Mapear Roles/Permissions para GrantedAuthority
-        return List.of(); // Por enquanto, vazio
+        return this.authorities;
     }
 
     @Override
@@ -43,7 +40,7 @@ public class AccountDetails implements UserDetails {
         return this.email;
     }
 
-    // tudo como 'true' por enquanto
+    // tudo true por enquanto
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }

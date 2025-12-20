@@ -1,26 +1,32 @@
 package br.org.gam.api.Entities.account.services.loginAccount;
 
-import br.org.gam.api.common.config.JwtService;
+import br.org.gam.api.common.auth.jwt.JwtService;
+import br.org.gam.api.common.auth.TokensDTO;
+import br.org.gam.api.common.auth.refreshToken.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class SpringLoginAccount implements LoginAccount {
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService accountDetailsService;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
-    public SpringLoginAccount(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtService jwtService) {
+    public SpringLoginAccount(AuthenticationManager authenticationManager, UserDetailsService accountDetailsService, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        this.accountDetailsService = accountDetailsService;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
-    public LoginAccountRDTO login(LoginAccountDTO dto) {
+    public TokensDTO login(LoginAccountDTO dto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         dto.email().value(),
@@ -28,10 +34,11 @@ public class SpringLoginAccount implements LoginAccount {
                 )
         );
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(dto.email().value());
+        final UserDetails userDetails = accountDetailsService.loadUserByUsername(dto.email().value());
 
         final String jwt = jwtService.generateToken(userDetails);
+        final UUID refreshToken = refreshTokenService.createRefreshToken(dto.email());
 
-        return new LoginAccountRDTO(jwt);
+        return new TokensDTO(jwt, refreshToken);
     }
 }

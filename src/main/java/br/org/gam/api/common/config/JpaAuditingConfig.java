@@ -1,5 +1,6 @@
 package br.org.gam.api.common.config;
 
+import br.org.gam.api.common.auth.AccountDetails;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;

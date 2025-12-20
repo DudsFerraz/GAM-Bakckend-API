@@ -1,5 +1,6 @@
-package br.org.gam.api.common.config;
+package br.org.gam.api.common.auth.jwt;
 
+import br.org.gam.api.common.auth.AccountDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -30,17 +32,22 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+
+        UUID id = ((AccountDetails) userDetails).getId();
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(id.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, UserDetails accountDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+
+        UUID id = ((AccountDetails) accountDetails).getId();
+
+        return (username.equals(id.toString())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

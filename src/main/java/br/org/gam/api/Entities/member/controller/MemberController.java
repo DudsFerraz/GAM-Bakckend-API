@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -60,12 +61,14 @@ public class MemberController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
+    @PreAuthorize("hasAuthority('MEMBER_GET')")
     @GetMapping("/{id}")
     public ResponseEntity<GetMemberRDTO> getMemberById(@PathVariable UUID id) {
         GetMemberRDTO dto = getMember.byId(id);
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasAuthority('MEMBER_SEARCH')")
     @PostMapping("/search")
     public ResponseEntity<Page<GetMemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
                                                              Pageable pageable) {
@@ -77,6 +80,7 @@ public class MemberController {
         );
     }
 
+    @PreAuthorize("hasAuthority('MEMBER_ACTIVATION')")
     @PatchMapping("/{id}/activate")
     public ResponseEntity activate(@PathVariable UUID id) {
 
@@ -84,6 +88,7 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAuthority('MEMBER_ACTIVATION')")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity deactivate(@PathVariable UUID id) {
 
@@ -91,6 +96,7 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("@memberSecurity.canGetMemberPresences(#memberId)")
     @GetMapping("/{memberId}/presences")
     public ResponseEntity<Page<GetPresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
                                                                     Pageable pageable) {

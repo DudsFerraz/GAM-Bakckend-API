@@ -14,22 +14,17 @@ public class SpringGetAccount implements GetAccount {
 
     private final AccountMapper accountMapper;
     private final GetAccountInstance getAccountInstance;
-    private final GetAccountRoles getAccountRoles;
 
-    public SpringGetAccount(AccountMapper accountMapper, GetAccountInstance getAccountInstance, GetAccountRoles getAccountRoles) {
+    public SpringGetAccount(AccountMapper accountMapper, GetAccountInstance getAccountInstance) {
         this.accountMapper = accountMapper;
         this.getAccountInstance = getAccountInstance;
-        this.getAccountRoles = getAccountRoles;
     }
 
     @Override
     public GetAccountRDTO byId(UUID id) {
 
         AccountEntity accountEntity = getAccountInstance.entityById(id);
-
-        GetAccountRolesRDTO rolesDto = getAccountRoles.get(accountEntity.getId());
-
-        return accountMapper.fromEntityToGetAccountRDTO(accountEntity, rolesDto);
+        return accountMapper.fromEntityToGetAccountRDTO(accountEntity);
     }
 
 }

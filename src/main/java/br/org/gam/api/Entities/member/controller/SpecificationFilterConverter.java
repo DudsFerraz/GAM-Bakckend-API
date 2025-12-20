@@ -20,16 +20,16 @@ class SpecificationFilterConverter {
 
     static {
         PARSER_MAP.put("id", UUID::fromString);
-        PARSER_MAP.put("account.id", UUID::fromString);
         PARSER_MAP.put("birthDate", LocalDate::parse);
         PARSER_MAP.put("phoneNumber", val -> val);
         PARSER_MAP.put("status", val -> MemberStatus.valueOf(val.toUpperCase()));
         PARSER_MAP.put("createdAt", OffsetDateTime::parse);
         PARSER_MAP.put("updatedAt", OffsetDateTime::parse);
-
-//        PARSER_MAP.put("firstName", val -> val);
-//        PARSER_MAP.put("surname", val -> val);
         PARSER_MAP.put("fullName", val -> val);
+        PARSER_MAP.put("account.id", UUID::fromString);
+        PARSER_MAP.put("account.displayName", val -> val);
+        PARSER_MAP.put("account.email", val -> val);
+        PARSER_MAP.put("account.accountRoles.role.name", val -> val);
     }
 
     public List<SpecificationFilter> convert(List<SpecificationFilterDTO> dtos) {

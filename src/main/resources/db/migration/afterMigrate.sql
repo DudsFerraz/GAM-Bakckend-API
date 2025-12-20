@@ -35,8 +35,8 @@ DO $$
         SELECT id INTO v_role_member_id FROM roles WHERE name = 'MEMBER';
         SELECT id INTO v_role_visitor_id FROM roles WHERE name = 'VISITOR';
 
-        SELECT id INTO v_perm_event_view_id FROM permissions WHERE name = 'event:view';
-        SELECT id INTO v_perm_manage_loc_id FROM permissions WHERE name = 'location:manage';
+        SELECT id INTO v_perm_event_view_id FROM permissions WHERE name = 'EVENT_CREATE';
+        SELECT id INTO v_perm_manage_loc_id FROM permissions WHERE name = 'LOCATION_MANAGE';
 
         SELECT id INTO v_acc_ana_id FROM accounts WHERE email = 'ana.coord@example.com';
         IF v_acc_ana_id IS NULL THEN

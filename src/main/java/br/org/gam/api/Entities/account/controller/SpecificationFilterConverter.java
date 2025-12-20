@@ -22,6 +22,7 @@ class SpecificationFilterConverter {
         PARSER_MAP.put("email", val -> val);
         PARSER_MAP.put("createdAt", OffsetDateTime::parse);
         PARSER_MAP.put("updatedAt", OffsetDateTime::parse);
+        PARSER_MAP.put("accountRoles.role.name", val -> val);
     }
 
     public List<SpecificationFilter> convert(List<SpecificationFilterDTO> dtos) {

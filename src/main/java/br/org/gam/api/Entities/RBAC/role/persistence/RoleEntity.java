@@ -7,12 +7,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@BatchSize(size = 20)
 @SQLRestriction("deleted_at IS NULL")
 @Setter
 @Getter

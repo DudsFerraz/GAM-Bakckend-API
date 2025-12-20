@@ -1,11 +1,9 @@
 package br.org.gam.api.Entities.member.services.getMember;
 
-import br.org.gam.api.Entities.account.AccountMapper;
-import br.org.gam.api.Entities.account.services.getAccount.GetAccount;
-import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
-import br.org.gam.api.Entities.member.Member;
 import br.org.gam.api.Entities.member.MemberMapper;
+import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
+import br.org.gam.api.Entities.member.security.MemberSecurity;
 import br.org.gam.api.Entities.member.services.getMemberInstance.GetMemberInstance;
 import org.springframework.stereotype.Service;
 
@@ -15,25 +13,23 @@ import java.util.UUID;
 public class SpringGetMember implements GetMember {
     private final GetMemberInstance getMemberInstance;
     private final MemberMapper memberMapper;
-    private final AccountMapper accountMapper;
-    private final GetAccount getAccount;
+    private final MemberSecurity memberSecurity;
 
-    public SpringGetMember(GetMemberInstance getMemberInstance, MemberMapper memberMapper, AccountMapper accountMapper, GetAccount getAccount) {
+    public SpringGetMember(GetMemberInstance getMemberInstance, MemberMapper memberMapper, MemberSecurity memberSecurity) {
         this.getMemberInstance = getMemberInstance;
         this.memberMapper = memberMapper;
-        this.accountMapper = accountMapper;
-        this.getAccount = getAccount;
+        this.memberSecurity = memberSecurity;
     }
 
     @Override
     public GetMemberRDTO byId(UUID id) {
 
         MemberEntity memberEntity = getMemberInstance.entityById(id);
+        if(!memberSecurity.canGetMember(memberEntity)) throw new MemberNotFoundException("Could not find member with id " + id);
 
         int age = memberMapper.fromEntityToDomain(memberEntity).getAge();
 
-        GetAccountRDTO accountRDTO = getAccount.byId(memberEntity.getAccount().getId());
-
-        return memberMapper.fromEntityToGetMemberRDTO(memberEntity, age, accountRDTO);
+        return memberMapper.fromEntityToGetMemberRDTO(memberEntity, age);
     }
+
 }

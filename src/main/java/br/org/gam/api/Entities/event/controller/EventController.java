@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -44,6 +45,7 @@ public class EventController {
         this.getPresence = getPresence;
     }
 
+    @PreAuthorize("hasAuthority('EVENT_CREATE')")
     @PostMapping
     public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
@@ -64,6 +66,7 @@ public class EventController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PreAuthorize("hasAuthority('EVENT_SEARCH')")
     @PostMapping("/search")
     public ResponseEntity<Page<GetEventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
                                                            Pageable pageable){
@@ -75,6 +78,7 @@ public class EventController {
         );
     }
 
+    @PreAuthorize("hasAuthority('EVENT_GET_PRESENCES')")
     @GetMapping("/{eventId}/presences")
     public ResponseEntity<Page<GetPresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
                                                                    Pageable pageable){

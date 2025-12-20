@@ -1,5 +1,7 @@
 package br.org.gam.api.common.specification;
 
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.Collection;
@@ -8,32 +10,55 @@ import jakarta.persistence.criteria.Path;
 public final class SpecificationFactory {
     private SpecificationFactory() {}
 
-    private static <T> Path<Object> getPath(Root<T> root, String field) {
+    private static Path<Object> getPath(Root<?> root, String field) {
         String[] parts = field.split("\\.");
-        Path<Object> path = root.get(parts[0]);
-        for (int i = 1; i < parts.length; i++) {
-            path = path.get(parts[i]);
+        From<?, ?> from = root;
+        Path<Object> path = null;
+
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+
+            if (i < parts.length - 1) {
+                from = from.join(part, JoinType.LEFT);
+            } else {
+                path = from.get(part);
+            }
         }
         return path;
     }
 
     public static <T> Specification<T> equals(String field, Object value) {
-        return (root, query, cb) -> cb.equal(getPath(root, field), value);
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.equal(getPath(root, field), value);
+        };
     }
 
     public static <T> Specification<T> like(String field, String value) {
-        return (root, query, cb) -> cb.like(cb.lower(getPath(root, field).as(String.class)), "%" + value.toLowerCase() + "%");
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.like(cb.lower(getPath(root, field).as(String.class)), "%" + value.toLowerCase() + "%");
+        };
     }
 
     public static <T, C extends Comparable<? super C>> Specification<T> isGreaterThanOrEqual(String field, C value) {
-        return (root, query, cb) -> cb.greaterThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.greaterThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+        };
     }
 
     public static <T, C extends Comparable<? super C>> Specification<T> isLessThanOrEqual(String field, C value) {
-        return (root, query, cb) -> cb.lessThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.lessThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+        };
     }
 
     public static <T> Specification<T> in(String field, Collection<?> values) {
-        return (root, query, cb) -> getPath(root, field).in(values);
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return getPath(root, field).in(values);
+        };
     }
 }

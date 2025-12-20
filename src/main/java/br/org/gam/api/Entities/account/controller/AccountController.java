@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class AccountController {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
     @GetMapping()
     public ResponseEntity<Page<GetAccountRDTO>> getAllAccounts(Pageable pageable) {
         return ResponseEntity.ok(
@@ -45,6 +47,7 @@ public class AccountController {
         );
     }
 
+    @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
     @PostMapping("/search")
     public ResponseEntity<Page<GetAccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
                                                                Pageable pageable) {
