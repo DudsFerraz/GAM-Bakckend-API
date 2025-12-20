@@ -1,5 +1,6 @@
-package br.org.gam.api.common.persistence;
+package br.org.gam.api.common.auditing;
 
+import br.org.gam.api.common.persistence.SoftDeletable;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

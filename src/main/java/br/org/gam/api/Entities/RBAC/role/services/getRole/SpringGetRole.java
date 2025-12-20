@@ -2,6 +2,7 @@ package br.org.gam.api.Entities.RBAC.role.services.getRole;
 
 import br.org.gam.api.Entities.RBAC.role.RoleMapper;
 import br.org.gam.api.Entities.RBAC.role.persistence.RoleEntity;
+import br.org.gam.api.Entities.RBAC.role.services.RoleRDTO;
 import br.org.gam.api.Entities.RBAC.role.services.getRoleInstance.GetRoleInstance;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,9 @@ public class SpringGetRole implements GetRole {
     }
 
     @Override
-    public GetRoleRDTO byId(UUID id) {
+    public RoleRDTO byId(UUID id) {
 
         RoleEntity roleEntity = getRoleInstance.entityById(id);
-        return roleMapper.fromEntityToGetRoleRDTO(roleEntity);
+        return roleMapper.entityToRoleRDTO(roleEntity);
     }
 }

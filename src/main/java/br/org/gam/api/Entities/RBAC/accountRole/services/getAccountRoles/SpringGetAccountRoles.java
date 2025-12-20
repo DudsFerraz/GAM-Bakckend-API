@@ -4,7 +4,7 @@ import br.org.gam.api.Entities.RBAC.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.Entities.RBAC.accountRole.persistence.AccountRoleRepository;
 import br.org.gam.api.Entities.RBAC.role.RoleMapper;
 import br.org.gam.api.Entities.RBAC.role.persistence.RoleEntity;
-import br.org.gam.api.Entities.RBAC.role.services.getRole.GetRoleRDTO;
+import br.org.gam.api.Entities.RBAC.role.services.RoleRDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,17 +21,17 @@ public class SpringGetAccountRoles implements GetAccountRoles {
     }
 
     @Override
-    public GetAccountRolesRDTO get(UUID accountId) {
+    public AccountRolesRDTO get(UUID accountId) {
         List<AccountRoleEntity> accountRolesEntities = accountRoleRepo.findAllByAccount_Id(accountId);
 
         List<RoleEntity> rolesEntities = accountRolesEntities
                 .stream()
                 .map(AccountRoleEntity::getRole).toList();
 
-        List<GetRoleRDTO> dtosList = rolesEntities
+        List<RoleRDTO> dtosList = rolesEntities
                 .stream()
-                .map(roleMapper::fromEntityToGetRoleRDTO).toList();
+                .map(roleMapper::entityToRoleRDTO).toList();
 
-        return new GetAccountRolesRDTO(dtosList);
+        return new AccountRolesRDTO(dtosList);
     }
 }

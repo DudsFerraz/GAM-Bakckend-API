@@ -35,9 +35,9 @@ public class SpringRegisterPresence implements RegisterPresence {
         Event relatedEvent = getEventInstance.domainById(dto.eventId());
 
         Presence newPresence = Presence.register(presentMember, relatedEvent, dto.observations());
-        PresenceEntity newPresenceEntity = presenceMapper.fromDomainToEntity(newPresence);
+        PresenceEntity newPresenceEntity = presenceMapper.domainToEntity(newPresence);
         PresenceEntity savedPresenceEntity = presenceRepo.save(newPresenceEntity);
 
-        return presenceMapper.fromEntityToRegisterPresenceRDTO(savedPresenceEntity);
+        return presenceMapper.entityToRegisterPresenceRDTO(savedPresenceEntity);
     }
 }

@@ -1,14 +1,14 @@
 package br.org.gam.api.Entities.member.controller;
 
 import br.org.gam.api.Entities.member.services.activation.Activation;
-import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
+import br.org.gam.api.Entities.member.services.MemberRDTO;
 import br.org.gam.api.Entities.member.services.getMember.GetMember;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMember;
 import br.org.gam.api.Entities.member.services.searchMembers.SearchMembers;
 import br.org.gam.api.Entities.presence.services.getPresence.GetPresence;
-import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
+import br.org.gam.api.Entities.presence.services.PresenceRDTO;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -63,15 +63,15 @@ public class MemberController {
 
     @PreAuthorize("hasAuthority('MEMBER_GET')")
     @GetMapping("/{id}")
-    public ResponseEntity<GetMemberRDTO> getMemberById(@PathVariable UUID id) {
-        GetMemberRDTO dto = getMember.byId(id);
+    public ResponseEntity<MemberRDTO> getMemberById(@PathVariable UUID id) {
+        MemberRDTO dto = getMember.byId(id);
         return ResponseEntity.ok(dto);
     }
 
     @PreAuthorize("hasAuthority('MEMBER_SEARCH')")
     @PostMapping("/search")
-    public ResponseEntity<Page<GetMemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
-                                                             Pageable pageable) {
+    public ResponseEntity<Page<MemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
+                                                          Pageable pageable) {
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
@@ -98,8 +98,8 @@ public class MemberController {
 
     @PreAuthorize("@memberSecurity.canGetMemberPresences(#memberId)")
     @GetMapping("/{memberId}/presences")
-    public ResponseEntity<Page<GetPresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
-                                                                    Pageable pageable) {
+    public ResponseEntity<Page<PresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
+                                                                 Pageable pageable) {
 
         return ResponseEntity.ok(
                 getPresence.allByMember(memberId, pageable)

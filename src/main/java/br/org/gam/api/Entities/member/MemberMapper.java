@@ -2,22 +2,31 @@ package br.org.gam.api.Entities.member;
 
 import br.org.gam.api.Entities.account.AccountMapper;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
-import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
+import br.org.gam.api.Entities.member.services.MemberRDTO;
 import br.org.gam.api.Entities.member.services.registerMember.RegisterMemberRDTO;
+import br.org.gam.api.common.Name;
+import br.org.gam.api.common.auditing.IgnoreFullAuditFields;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring", uses = {AccountMapper.class})
 public interface MemberMapper {
+    @IgnoreFullAuditFields
+    MemberEntity domainToEntity(Member memberDomain);
 
-    MemberEntity fromDomainToEntity(Member member);
+    Member entityToDomain(MemberEntity memberEntity);
 
-    Member fromEntityToDomain(MemberEntity memberEntity);
+    RegisterMemberRDTO entityToRegisterMemberRDTO(MemberEntity memberEntity);
 
-    RegisterMemberRDTO fromEntityToRegisterMemberRDTO(MemberEntity memberEntity);
+    @Named("nameToString")
+    default String nameToString(Name name) {
+        if (name == null) return null;
+        return name.toString();
+    }
 
-    @Mapping(target = "name", source = "memberEntity.fullName")
+    @Mapping(target = "name", source = "memberEntity.name", qualifiedByName = "nameToString")
     @Mapping(target = "age", source = "age")
     @Mapping(target = "id", source = "memberEntity.id")
-    GetMemberRDTO fromEntityToGetMemberRDTO(MemberEntity memberEntity, int age);
+    MemberRDTO entityToMemberRDTO(MemberEntity memberEntity, int age);
 }

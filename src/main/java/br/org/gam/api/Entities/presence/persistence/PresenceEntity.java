@@ -2,7 +2,7 @@ package br.org.gam.api.Entities.presence.persistence;
 
 import br.org.gam.api.Entities.event.persistence.EventEntity;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
-import br.org.gam.api.common.persistence.FullAuditableEntity;
+import br.org.gam.api.common.auditing.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

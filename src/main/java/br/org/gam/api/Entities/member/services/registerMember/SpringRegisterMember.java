@@ -38,9 +38,9 @@ public class SpringRegisterMember implements RegisterMember {
 
         Member newMember = Member.register(relatedAccount, name, dto.birthDate(), dto.phoneNumber());
 
-        MemberEntity newMemberEntity = memberMapper.fromDomainToEntity(newMember);
+        MemberEntity newMemberEntity = memberMapper.domainToEntity(newMember);
         MemberEntity savedMemberEntity = memberRepo.save(newMemberEntity);
 
-        return memberMapper.fromEntityToRegisterMemberRDTO(savedMemberEntity);
+        return memberMapper.entityToRegisterMemberRDTO(savedMemberEntity);
     }
 }

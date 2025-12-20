@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.location.controller;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationDTO;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationRDTO;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocation;
-import br.org.gam.api.Entities.location.services.getLocation.GetLocationRDTO;
+import br.org.gam.api.Entities.location.services.LocationRDTO;
 import br.org.gam.api.Entities.location.services.getLocation.GetLocation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -40,13 +40,13 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetLocationRDTO> getLocationById(@PathVariable UUID id) {
-        GetLocationRDTO responseDTO = getLocation.byId(id);
+    public ResponseEntity<LocationRDTO> getLocationById(@PathVariable UUID id) {
+        LocationRDTO responseDTO = getLocation.byId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<Page<GetLocationRDTO>> getAllLocations(Pageable pageable) {
+    public ResponseEntity<Page<LocationRDTO>> getAllLocations(Pageable pageable) {
         return ResponseEntity.ok(
                 getLocation.all(pageable)
         );

@@ -28,4 +28,9 @@ public record Name(
     public String getFullName() {
         return this.firstName + " " + this.surname;
     }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
 }

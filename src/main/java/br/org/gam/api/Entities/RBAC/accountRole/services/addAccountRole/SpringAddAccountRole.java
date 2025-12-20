@@ -43,10 +43,10 @@ public class SpringAddAccountRole implements AddAccountRole {
         }
 
         AccountRole newAccountRole = AccountRole.register(account, role);
-        AccountRoleEntity newAccountRoleEntity = accountRoleMapper.fromDomainToEntity(newAccountRole);
+        AccountRoleEntity newAccountRoleEntity = accountRoleMapper.domainToEntity(newAccountRole);
         AccountRoleEntity savedAccountRoleEntity = accountRoleRepo.save(newAccountRoleEntity);
 
-        return accountRoleMapper.fromEntityToAccountRoleRDTO(savedAccountRoleEntity);
+        return accountRoleMapper.entityToAccountRoleRDTO(savedAccountRoleEntity);
     }
 
     @Transactional

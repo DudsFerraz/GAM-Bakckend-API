@@ -1,7 +1,9 @@
 package br.org.gam.api.Entities.RBAC.permission.services.getPermission;
 
+import br.org.gam.api.Entities.RBAC.permission.services.PermissionRDTO;
+
 import java.util.UUID;
 
 public interface GetPermission {
-    GetPermissionRDTO byId(UUID id);
+    PermissionRDTO byId(UUID id);
 }

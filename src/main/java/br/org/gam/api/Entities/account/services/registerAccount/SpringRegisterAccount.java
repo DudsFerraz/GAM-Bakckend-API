@@ -32,9 +32,9 @@ public class SpringRegisterAccount implements RegisterAccount {
         String hashedPassword = passwordEncoder.encode(dto.password());
 
         Account newAccount = Account.register(dto.email(), hashedPassword, dto.displayName());
-        AccountEntity newAccountEntity = accountMapper.fromDomainToEntity(newAccount);
+        AccountEntity newAccountEntity = accountMapper.domainToEntity(newAccount);
         AccountEntity savedAccountEntity = accountRepo.save(newAccountEntity);
 
-        return accountMapper.fromEntityToRegisterAccountRDTO(savedAccountEntity);
+        return accountMapper.entityToRegisterAccountRDTO(savedAccountEntity);
     }
 }

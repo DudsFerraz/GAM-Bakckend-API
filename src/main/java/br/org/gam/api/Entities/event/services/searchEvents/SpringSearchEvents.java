@@ -3,7 +3,8 @@ package br.org.gam.api.Entities.event.services.searchEvents;
 import br.org.gam.api.Entities.event.EventMapper;
 import br.org.gam.api.Entities.event.persistence.EventEntity;
 import br.org.gam.api.Entities.event.persistence.EventRepository;
-import br.org.gam.api.Entities.event.services.getEvent.GetEventRDTO;
+import br.org.gam.api.Entities.event.persistence.EventSpecifications;
+import br.org.gam.api.Entities.event.services.EventRDTO;
 import br.org.gam.api.common.security.SecurityUtils;
 import br.org.gam.api.Entities.event.security.EventSecuritySpecification;
 import br.org.gam.api.common.specification.SpecificationBuilder;
@@ -29,16 +30,16 @@ public class SpringSearchEvents implements SearchEvents {
     }
 
     @Override
-    public Page<GetEventRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<EventRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Set<String> authorities = securityUtils.getLoggedUserAuthorities();
         Specification<EventEntity> securityFilter = EventSecuritySpecification.canGetEvent(authorities);
 
         Specification<EventEntity> searchFilters = SpecificationBuilder.build(filters);
 
-        Specification<EventEntity> spec = securityFilter.and(searchFilters);
+        Specification<EventEntity> spec = securityFilter.and(searchFilters).and(EventSpecifications.fetchLocation());
 
         Page<EventEntity> entitiesPage = eventRepo.findAll(spec, pageable);
 
-        return entitiesPage.map(eventMapper::fromEntityToGetEventRDTO);
+        return entitiesPage.map(eventMapper::entityToEventRDTO);
     }
 }

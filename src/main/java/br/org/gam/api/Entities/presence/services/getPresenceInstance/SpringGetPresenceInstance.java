@@ -22,7 +22,7 @@ public class SpringGetPresenceInstance implements GetPresenceInstance {
     @Override
     public Presence domainById(UUID id) {
         return presenceRepo.findById(id)
-                .map(presenceMapper::fromEntityToDomain)
+                .map(presenceMapper::entityToDomain)
                 .orElseThrow(() -> new PresenceNotFoundException("Could not find presence with id " + id));
     }
 
@@ -43,7 +43,7 @@ public class SpringGetPresenceInstance implements GetPresenceInstance {
     @Override
     public Presence domainByIds(UUID memberId, UUID eventId) {
         return presenceRepo.findByMember_IdAndEvent_Id(memberId, eventId)
-                .map(presenceMapper::fromEntityToDomain)
+                .map(presenceMapper::entityToDomain)
                 .orElseThrow(() -> new PresenceNotFoundException(
                         String.format("member with id: %s has no presence registered in event with id: %s", memberId, eventId)
                 ));

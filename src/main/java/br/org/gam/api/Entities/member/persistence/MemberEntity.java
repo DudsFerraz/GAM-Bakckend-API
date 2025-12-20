@@ -4,7 +4,7 @@ import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.member.MemberStatus;
 import br.org.gam.api.common.Name;
 import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
-import br.org.gam.api.common.persistence.FullAuditableEntity;
+import br.org.gam.api.common.auditing.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,9 +33,6 @@ public class MemberEntity extends FullAuditableEntity {
 
     @Embedded
     private Name name;
-
-    @Formula("first_name || ' ' || surname")
-    private String fullName;
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;

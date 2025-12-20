@@ -22,7 +22,7 @@ public class SpringGetRoleInstance implements GetRoleInstance {
     @Override
     public Role domainById(UUID id) {
         return roleRepo.findById(id)
-                .map(roleMapper::fromEntityToDomain)
+                .map(roleMapper::entityToDomain)
                 .orElseThrow(() -> new RoleNotFoundException("Could not find role with id" + id));
     }
 

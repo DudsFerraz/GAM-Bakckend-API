@@ -1,15 +1,18 @@
 package br.org.gam.api.Entities.event;
 
+import br.org.gam.api.Entities.RBAC.permission.PermissionMapper;
 import br.org.gam.api.Entities.event.persistence.EventEntity;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventRDTO;
-import br.org.gam.api.Entities.event.services.getEvent.GetEventRDTO;
+import br.org.gam.api.Entities.event.services.EventRDTO;
 import br.org.gam.api.Entities.location.LocationMapper;
+import br.org.gam.api.common.auditing.IgnoreFullAuditFields;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {LocationMapper.class})
+@Mapper(componentModel = "spring", uses = {LocationMapper.class, PermissionMapper.class})
 public interface EventMapper {
-    EventEntity fromDomainToEntity(Event event);
-    Event fromEntityToDomain(EventEntity eventEntity);
-    CreateEventRDTO fromEntityToCreateEventRDTO(EventEntity eventEntity);
-    GetEventRDTO fromEntityToGetEventRDTO(EventEntity eventEntity);
+    @IgnoreFullAuditFields
+    EventEntity domainToEntity(Event event);
+    Event entityToDomain(EventEntity eventEntity);
+    CreateEventRDTO entityToCreateEventRDTO(EventEntity eventEntity);
+    EventRDTO entityToEventRDTO(EventEntity eventEntity);
 }

@@ -4,6 +4,7 @@ import br.org.gam.api.Entities.member.MemberMapper;
 import br.org.gam.api.Entities.member.exception.MemberNotFoundException;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
 import br.org.gam.api.Entities.member.security.MemberSecurity;
+import br.org.gam.api.Entities.member.services.MemberRDTO;
 import br.org.gam.api.Entities.member.services.getMemberInstance.GetMemberInstance;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +23,14 @@ public class SpringGetMember implements GetMember {
     }
 
     @Override
-    public GetMemberRDTO byId(UUID id) {
+    public MemberRDTO byId(UUID id) {
 
         MemberEntity memberEntity = getMemberInstance.entityById(id);
         if(!memberSecurity.canGetMember(memberEntity)) throw new MemberNotFoundException("Could not find member with id " + id);
 
-        int age = memberMapper.fromEntityToDomain(memberEntity).getAge();
+        int age = memberMapper.entityToDomain(memberEntity).getAge();
 
-        return memberMapper.fromEntityToGetMemberRDTO(memberEntity, age);
+        return memberMapper.entityToMemberRDTO(memberEntity, age);
     }
 
 }

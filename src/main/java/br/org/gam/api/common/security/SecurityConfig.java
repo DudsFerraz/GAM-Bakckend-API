@@ -1,7 +1,7 @@
 package br.org.gam.api.common.security;
 
 import br.org.gam.api.common.auth.jwt.JwtAuthFilter;
-import br.org.gam.api.common.config.DelegatedAuthenticationEntryPoint;
+import br.org.gam.api.common.auth.DelegatedAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

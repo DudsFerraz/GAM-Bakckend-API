@@ -51,7 +51,7 @@ public class SpringActivation implements Activation {
         addAccountRole.byRoleName(roleToAdd, accountId);
         dropAccountRole.byRoleName(roleToRemove, accountId);
 
-        MemberEntity memberEntity = memberMapper.fromDomainToEntity(member);
+        MemberEntity memberEntity = memberMapper.domainToEntity(member);
         memberRepo.save(memberEntity);
     }
 

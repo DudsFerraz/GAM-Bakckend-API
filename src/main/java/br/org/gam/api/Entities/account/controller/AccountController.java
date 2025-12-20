@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.account.controller;
 
-import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
+import br.org.gam.api.Entities.account.services.AccountRDTO;
 import br.org.gam.api.Entities.account.services.getAccount.GetAccount;
 import br.org.gam.api.Entities.account.services.searchAccounts.SearchAccounts;
 import br.org.gam.api.common.specification.SearchDTO;
@@ -34,14 +34,14 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetAccountRDTO> getAccountById(@PathVariable UUID id) {
-        GetAccountRDTO dto = getAccount.byId(id);
+    public ResponseEntity<AccountRDTO> getAccountById(@PathVariable UUID id) {
+        AccountRDTO dto = getAccount.byId(id);
         return ResponseEntity.ok(dto);
     }
 
     @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
     @GetMapping()
-    public ResponseEntity<Page<GetAccountRDTO>> getAllAccounts(Pageable pageable) {
+    public ResponseEntity<Page<AccountRDTO>> getAllAccounts(Pageable pageable) {
         return ResponseEntity.ok(
                 searchAccountsService.search(List.of(), pageable)
         );
@@ -49,8 +49,8 @@ public class AccountController {
 
     @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
     @PostMapping("/search")
-    public ResponseEntity<Page<GetAccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
-                                                               Pageable pageable) {
+    public ResponseEntity<Page<AccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
+                                                            Pageable pageable) {
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 

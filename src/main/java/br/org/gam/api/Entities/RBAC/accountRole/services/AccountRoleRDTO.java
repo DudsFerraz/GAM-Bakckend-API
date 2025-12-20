@@ -1,10 +1,10 @@
 package br.org.gam.api.Entities.RBAC.accountRole.services;
 
-import br.org.gam.api.Entities.RBAC.role.services.getRole.GetRoleRDTO;
-import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
+import br.org.gam.api.Entities.RBAC.role.services.RoleRDTO;
+import br.org.gam.api.Entities.account.services.AccountRDTO;
 
 public record AccountRoleRDTO(
-        GetAccountRDTO account,
-        GetRoleRDTO role
+        AccountRDTO account,
+        RoleRDTO role
 ) {
 }

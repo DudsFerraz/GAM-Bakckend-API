@@ -37,10 +37,10 @@ public class SpringCreateEvent implements CreateEvent {
         Event newEvent = Event.register(dto.title(), dto.description(), eventLocation, requiredPermission,
                                       dto.beginDate(), dto.endDate());
 
-        EventEntity newEventEntity = eventMapper.fromDomainToEntity(newEvent);
+        EventEntity newEventEntity = eventMapper.domainToEntity(newEvent);
         EventEntity savedEventEntity = eventRepository.save(newEventEntity);
 
-        return eventMapper.fromEntityToCreateEventRDTO(savedEventEntity);
+        return eventMapper.entityToCreateEventRDTO(savedEventEntity);
     }
 
 }

@@ -1,4 +1,4 @@
-package br.org.gam.api.common.config;
+package br.org.gam.api.common.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

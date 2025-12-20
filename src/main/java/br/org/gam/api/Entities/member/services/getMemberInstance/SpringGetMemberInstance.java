@@ -23,7 +23,7 @@ public class SpringGetMemberInstance implements GetMemberInstance {
     @Override
     public Member domainById(UUID id) {
         return memberRepo.findById(id)
-                .map(memberMapper::fromEntityToDomain)
+                .map(memberMapper::entityToDomain)
                 .orElseThrow(() -> new MemberNotFoundException("Could not find member with id " + id));
     }
 

@@ -1,15 +1,15 @@
-package br.org.gam.api.Entities.member.services.getMember;
+package br.org.gam.api.Entities.member.services;
 
-import br.org.gam.api.Entities.account.services.getAccount.GetAccountRDTO;
+import br.org.gam.api.Entities.account.services.AccountRDTO;
 import br.org.gam.api.Entities.member.MemberStatus;
 import br.org.gam.api.common.myPhoneNumber.MyPhoneNumber;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record GetMemberRDTO(
+public record MemberRDTO(
         UUID id,
-        GetAccountRDTO account,
+        AccountRDTO account,
         String name,
         LocalDate birthDate,
         int age,

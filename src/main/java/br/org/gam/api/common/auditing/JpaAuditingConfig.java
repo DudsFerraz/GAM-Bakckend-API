@@ -1,4 +1,4 @@
-package br.org.gam.api.common.config;
+package br.org.gam.api.common.auditing;
 
 import br.org.gam.api.common.auth.AccountDetails;
 import org.springframework.context.annotation.Configuration;

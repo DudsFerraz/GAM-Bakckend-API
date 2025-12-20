@@ -1,11 +1,11 @@
-package br.org.gam.api.Entities.location.services.getLocation;
+package br.org.gam.api.Entities.location.services;
 
 import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record GetLocationRDTO(
+public record LocationRDTO(
         UUID id,
         String name,
         @Nullable String street,

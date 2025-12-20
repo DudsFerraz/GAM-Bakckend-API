@@ -3,11 +3,11 @@ package br.org.gam.api.Entities.event.controller;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventRDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEvent;
-import br.org.gam.api.Entities.event.services.getEvent.GetEventRDTO;
+import br.org.gam.api.Entities.event.services.EventRDTO;
 import br.org.gam.api.Entities.event.services.getEvent.GetEvent;
 import br.org.gam.api.Entities.event.services.searchEvents.SearchEvents;
 import br.org.gam.api.Entities.presence.services.getPresence.GetPresence;
-import br.org.gam.api.Entities.presence.services.getPresence.GetPresenceRDTO;
+import br.org.gam.api.Entities.presence.services.PresenceRDTO;
 import br.org.gam.api.common.specification.SearchDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import jakarta.validation.Valid;
@@ -60,16 +60,16 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetEventRDTO> getEventById(@PathVariable UUID id){
+    public ResponseEntity<EventRDTO> getEventById(@PathVariable UUID id){
 
-        GetEventRDTO responseDTO = getEvent.byId(id);
+        EventRDTO responseDTO = getEvent.byId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @PreAuthorize("hasAuthority('EVENT_SEARCH')")
     @PostMapping("/search")
-    public ResponseEntity<Page<GetEventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
-                                                           Pageable pageable){
+    public ResponseEntity<Page<EventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
+                                                        Pageable pageable){
 
         List<SpecificationFilter> filters = specificationFilterConverter.convert(searchDTO.filters());
 
@@ -80,8 +80,8 @@ public class EventController {
 
     @PreAuthorize("hasAuthority('EVENT_GET_PRESENCES')")
     @GetMapping("/{eventId}/presences")
-    public ResponseEntity<Page<GetPresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
-                                                                   Pageable pageable){
+    public ResponseEntity<Page<PresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
+                                                                Pageable pageable){
 
         return ResponseEntity.ok(
                 getPresence.allByEvent(eventId, pageable)

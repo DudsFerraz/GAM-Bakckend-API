@@ -3,6 +3,7 @@ package br.org.gam.api.Entities.location.services.getLocation;
 import br.org.gam.api.Entities.location.LocationMapper;
 import br.org.gam.api.Entities.location.persistence.LocationEntity;
 import br.org.gam.api.Entities.location.persistence.LocationRepository;
+import br.org.gam.api.Entities.location.services.LocationRDTO;
 import br.org.gam.api.Entities.location.services.getLocationInstance.GetLocationInstance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +25,16 @@ public class SpringGetLocation implements GetLocation {
     }
 
     @Override
-    public GetLocationRDTO byId(UUID id) {
+    public LocationRDTO byId(UUID id) {
 
         LocationEntity locationEntity = getLocationInstance.entityById(id);
-        return locationMapper.fromEntityToGetLocationRDTO(locationEntity);
+        return locationMapper.entityToLocationRDTO(locationEntity);
     }
 
     @Override
-    public Page<GetLocationRDTO> all(Pageable pageable) {
+    public Page<LocationRDTO> all(Pageable pageable) {
 
         return locationRepo.findAll(pageable)
-                .map(locationMapper::fromEntityToGetLocationRDTO);
+                .map(locationMapper::entityToLocationRDTO);
     }
 }

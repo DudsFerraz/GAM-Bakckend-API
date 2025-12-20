@@ -3,7 +3,7 @@ package br.org.gam.api.Entities.account.persistence;
 import br.org.gam.api.Entities.RBAC.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.Entities.account.myEmail.EmailConverterJPA;
 import br.org.gam.api.Entities.account.myEmail.MyEmail;
-import br.org.gam.api.common.persistence.FullAuditableEntity;
+import br.org.gam.api.common.auditing.FullAuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;

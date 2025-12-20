@@ -4,7 +4,7 @@ import br.org.gam.api.Entities.member.MemberMapper;
 import br.org.gam.api.Entities.member.persistence.MemberRepository;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
 import br.org.gam.api.Entities.member.persistence.MemberSpecifications;
-import br.org.gam.api.Entities.member.services.getMember.GetMemberRDTO;
+import br.org.gam.api.Entities.member.services.MemberRDTO;
 import br.org.gam.api.common.security.SecurityUtils;
 import br.org.gam.api.Entities.member.security.MemberSecuritySpecification;
 import br.org.gam.api.common.specification.SpecificationBuilder;
@@ -31,7 +31,7 @@ public class SpringSearchMembers implements SearchMembers {
     }
 
     @Override
-    public Page<GetMemberRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
+    public Page<MemberRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Set<String> authorities = securityUtils.getLoggedUserAuthorities();
         Specification<MemberEntity> securityFilter = MemberSecuritySpecification.canGetMember(authorities);
 
@@ -42,8 +42,8 @@ public class SpringSearchMembers implements SearchMembers {
         Page<MemberEntity> entitiesPage = memberRepo.findAll(spec, pageable);
         return entitiesPage
                 .map(memberEntity -> {
-                    int age = memberMapper.fromEntityToDomain(memberEntity).getAge();
-                    return memberMapper.fromEntityToGetMemberRDTO(memberEntity, age);
+                    int age = memberMapper.entityToDomain(memberEntity).getAge();
+                    return memberMapper.entityToMemberRDTO(memberEntity, age);
                 });
     }
 

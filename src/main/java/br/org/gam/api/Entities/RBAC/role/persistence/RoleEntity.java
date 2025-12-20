@@ -2,7 +2,7 @@ package br.org.gam.api.Entities.RBAC.role.persistence;
 
 import br.org.gam.api.Entities.RBAC.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.Entities.RBAC.rolePermission.persistence.RolePermissionEntity;
-import br.org.gam.api.common.persistence.FullAuditableEntity;
+import br.org.gam.api.common.auditing.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

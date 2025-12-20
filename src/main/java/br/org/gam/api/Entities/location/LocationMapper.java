@@ -2,16 +2,18 @@ package br.org.gam.api.Entities.location;
 
 import br.org.gam.api.Entities.location.persistence.LocationEntity;
 import br.org.gam.api.Entities.location.services.createLocation.CreateLocationRDTO;
-import br.org.gam.api.Entities.location.services.getLocation.GetLocationRDTO;
+import br.org.gam.api.Entities.location.services.LocationRDTO;
+import br.org.gam.api.common.auditing.IgnoreFullAuditFields;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface LocationMapper {
-    LocationEntity fromDomainToEntity(Location account);
+    @IgnoreFullAuditFields
+    LocationEntity domainToEntity(Location locationDomain);
 
-    Location fromEntityToDomain(LocationEntity locationEntity);
+    Location entityToDomain(LocationEntity locationEntity);
 
-    CreateLocationRDTO fromEntityToCreateLocationRDTO(LocationEntity locationEntity);
+    CreateLocationRDTO entityToCreateLocationRDTO(LocationEntity locationEntity);
 
-    GetLocationRDTO fromEntityToGetLocationRDTO(LocationEntity locationEntity);
+    LocationRDTO entityToLocationRDTO(LocationEntity locationEntity);
 }

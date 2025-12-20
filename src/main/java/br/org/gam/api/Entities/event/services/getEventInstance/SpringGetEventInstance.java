@@ -23,7 +23,7 @@ public class SpringGetEventInstance implements GetEventInstance {
     @Override
     public Event domainById(UUID id) {
         return eventRepo.findById(id)
-                .map(eventMapper::fromEntityToDomain)
+                .map(eventMapper::entityToDomain)
                 .orElseThrow(() -> new EventNotFoundException("Could not find event with id " + id));
     }
 
