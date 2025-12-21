@@ -33,4 +33,20 @@ public class RefreshToken {
         UUID id = UUIDGenerator.generateUUIDV7();
         return new RefreshToken(id, token, expiryDate, account);
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getToken() {
+        return token;
+    }
+
+    public Instant getExpiryDate() {
+        return expiryDate;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
 }

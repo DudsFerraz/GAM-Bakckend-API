@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.member.security;
 
+import br.org.gam.api.Entities.RBAC.permission.PermissionEnum;
 import br.org.gam.api.Entities.member.MemberStatus;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
 import br.org.gam.api.Entities.member.services.getMemberInstance.GetMemberInstance;
@@ -30,7 +31,7 @@ public class MemberSecurity {
             return false;
         }
 
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("PRESENCES_SEARCH"))) return true;
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissionEnum.PRESENCES_SEARCH.name()))) return true;
 
         AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
         UUID loggedAccountId = accountDetails.getId();
@@ -44,6 +45,6 @@ public class MemberSecurity {
 
         Set<String> userAuthorities = securityUtils.getLoggedUserAuthorities();
 
-        return userAuthorities.contains("MEMBER_GET_NON_ACTIVE");
+        return userAuthorities.contains(PermissionEnum.MEMBER_GET_NON_ACTIVE.name());
     }
 }

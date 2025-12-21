@@ -26,7 +26,6 @@ public interface MemberMapper {
     }
 
     @Mapping(target = "name", source = "memberEntity.name", qualifiedByName = "nameToString")
-    @Mapping(target = "age", source = "age")
     @Mapping(target = "id", source = "memberEntity.id")
-    MemberRDTO entityToMemberRDTO(MemberEntity memberEntity, int age);
+    MemberRDTO entityToMemberRDTO(MemberEntity memberEntity);
 }

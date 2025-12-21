@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.event.controller;
 
+import br.org.gam.api.Entities.RBAC.permission.PermissionEnum;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEventRDTO;
 import br.org.gam.api.Entities.event.services.createEvent.CreateEvent;
@@ -45,7 +46,7 @@ public class EventController {
         this.getPresence = getPresence;
     }
 
-    @PreAuthorize("hasAuthority('EVENT_CREATE')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_CREATE + "')")
     @PostMapping
     public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
@@ -66,7 +67,7 @@ public class EventController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PreAuthorize("hasAuthority('EVENT_SEARCH')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_SEARCH + "')")
     @PostMapping("/search")
     public ResponseEntity<Page<EventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
                                                         Pageable pageable){
@@ -78,7 +79,7 @@ public class EventController {
         );
     }
 
-    @PreAuthorize("hasAuthority('EVENT_GET_PRESENCES')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_GET_PRESENCES + "')")
     @GetMapping("/{eventId}/presences")
     public ResponseEntity<Page<PresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
                                                                 Pageable pageable){

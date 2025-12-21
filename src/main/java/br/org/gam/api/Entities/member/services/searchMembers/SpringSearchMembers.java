@@ -34,17 +34,11 @@ public class SpringSearchMembers implements SearchMembers {
     public Page<MemberRDTO> search(List<SpecificationFilter> filters, Pageable pageable) {
         Set<String> authorities = securityUtils.getLoggedUserAuthorities();
         Specification<MemberEntity> securityFilter = MemberSecuritySpecification.canGetMember(authorities);
-
         Specification<MemberEntity> searchFilters = SpecificationBuilder.build(filters);
-
         Specification<MemberEntity> spec = securityFilter.and(searchFilters).and(MemberSpecifications.fetchAccount());
 
-        Page<MemberEntity> entitiesPage = memberRepo.findAll(spec, pageable);
-        return entitiesPage
-                .map(memberEntity -> {
-                    int age = memberMapper.entityToDomain(memberEntity).getAge();
-                    return memberMapper.entityToMemberRDTO(memberEntity, age);
-                });
+        return memberRepo.findAll(spec, pageable)
+                .map(memberMapper::entityToMemberRDTO);
     }
 
 

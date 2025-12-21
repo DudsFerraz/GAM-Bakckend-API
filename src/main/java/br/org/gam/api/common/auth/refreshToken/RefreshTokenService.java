@@ -4,7 +4,6 @@ import br.org.gam.api.Entities.account.Account;
 import br.org.gam.api.Entities.account.myEmail.MyEmail;
 import br.org.gam.api.Entities.account.persistence.AccountEntity;
 import br.org.gam.api.Entities.account.services.getAccountInstance.GetAccountInstance;
-import br.org.gam.api.common.auth.AccountDetails;
 import br.org.gam.api.common.auth.TokensDTO;
 import br.org.gam.api.common.auth.exception.InvalidTokenFormatException;
 import br.org.gam.api.common.auth.exception.RefreshTokenExpiredException;
@@ -60,7 +59,7 @@ public class RefreshTokenService {
         Account account = getAccountInstance.domainByEmail(email);
 
         RefreshToken newRefreshToken = RefreshToken.register(token, expiryDate, account);
-        RefreshTokenEntity newRefreshTokenEntity = refreshTokenMapper.fromDomainToEntity(newRefreshToken);
+        RefreshTokenEntity newRefreshTokenEntity = refreshTokenMapper.domainToEntity(newRefreshToken);
         RefreshTokenEntity savedRefreshTokenEntity = refreshTokenRepository.save(newRefreshTokenEntity);
 
         return savedRefreshTokenEntity.getToken();

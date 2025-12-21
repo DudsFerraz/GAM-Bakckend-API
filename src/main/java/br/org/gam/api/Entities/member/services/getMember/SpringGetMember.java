@@ -24,13 +24,10 @@ public class SpringGetMember implements GetMember {
 
     @Override
     public MemberRDTO byId(UUID id) {
-
         MemberEntity memberEntity = getMemberInstance.entityById(id);
         if(!memberSecurity.canGetMember(memberEntity)) throw new MemberNotFoundException("Could not find member with id " + id);
 
-        int age = memberMapper.entityToDomain(memberEntity).getAge();
-
-        return memberMapper.entityToMemberRDTO(memberEntity, age);
+        return memberMapper.entityToMemberRDTO(memberEntity);
     }
 
 }

@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.account.controller;
 
+import br.org.gam.api.Entities.RBAC.permission.PermissionEnum;
 import br.org.gam.api.Entities.account.services.AccountRDTO;
 import br.org.gam.api.Entities.account.services.getAccount.GetAccount;
 import br.org.gam.api.Entities.account.services.searchAccounts.SearchAccounts;
@@ -33,21 +34,14 @@ public class AccountController {
         this.specificationFilterConverter = specificationFilterConverter;
     }
 
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
     @GetMapping("/{id}")
     public ResponseEntity<AccountRDTO> getAccountById(@PathVariable UUID id) {
         AccountRDTO dto = getAccount.byId(id);
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
-    @GetMapping()
-    public ResponseEntity<Page<AccountRDTO>> getAllAccounts(Pageable pageable) {
-        return ResponseEntity.ok(
-                searchAccountsService.search(List.of(), pageable)
-        );
-    }
-
-    @PreAuthorize("hasAuthority('ACCOUNT_GET_ALL')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_SEARCH + "')")
     @PostMapping("/search")
     public ResponseEntity<Page<AccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
                                                             Pageable pageable) {

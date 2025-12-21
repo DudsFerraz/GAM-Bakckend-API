@@ -1,5 +1,6 @@
 package br.org.gam.api.Entities.member.controller;
 
+import br.org.gam.api.Entities.RBAC.permission.PermissionEnum;
 import br.org.gam.api.Entities.member.services.activation.Activation;
 import br.org.gam.api.Entities.member.services.MemberRDTO;
 import br.org.gam.api.Entities.member.services.getMember.GetMember;
@@ -61,14 +62,14 @@ public class MemberController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @PreAuthorize("hasAuthority('MEMBER_GET')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_GET + "')")
     @GetMapping("/{id}")
     public ResponseEntity<MemberRDTO> getMemberById(@PathVariable UUID id) {
         MemberRDTO dto = getMember.byId(id);
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAuthority('MEMBER_SEARCH')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_SEARCH + "')")
     @PostMapping("/search")
     public ResponseEntity<Page<MemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
                                                           Pageable pageable) {
@@ -80,7 +81,7 @@ public class MemberController {
         );
     }
 
-    @PreAuthorize("hasAuthority('MEMBER_ACTIVATION')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
     @PatchMapping("/{id}/activate")
     public ResponseEntity activate(@PathVariable UUID id) {
 
@@ -88,7 +89,7 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAuthority('MEMBER_ACTIVATION')")
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity deactivate(@PathVariable UUID id) {
 
