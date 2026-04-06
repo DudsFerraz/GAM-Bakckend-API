@@ -40,6 +40,7 @@ jobs:
           cache: maven
 
       # 2. Executamos os testes injetando as variáveis de ambiente
+      #dasjhdsaid
       - name: Executar testes com Maven
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
