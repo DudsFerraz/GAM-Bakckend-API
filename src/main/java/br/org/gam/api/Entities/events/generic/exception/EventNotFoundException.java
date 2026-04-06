@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core.exception;
+package br.org.gam.api.Entities.events.generic.exception;
 
 public class EventNotFoundException extends RuntimeException {
     public EventNotFoundException(String message) {

@@ -1,6 +1,6 @@
-package br.org.gam.api.Entities.events.core.security;
+package br.org.gam.api.Entities.events.generic.security;
 
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 

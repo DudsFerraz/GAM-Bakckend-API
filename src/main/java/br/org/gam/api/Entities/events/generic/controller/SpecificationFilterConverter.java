@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core.controller;
+package br.org.gam.api.Entities.events.generic.controller;
 
 import br.org.gam.api.common.specification.GenericSpecificationFilterConverter;
 import br.org.gam.api.common.specification.SpecificationFilter;

@@ -24,11 +24,13 @@ public class R__SeedPermissionsAndRoles extends BaseJavaMigration {
             MEMBER_SEARCH,
             MEMBER_ACTIVATION,
             MEMBER_GET_NON_ACTIVE,
+            MEMBER_MANAGE,
             ACCOUNT_GET,
             ACCOUNT_SEARCH,
             EVENT_CREATE,
             EVENT_SEARCH,
             EVENT_GET_PRESENCES,
+            EVENT_MANAGE,
             PRESENCES_SEARCH
     );
     private static final Set<PermissionEnum> MEMBER_PERMISSIONS = EnumSet.of(

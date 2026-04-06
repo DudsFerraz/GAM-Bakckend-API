@@ -1,7 +1,7 @@
-package br.org.gam.api.Entities.events.core.services.getEventInstance;
+package br.org.gam.api.Entities.events.generic.services.getEventInstance;
 
-import br.org.gam.api.Entities.events.core.Event;
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.Event;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
 
 import java.util.UUID;
 

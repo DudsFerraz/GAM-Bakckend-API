@@ -6,7 +6,7 @@ import br.org.gam.api.Entities.RBAC.role.exception.RoleNotFoundException;
 import br.org.gam.api.Entities.RBAC.rolePermission.exception.RolePermissionNotFoundException;
 import br.org.gam.api.Entities.account.exception.AccountConflictException;
 import br.org.gam.api.Entities.account.exception.AccountNotFoundException;
-import br.org.gam.api.Entities.event.exception.EventNotFoundException;
+import br.org.gam.api.Entities.events.generic.exception.EventNotFoundException;
 import br.org.gam.api.Entities.location.exception.LocationNotFoundException;
 import br.org.gam.api.Entities.member.exception.MemberAccountConflictException;
 

@@ -7,7 +7,10 @@ import br.org.gam.api.Entities.member.persistence.MemberRepository;
 import br.org.gam.api.Entities.member.persistence.MemberEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SpringGetMemberInstance implements GetMemberInstance {
@@ -31,5 +34,19 @@ public class SpringGetMemberInstance implements GetMemberInstance {
     public MemberEntity entityById(UUID id) {
         return memberRepo.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Could not find member with id " + id));
+    }
+
+    @Override
+    public Set<Member> domainsById(Set<UUID> ids) {
+        if (ids == null || ids.isEmpty()) return new HashSet<>();
+
+        Set<UUID> safeIds = ids.stream()
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return memberRepo.findAllById(safeIds)
+                .stream()
+                .map(memberMapper::entityToDomain)
+                .collect(Collectors.toSet());
     }
 }

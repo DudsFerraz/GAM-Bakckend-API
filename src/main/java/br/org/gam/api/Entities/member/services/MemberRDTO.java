@@ -12,7 +12,6 @@ public record MemberRDTO(
         AccountRDTO account,
         String name,
         LocalDate birthDate,
-        int age,
         MyPhoneNumber phoneNumber,
         MemberStatus status
 ) {

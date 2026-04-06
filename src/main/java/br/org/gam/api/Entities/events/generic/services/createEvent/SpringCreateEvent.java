@@ -1,11 +1,12 @@
-package br.org.gam.api.Entities.events.core.services.createEvent;
+package br.org.gam.api.Entities.events.generic.services.createEvent;
 
 import br.org.gam.api.Entities.RBAC.permission.Permission;
 import br.org.gam.api.Entities.RBAC.permission.services.getPermissionInstance.GetPermissionInstance;
-import br.org.gam.api.Entities.events.core.Event;
-import br.org.gam.api.Entities.events.core.EventMapper;
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
-import br.org.gam.api.Entities.events.core.persistence.EventRepository;
+import br.org.gam.api.Entities.events.generic.Event;
+import br.org.gam.api.Entities.events.generic.EventMapper;
+import br.org.gam.api.Entities.events.generic.EventType;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.persistence.EventRepository;
 import br.org.gam.api.Entities.location.Location;
 import br.org.gam.api.Entities.location.services.getLocationInstance.GetLocationInstance;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class SpringCreateEvent implements CreateEvent {
         Permission requiredPermission = getPermissionInstance.domainById(dto.requiredPermissionId());
 
         Event newEvent = Event.register(dto.title(), dto.description(), eventLocation, requiredPermission,
-                                      dto.beginDate(), dto.endDate());
+                                      dto.beginDate(), dto.endDate(), dto.type());
 
         EventEntity newEventEntity = eventMapper.domainToEntity(newEvent);
         EventEntity savedEventEntity = eventRepository.save(newEventEntity);

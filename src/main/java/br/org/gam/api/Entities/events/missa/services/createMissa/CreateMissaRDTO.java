@@ -1,4 +1,8 @@
 package br.org.gam.api.Entities.events.missa.services.createMissa;
 
-public record CreateMissaRDTO() {
+import java.util.UUID;
+
+public record CreateMissaRDTO(
+        UUID id
+) {
 }

@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core.services.createEvent;
+package br.org.gam.api.Entities.events.generic.services.createEvent;
 
 import java.util.UUID;
 

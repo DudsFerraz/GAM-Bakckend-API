@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core.persistence;
+package br.org.gam.api.Entities.events.generic.persistence;
 
 import br.org.gam.api.common.persistence.BaseRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

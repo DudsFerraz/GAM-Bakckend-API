@@ -1,7 +1,7 @@
 package br.org.gam.api.Entities.presence.services.registerPresence;
 
-import br.org.gam.api.Entities.event.Event;
-import br.org.gam.api.Entities.event.services.getEventInstance.GetEventInstance;
+import br.org.gam.api.Entities.events.generic.Event;
+import br.org.gam.api.Entities.events.generic.services.getEventInstance.GetEventInstance;
 import br.org.gam.api.Entities.member.Member;
 import br.org.gam.api.Entities.member.services.getMemberInstance.GetMemberInstance;
 import br.org.gam.api.Entities.presence.PresenceMapper;

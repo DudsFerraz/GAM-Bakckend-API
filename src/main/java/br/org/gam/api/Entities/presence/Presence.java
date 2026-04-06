@@ -1,6 +1,6 @@
 package br.org.gam.api.Entities.presence;
 
-import br.org.gam.api.Entities.event.Event;
+import br.org.gam.api.Entities.events.generic.Event;
 import br.org.gam.api.Entities.member.Member;
 import br.org.gam.api.common.persistence.UUIDGenerator;
 

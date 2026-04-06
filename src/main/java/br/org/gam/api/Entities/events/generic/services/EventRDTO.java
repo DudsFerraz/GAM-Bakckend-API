@@ -1,8 +1,8 @@
-package br.org.gam.api.Entities.events.core.services;
+package br.org.gam.api.Entities.events.generic.services;
 
 import br.org.gam.api.Entities.RBAC.permission.services.PermissionRDTO;
-import br.org.gam.api.Entities.events.core.EventStatus;
-import br.org.gam.api.Entities.events.core.EventType;
+import br.org.gam.api.Entities.events.generic.EventStatus;
+import br.org.gam.api.Entities.events.generic.EventType;
 import br.org.gam.api.Entities.location.services.LocationRDTO;
 
 import java.time.Instant;

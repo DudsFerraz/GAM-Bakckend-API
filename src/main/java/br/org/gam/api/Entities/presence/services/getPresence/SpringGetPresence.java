@@ -1,16 +1,15 @@
 package br.org.gam.api.Entities.presence.services.getPresence;
 
-import br.org.gam.api.Entities.event.exception.EventNotFoundException;
-import br.org.gam.api.Entities.event.persistence.EventEntity;
-import br.org.gam.api.Entities.event.security.EventSecurity;
-import br.org.gam.api.Entities.event.services.getEventInstance.GetEventInstance;
+import br.org.gam.api.Entities.events.generic.exception.EventNotFoundException;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.security.EventSecurity;
+import br.org.gam.api.Entities.events.generic.services.getEventInstance.GetEventInstance;
 import br.org.gam.api.Entities.presence.PresenceMapper;
 import br.org.gam.api.Entities.presence.exception.PresenceNotFoundException;
 import br.org.gam.api.Entities.presence.persistence.PresenceEntity;
 import br.org.gam.api.Entities.presence.persistence.PresenceRepository;
 import br.org.gam.api.Entities.presence.persistence.PresenceSpecifications;
 import br.org.gam.api.Entities.presence.services.PresenceRDTO;
-import br.org.gam.api.Entities.presence.services.getPresenceInstance.GetPresenceInstance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

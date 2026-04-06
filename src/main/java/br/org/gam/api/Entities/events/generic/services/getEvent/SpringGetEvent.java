@@ -1,11 +1,11 @@
-package br.org.gam.api.Entities.events.core.services.getEvent;
+package br.org.gam.api.Entities.events.generic.services.getEvent;
 
-import br.org.gam.api.Entities.events.core.EventMapper;
-import br.org.gam.api.Entities.events.core.exception.EventNotFoundException;
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
-import br.org.gam.api.Entities.events.core.security.EventSecurity;
-import br.org.gam.api.Entities.events.core.services.EventRDTO;
-import br.org.gam.api.Entities.events.core.services.getEventInstance.GetEventInstance;
+import br.org.gam.api.Entities.events.generic.EventMapper;
+import br.org.gam.api.Entities.events.generic.exception.EventNotFoundException;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.security.EventSecurity;
+import br.org.gam.api.Entities.events.generic.services.EventRDTO;
+import br.org.gam.api.Entities.events.generic.services.getEventInstance.GetEventInstance;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,7 +24,6 @@ public class SpringGetEvent implements GetEvent {
 
     @Override
     public EventRDTO byId(UUID id) {
-
         EventEntity eventEntity = getEventInstance.entityById(id);
 
         if(!eventSecurity.canGetEvent(eventEntity)) throw new EventNotFoundException("Could not find event with id " + id);

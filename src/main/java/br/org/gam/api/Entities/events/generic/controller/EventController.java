@@ -1,12 +1,12 @@
-package br.org.gam.api.Entities.events.core.controller;
+package br.org.gam.api.Entities.events.generic.controller;
 
 import br.org.gam.api.Entities.RBAC.permission.PermissionEnum;
-import br.org.gam.api.Entities.events.core.services.createEvent.CreateEventDTO;
-import br.org.gam.api.Entities.events.core.services.createEvent.CreateEventRDTO;
-import br.org.gam.api.Entities.events.core.services.createEvent.CreateEvent;
-import br.org.gam.api.Entities.events.core.services.EventRDTO;
-import br.org.gam.api.Entities.events.core.services.getEvent.GetEvent;
-import br.org.gam.api.Entities.events.core.services.searchEvents.SearchEvents;
+import br.org.gam.api.Entities.events.generic.services.createEvent.CreateEventDTO;
+import br.org.gam.api.Entities.events.generic.services.createEvent.CreateEventRDTO;
+import br.org.gam.api.Entities.events.generic.services.createEvent.CreateEvent;
+import br.org.gam.api.Entities.events.generic.services.EventRDTO;
+import br.org.gam.api.Entities.events.generic.services.getEvent.GetEvent;
+import br.org.gam.api.Entities.events.generic.services.searchEvents.SearchEvents;
 import br.org.gam.api.Entities.presence.services.getPresence.GetPresence;
 import br.org.gam.api.Entities.presence.services.PresenceRDTO;
 import br.org.gam.api.common.specification.SearchDTO;

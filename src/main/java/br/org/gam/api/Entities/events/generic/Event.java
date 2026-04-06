@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core;
+package br.org.gam.api.Entities.events.generic;
 
 import br.org.gam.api.Entities.RBAC.permission.Permission;
 import br.org.gam.api.Entities.location.Location;

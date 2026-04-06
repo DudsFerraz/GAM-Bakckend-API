@@ -28,12 +28,14 @@ DO $$
 
     BEGIN
 
+        -- 1. BUSCA DE ROLES E PERMISSÕES
         SELECT id INTO v_role_member_id FROM roles WHERE name = 'MEMBER';
         SELECT id INTO v_role_coord_id FROM roles WHERE name = 'COORD';
         SELECT id INTO v_role_visitor_id FROM roles WHERE name = 'VISITOR';
 
         SELECT id INTO v_perm_event_get_s_id FROM permissions WHERE name = 'EVENT_GET_S';
 
+        -- 2. CRIAÇÃO DE ACCOUNTS
         SELECT id INTO v_acc_giulia_id FROM accounts WHERE email = 'giulia@gmail.com';
         IF v_acc_giulia_id IS NULL THEN
             v_acc_giulia_id := uuidv7();
@@ -76,7 +78,7 @@ DO $$
             VALUES (uuidv7(), v_acc_daniel_id, v_role_member_id, v_now);
         END IF;
 
-        -- Locais
+        -- 3. CRIAÇÃO DE LOCATIONS
         SELECT id INTO v_loc_sede_id FROM locations WHERE name = 'Sede Principal GAM';
         IF v_loc_sede_id IS NULL THEN
             v_loc_sede_id := uuidv7();
@@ -91,7 +93,7 @@ DO $$
             VALUES (v_loc_anexo_id, 'Salão de Eventos Anexo', 'Avenida Brasil, 456', 'Rio de Janeiro', 'RJ', '20000-000', 'BR', -22.906847, -43.172896, v_now, v_now, v_acc_giulia_id);
         END IF;
 
-        -- Membros
+        -- 4. CRIAÇÃO DE MEMBERS
         SELECT id INTO v_member_giulia_id FROM members WHERE account_id = v_acc_giulia_id;
         IF v_member_giulia_id IS NULL THEN
             v_member_giulia_id := uuidv7();
@@ -113,34 +115,34 @@ DO $$
             VALUES (v_member_daniel_id, v_acc_daniel_id, 'Daniel', 'Gomes', '2002-07-30', '+5519988776655', 'PENDENT', v_now, v_now, v_acc_giulia_id);
         END IF;
 
-        -- Eventos
+        -- 5. CRIAÇÃO DE EVENTS
         SELECT id INTO v_event_reuniao_id FROM events WHERE title = 'Reunião de Coordenadores';
         IF v_event_reuniao_id IS NULL THEN
             v_event_reuniao_id := uuidv7();
-            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by)
-            VALUES (v_event_reuniao_id, 'Reunião de Coordenadores', 'Planejamento estratégico.', v_loc_sede_id, v_perm_event_get_s_id, v_now + interval '2 day', v_now + interval '2 day 2 hour', v_now, v_now, v_acc_giulia_id);
+            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by, type, status)
+            VALUES (v_event_reuniao_id, 'Reunião de Coordenadores', 'Planejamento estratégico.', v_loc_sede_id, v_perm_event_get_s_id, v_now + interval '2 day', v_now + interval '2 day 2 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'SCHEDULED');
         END IF;
 
         SELECT id INTO v_event_encontro_id FROM events WHERE title = 'Encontro Semanal GAM';
         IF v_event_encontro_id IS NULL THEN
             v_event_encontro_id := uuidv7();
-            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by)
-            VALUES (v_event_encontro_id, 'Encontro Semanal GAM', 'Encontro geral.', v_loc_anexo_id, null, v_now + interval '5 day', v_now + interval '5 day 3 hour', v_now, v_now, v_acc_giulia_id);
+            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by, type, status)
+            VALUES (v_event_encontro_id, 'Encontro Semanal GAM', 'Encontro geral.', v_loc_anexo_id, null, v_now + interval '5 day', v_now + interval '5 day 3 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'SCHEDULED');
         END IF;
 
         SELECT id INTO v_event_palestra_id FROM events WHERE title = 'Palestra sobre Voluntariado (Passado)';
         IF v_event_palestra_id IS NULL THEN
             v_event_palestra_id := uuidv7();
-            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by)
-            VALUES (v_event_palestra_id, 'Palestra sobre Voluntariado (Passado)', 'Evento já ocorreu.', v_loc_sede_id, null, v_now - interval '7 day', v_now - interval '6 day 22 hour', v_now, v_now, v_acc_giulia_id);
+            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by, type, status)
+            VALUES (v_event_palestra_id, 'Palestra sobre Voluntariado (Passado)', 'Evento já ocorreu.', v_loc_sede_id, null, v_now - interval '7 day', v_now - interval '6 day 22 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'COMPLETED');
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM events WHERE title = 'Evento Portas Abertas') THEN
-            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by)
-            VALUES (uuidv7(), 'Evento Portas Abertas', 'Aberto ao público.', NULL, NULL, v_now + interval '10 day', v_now + interval '10 day 4 hour', v_now, v_now, v_acc_giulia_id);
+            INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by, type, status)
+            VALUES (uuidv7(), 'Evento Portas Abertas', 'Aberto ao público.', NULL, NULL, v_now + interval '10 day', v_now + interval '10 day 4 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'SCHEDULED');
         END IF;
 
-        -- Presenças
+        -- 6. CRIAÇÃO DE PRESENCES
         IF NOT EXISTS (SELECT 1 FROM presences WHERE member_id = v_member_giulia_id AND event_id = v_event_reuniao_id) THEN
             INSERT INTO presences (id, member_id, event_id, observations, created_at, updated_at, created_by)
             VALUES (uuidv7(), v_member_giulia_id, v_event_reuniao_id, 'Liderou a pauta', v_now, v_now, v_acc_giulia_id);

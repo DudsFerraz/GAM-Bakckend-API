@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core;
+package br.org.gam.api.Entities.events.generic;
 
 public enum EventType {
     GENERIC,

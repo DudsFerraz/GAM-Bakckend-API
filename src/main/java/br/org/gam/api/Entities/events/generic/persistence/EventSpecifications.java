@@ -1,4 +1,4 @@
-package br.org.gam.api.Entities.events.core.persistence;
+package br.org.gam.api.Entities.events.generic.persistence;
 
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;

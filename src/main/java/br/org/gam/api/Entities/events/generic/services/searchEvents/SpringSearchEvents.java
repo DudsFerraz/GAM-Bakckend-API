@@ -1,12 +1,12 @@
-package br.org.gam.api.Entities.events.core.services.searchEvents;
+package br.org.gam.api.Entities.events.generic.services.searchEvents;
 
-import br.org.gam.api.Entities.events.core.EventMapper;
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
-import br.org.gam.api.Entities.events.core.persistence.EventRepository;
-import br.org.gam.api.Entities.events.core.persistence.EventSpecifications;
-import br.org.gam.api.Entities.events.core.services.EventRDTO;
+import br.org.gam.api.Entities.events.generic.EventMapper;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.persistence.EventRepository;
+import br.org.gam.api.Entities.events.generic.persistence.EventSpecifications;
+import br.org.gam.api.Entities.events.generic.services.EventRDTO;
 import br.org.gam.api.common.security.SecurityUtils;
-import br.org.gam.api.Entities.events.core.security.EventSecuritySpecification;
+import br.org.gam.api.Entities.events.generic.security.EventSecuritySpecification;
 import br.org.gam.api.common.specification.SpecificationBuilder;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import org.springframework.data.domain.Page;

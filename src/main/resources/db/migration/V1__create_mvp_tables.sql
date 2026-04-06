@@ -1,4 +1,6 @@
 CREATE TYPE member_status_enum AS ENUM ('ACTIVE', 'INACTIVE', 'PENDENT');
+CREATE TYPE event_status_enum AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED');
+CREATE TYPE event_type_enum AS ENUM ('GENERIC', 'MISSA', 'ORATORIO');
 
 
 CREATE TABLE accounts(
@@ -132,9 +134,11 @@ CREATE TABLE locations (
 CREATE TABLE events(
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL ,
+    description TEXT NOT NULL,
     location_id UUID,
     required_permission_id UUID,
+    type event_type_enum NOT NULL,
+    status event_status_enum NOT NULL,
 
     begin_date TIMESTAMPTZ NOT NULL,
     end_date TIMESTAMPTZ NOT NULL,
@@ -203,3 +207,113 @@ CREATE TABLE presences(
 CREATE UNIQUE INDEX idx_presence_not_deleted
     ON presences (member_id, event_id)
     WHERE (deleted_at IS NULL);
+
+
+CREATE TABLE oratorios (
+    id UUID PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    cancellation_reason TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    created_by UUID,
+    updated_at TIMESTAMPTZ NOT NULL,
+    updated_by UUID,
+    deleted_at TIMESTAMPTZ,
+    deleted_by UUID,
+
+    CONSTRAINT fk_oratorio_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_oratorio_created_by FOREIGN KEY(created_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratorio_updated_by FOREIGN KEY(updated_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratorio_deleted_by FOREIGN KEY(deleted_by) REFERENCES accounts(id)
+);
+
+CREATE TABLE oratorio_lanche(
+    member_id UUID NOT NULL,
+    oratorio_id UUID NOT NULL,
+
+    PRIMARY KEY (oratorio_id, member_id),
+    CONSTRAINT fk_lanche_member FOREIGN KEY(member_id) REFERENCES members(id),
+    CONSTRAINT fk_lanche_oratorio FOREIGN KEY(oratorio_id) REFERENCES oratorios(id)
+);
+
+CREATE TABLE oratorio_bt_jovens(
+    member_id UUID NOT NULL,
+    oratorio_id UUID NOT NULL,
+
+    PRIMARY KEY (oratorio_id, member_id),
+    CONSTRAINT fk_bt_jovens_member FOREIGN KEY(member_id) REFERENCES members(id),
+    CONSTRAINT fk_bt_jovens_oratorio FOREIGN KEY(oratorio_id) REFERENCES oratorios(id)
+);
+
+CREATE TABLE oratorio_bt_criancas(
+    member_id UUID NOT NULL,
+    oratorio_id UUID NOT NULL,
+
+    PRIMARY KEY (oratorio_id, member_id),
+    CONSTRAINT fk_bt_criancas_member FOREIGN KEY(member_id) REFERENCES members(id),
+    CONSTRAINT fk_bt_criancas_oratorio FOREIGN KEY(oratorio_id) REFERENCES oratorios(id)
+);
+
+CREATE TABLE oratorianos(
+    id UUID PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    surname VARCHAR(255) NOT NULL,
+    birth_date DATE,
+    phone_number VARCHAR(30),
+
+    created_at TIMESTAMPTZ NOT NULL,
+    created_by UUID,
+    updated_at TIMESTAMPTZ NOT NULL,
+    updated_by UUID,
+    deleted_at TIMESTAMPTZ,
+    deleted_by UUID,
+
+    CONSTRAINT fk_oratoriano_created_by FOREIGN KEY(created_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratoriano_updated_by FOREIGN KEY(updated_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratoriano_deleted_by FOREIGN KEY(deleted_by) REFERENCES accounts(id)
+);
+
+CREATE TABLE oratorio_presences_oratorianos(
+    oratoriano_id UUID NOT NULL,
+    oratorio_id UUID NOT NULL,
+
+    PRIMARY KEY (oratorio_id, oratoriano_id),
+    CONSTRAINT fk_presences_oratoriano FOREIGN KEY(oratoriano_id) REFERENCES oratorianos(id),
+    CONSTRAINT fk_presences_oratorio FOREIGN KEY(oratorio_id) REFERENCES oratorios(id)
+);
+
+CREATE TABLE missas(
+    id UUID PRIMARY KEY,
+    event_id UUID NOT NULL UNIQUE,
+    comentarios_member UUID,
+    leitura_1_member UUID,
+    salmo_member UUID,
+    leitura_2_member UUID,
+    preces_member UUID,
+
+    created_at TIMESTAMPTZ NOT NULL,
+    created_by UUID,
+    updated_at TIMESTAMPTZ NOT NULL,
+    updated_by UUID,
+    deleted_at TIMESTAMPTZ,
+    deleted_by UUID,
+
+    CONSTRAINT fk_missa_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comentarios_member FOREIGN KEY(comentarios_member) REFERENCES members(id),
+    CONSTRAINT fk_leitura_1_member FOREIGN KEY(leitura_1_member) REFERENCES members(id),
+    CONSTRAINT fk_salmo_member FOREIGN KEY(salmo_member) REFERENCES members(id),
+    CONSTRAINT fk_leitura_2_member FOREIGN KEY(leitura_2_member) REFERENCES members(id),
+    CONSTRAINT fk_preces_member FOREIGN KEY(preces_member) REFERENCES members(id),
+
+    CONSTRAINT fk_oratorio_created_by FOREIGN KEY(created_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratorio_updated_by FOREIGN KEY(updated_by) REFERENCES accounts(id),
+    CONSTRAINT fk_oratorio_deleted_by FOREIGN KEY(deleted_by) REFERENCES accounts(id)
+);
+
+CREATE TABLE missa_acolhida_members(
+    member_id UUID,
+    missa_id UUID,
+
+    CONSTRAINT fk_acolhida_member FOREIGN KEY(member_id) REFERENCES members(id),
+    CONSTRAINT fk_acolhida_missa FOREIGN KEY(missa_id) REFERENCES missas(id)
+);

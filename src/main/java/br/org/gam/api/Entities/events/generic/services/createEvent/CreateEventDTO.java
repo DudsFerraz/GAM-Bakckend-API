@@ -1,5 +1,6 @@
-package br.org.gam.api.Entities.events.core.services.createEvent;
+package br.org.gam.api.Entities.events.generic.services.createEvent;
 
+import br.org.gam.api.Entities.events.generic.EventType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
@@ -13,6 +14,7 @@ public record CreateEventDTO(
         @NotNull UUID locationId,
         @NotNull UUID requiredPermissionId,
         @NotNull Instant beginDate,
-        @NotNull Instant endDate
+        @NotNull Instant endDate,
+        @NotNull EventType type
         ) {
 }

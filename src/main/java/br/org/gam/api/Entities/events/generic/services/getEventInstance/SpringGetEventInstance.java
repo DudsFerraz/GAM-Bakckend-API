@@ -1,10 +1,10 @@
-package br.org.gam.api.Entities.events.core.services.getEventInstance;
+package br.org.gam.api.Entities.events.generic.services.getEventInstance;
 
-import br.org.gam.api.Entities.events.core.Event;
-import br.org.gam.api.Entities.events.core.exception.EventNotFoundException;
-import br.org.gam.api.Entities.events.core.persistence.EventEntity;
-import br.org.gam.api.Entities.events.core.persistence.EventRepository;
-import br.org.gam.api.Entities.events.core.EventMapper;
+import br.org.gam.api.Entities.events.generic.Event;
+import br.org.gam.api.Entities.events.generic.exception.EventNotFoundException;
+import br.org.gam.api.Entities.events.generic.persistence.EventEntity;
+import br.org.gam.api.Entities.events.generic.persistence.EventRepository;
+import br.org.gam.api.Entities.events.generic.EventMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

@@ -1,4 +1,8 @@
 package br.org.gam.api.Entities.events.oratorio.services.createOratorio;
 
-public record CreateOratorioRDTO() {
+import java.util.UUID;
+
+public record CreateOratorioRDTO(
+        UUID id
+) {
 }

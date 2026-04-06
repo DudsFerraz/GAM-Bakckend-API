@@ -1,6 +1,6 @@
-package br.org.gam.api.Entities.events.core.services.searchEvents;
+package br.org.gam.api.Entities.events.generic.services.searchEvents;
 
-import br.org.gam.api.Entities.events.core.services.EventRDTO;
+import br.org.gam.api.Entities.events.generic.services.EventRDTO;
 import br.org.gam.api.common.specification.SpecificationFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
