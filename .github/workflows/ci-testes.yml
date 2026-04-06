@@ -45,8 +45,9 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
           SPRING_DATASOURCE_USERNAME: usuario_teste
           SPRING_DATASOURCE_PASSWORD: senha_teste
-          SPRING_PROFILES_ACTIVE: default # Força o Spring a não procurar o perfil "local"
-          JWT_SECRET_KEY: uma_chave_secreta_muito_longa_apenas_para_passar_os_testes_no_github_actions_12345!
+          SPRING_PROFILES_ACTIVE: default
+          JWT_SECRET_KEY: 7be123441ce4c2c2c04a9e2e27d802ce81be1708eeac649b747e93907b558c2d38009c09
+          CORS_ALLOWED_ORIGINS: http://localhost:5173
         run: mvn clean test
 
       - name: Fazer Upload do Relatório de Cobertura
