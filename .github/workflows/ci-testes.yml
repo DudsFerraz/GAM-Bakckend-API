@@ -1,6 +1,5 @@
 name: Testes e Cobertura Java
 
-# Define quando a Action vai rodar (ao fazer push ou pull request para a main)
 on:
   push:
     branches: [ "main", "master" ]
@@ -11,12 +10,28 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    # 1. Adicionamos o serviço do PostgreSQL
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: gam_db
+          POSTGRES_USER: usuario_teste
+          POSTGRES_PASSWORD: senha_teste
+        # Mapeia a porta padrão do container para a máquina do GitHub
+        ports:
+          - 5432:5432
+        # Aguarda o banco estar pronto antes de rodar os testes
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      # Passo 1: Baixa o código do repositório
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Passo 2: Prepara o ambiente Java
       - name: Configurar JDK 21
         uses: actions/setup-java@v4
         with:
@@ -24,14 +39,18 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Passo 3: Roda os testes e gera o relatório do JaCoCo
+      # 2. Executamos os testes injetando as variáveis de ambiente
       - name: Executar testes com Maven
+        env:
+          # Estas variáveis sobrescrevem as configurações ausentes do seu projeto
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
+          SPRING_DATASOURCE_USERNAME: usuario_teste
+          SPRING_DATASOURCE_PASSWORD: senha_teste
+          SPRING_PROFILES_ACTIVE: default # Força o Spring a não procurar o perfil "local"
         run: mvn clean test
 
-      # Passo 4: Salva o relatório de cobertura gerado para download
       - name: Fazer Upload do Relatório de Cobertura
         uses: actions/upload-artifact@v4
-        # O if: always() garante que o relatório seja salvo mesmo se um teste falhar
         if: always()
         with:
           name: relatorio-cobertura-jacoco
