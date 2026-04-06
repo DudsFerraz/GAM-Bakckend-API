@@ -42,11 +42,11 @@ jobs:
       # 2. Executamos os testes injetando as variáveis de ambiente
       - name: Executar testes com Maven
         env:
-          # Estas variáveis sobrescrevem as configurações ausentes do seu projeto
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
           SPRING_DATASOURCE_USERNAME: usuario_teste
           SPRING_DATASOURCE_PASSWORD: senha_teste
           SPRING_PROFILES_ACTIVE: default # Força o Spring a não procurar o perfil "local"
+          JWT_SECRET_KEY: uma_chave_secreta_muito_longa_apenas_para_passar_os_testes_no_github_actions_12345!
         run: mvn clean test
 
       - name: Fazer Upload do Relatório de Cobertura
