@@ -73,6 +73,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-docker-compose</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
@@ -283,5 +290,17 @@
 
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<spring-boot.run.profiles>dev</spring-boot.run.profiles>
+			</properties>
+			<build>
+				<defaultGoal>spring-boot:run</defaultGoal>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

@@ -60,15 +60,7 @@ Prerequisites:
 
 - Java 21
 - Maven, or the included Maven Wrapper
-- PostgreSQL
-
-Create a local configuration file from the example:
-
-```powershell
-Copy-Item src/main/resources/application-local.properties.example src/main/resources/application-local.properties
-```
-
-Fill in the datasource, JWT secret, SQL logging, and CORS values in `application-local.properties`.
+- Docker Desktop
 
 Run the test suite:
 
@@ -76,13 +68,31 @@ Run the test suite:
 .\mvnw.cmd test
 ```
 
-Run the application:
+Run the application with the development shortcut:
 
 ```powershell
-.\mvnw.cmd spring-boot:run
+.\mvnw.cmd -Pdev
 ```
 
-By default, the application uses the `local` Spring profile and validates the database schema through Flyway-managed migrations.
+This command activates the Maven profile named `dev`. That Maven profile is only a shortcut: it runs the `spring-boot:run` goal and passes the Spring profile named `dev` to the application. The Spring profile then loads `application-dev.properties`.
+
+The development Spring profile uses Spring Boot Docker Compose support to start PostgreSQL from `compose.yml` when needed. The PostgreSQL container is kept running after the application exits so later application restarts are faster.
+
+The development and integration-test databases use PostgreSQL 18 because the migrations call PostgreSQL's built-in `uuidv7()` function. Current Flyway versions may print a warning that PostgreSQL 18 support is newer than its tested compatibility range; that warning is expected until the managed Flyway version is upgraded.
+
+Stop the development database when you are done:
+
+```powershell
+docker compose stop
+```
+
+Reset the development database and remove its volume:
+
+```powershell
+docker compose down -v
+```
+
+The application does not activate a Spring profile by default. Use `.\mvnw.cmd -Pdev` for local development. Plain `.\mvnw.cmd spring-boot:run` intentionally does not load development settings or start Docker Compose. Flyway validates and migrates the PostgreSQL schema during startup.
 
 ## Documentation
 

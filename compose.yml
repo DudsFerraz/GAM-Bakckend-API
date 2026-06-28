@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: gam_api
+      POSTGRES_USER: gam
+      POSTGRES_PASSWORD: gam_dev_password
+    volumes:
+      - gam-api-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gam -d gam_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  gam-api-postgres-data:
