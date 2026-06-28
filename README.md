@@ -81,7 +81,7 @@ The development profile requires `JWT_SECRET_KEY` to be set in the environment. 
 
 The development Spring profile uses Spring Boot Docker Compose support to start PostgreSQL from `compose.yml` when needed. The PostgreSQL container is kept running after the application exits so later application restarts are faster.
 
-The development and integration-test databases use PostgreSQL 18 because the migrations call PostgreSQL's built-in `uuidv7()` function. Current Flyway versions may print a warning that PostgreSQL 18 support is newer than its tested compatibility range; that warning is expected until the managed Flyway version is upgraded.
+The development and integration-test databases use PostgreSQL 18 because the migrations call PostgreSQL's built-in `uuidv7()` function. The project overrides Spring Boot's managed Flyway version so migrations run with PostgreSQL 18 support.
 
 Stop the development database when you are done:
 
