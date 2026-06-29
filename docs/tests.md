@@ -93,8 +93,8 @@ Integration tests evaluate how different parts of the system interact with each 
 Use custom JUnit annotations instead of raw `@Tag(...)`. Each annotation should be usable on both test classes and test methods. Required annotations are:
 
 - `@UnitTest`
-- `@Functional`
-- `@Structural`
+- `@FunctionalTest`
+- `@StructuralTest`
 - `@IntegrationTest`
 - `@ApiTest`
 - `@SecurityTest`
