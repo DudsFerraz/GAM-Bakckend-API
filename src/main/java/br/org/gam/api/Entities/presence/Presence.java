@@ -43,6 +43,10 @@ public class Presence {
         return member;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public Event getEvent() {
         return event;
     }

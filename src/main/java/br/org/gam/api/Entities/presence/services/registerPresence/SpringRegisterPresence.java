@@ -6,7 +6,7 @@ import br.org.gam.api.Entities.member.Member;
 import br.org.gam.api.Entities.member.services.getMemberInstance.GetMemberInstance;
 import br.org.gam.api.Entities.presence.PresenceMapper;
 import br.org.gam.api.Entities.presence.Presence;
-import br.org.gam.api.Entities.presence.exception.PresenceNotFoundException;
+import br.org.gam.api.Entities.presence.exception.PresenceConflictException;
 import br.org.gam.api.Entities.presence.persistence.PresenceRepository;
 import br.org.gam.api.Entities.presence.persistence.PresenceEntity;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class SpringRegisterPresence implements RegisterPresence {
     @Override
     public RegisterPresenceRDTO register(RegisterPresenceDTO dto) {
         if(presenceRepo.existsByMember_IdAndEvent_Id(dto.memberId(), dto.eventId())){
-            throw new PresenceNotFoundException("Presence already registered");
+            throw new PresenceConflictException("Presence already registered");
         }
 
         Member presentMember = getMemberInstance.domainById(dto.memberId());
