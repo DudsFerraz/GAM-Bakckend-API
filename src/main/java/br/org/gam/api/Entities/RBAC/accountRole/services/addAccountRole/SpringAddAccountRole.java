@@ -54,6 +54,6 @@ public class SpringAddAccountRole implements AddAccountRole {
     public AccountRoleRDTO byRoleName(String roleName, UUID accountId) {
         UUID roleId = getRoleInstance.entityByName(roleName).getId();
 
-        return byDTO(new AccountRoleDTO(roleId, accountId));
+        return byDTO(new AccountRoleDTO(accountId, roleId));
     }
 }

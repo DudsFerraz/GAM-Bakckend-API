@@ -35,6 +35,6 @@ public class SpringDropAccountRole implements DropAccountRole {
     public void byRoleName(String roleName, UUID accountId) {
         UUID roleId = getRoleInstance.entityByName(roleName).getId();
 
-        byDTO(new AccountRoleDTO(roleId, accountId));
+        byDTO(new AccountRoleDTO(accountId, roleId));
     }
 }

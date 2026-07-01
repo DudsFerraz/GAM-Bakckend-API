@@ -23,12 +23,12 @@ public class SpringGetPermissionInstance implements GetPermissionInstance {
     public Permission domainById(UUID id) {
         return permissionRepo.findById(id)
                 .map(permissionMapper::entityToDomain)
-                .orElseThrow(() -> new PermissionNotFoundException("Could not find permission with id" + id));
+                .orElseThrow(() -> new PermissionNotFoundException("Could not find permission with id " + id));
     }
 
     @Override
     public PermissionEntity entityById(UUID id) {
         return permissionRepo.findById(id)
-                .orElseThrow(() -> new PermissionNotFoundException("Could not find permission with id" + id));
+                .orElseThrow(() -> new PermissionNotFoundException("Could not find permission with id " + id));
     }
 }
