@@ -1,11 +1,11 @@
 package br.org.gam.api.security.web;
 
-import br.org.gam.api.account.application.useCases.LoginAccount.LoginAccount;
-import br.org.gam.api.account.application.useCases.LoginAccount.LoginAccountDTO;
-import br.org.gam.api.account.application.useCases.LoginAccount.LoginAccountRDTO;
-import br.org.gam.api.account.application.useCases.RegisterAccount.RegisterAccount;
-import br.org.gam.api.account.application.useCases.RegisterAccount.RegisterAccountDTO;
-import br.org.gam.api.account.application.useCases.RegisterAccount.RegisterAccountRDTO;
+import br.org.gam.api.account.application.useCases.loginAccount.LoginAccount;
+import br.org.gam.api.account.application.useCases.loginAccount.LoginAccountDTO;
+import br.org.gam.api.account.application.useCases.loginAccount.LoginAccountRDTO;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccount;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountDTO;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountRDTO;
 import br.org.gam.api.security.application.TokensDTO;
 import br.org.gam.api.security.refreshtoken.application.RefreshTokenService;
 import jakarta.servlet.http.Cookie;

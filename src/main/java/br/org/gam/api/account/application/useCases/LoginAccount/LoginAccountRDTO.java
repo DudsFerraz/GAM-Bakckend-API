@@ -1,4 +1,4 @@
-package br.org.gam.api.account.application.useCases.LoginAccount;
+package br.org.gam.api.account.application.useCases.loginAccount;
 
 import java.util.UUID;
 

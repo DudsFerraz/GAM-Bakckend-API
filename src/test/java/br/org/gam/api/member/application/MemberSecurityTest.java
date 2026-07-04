@@ -7,7 +7,7 @@ import br.org.gam.api.member.application.MemberEntityLoader;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
-import br.org.gam.api.rbac.Permission.domain.PermissionEnum;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.security.application.AccountDetails;
 import br.org.gam.api.security.SecurityUtils;
 import br.org.gam.api.testing.annotation.StructuralTest;
@@ -67,7 +67,7 @@ class MemberSecurityTest {
             MemberSecurity memberSecurity = new MemberSecurity(getMemberInstance, securityUtils);
             MemberEntity member = member(MemberStatus.PENDENT, UUID.randomUUID());
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of(PermissionEnum.MEMBER_GET_NON_ACTIVE.name()));
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of(PermissionEnum.MEMBER_GET_NON_ACTIVE.getCode()));
 
             assertThat(memberSecurity.canGetMember(member)).isTrue();
         }
@@ -97,7 +97,7 @@ class MemberSecurityTest {
         void presenceSearchAuthorityShouldBeVisible() {
             MemberSecurity memberSecurity = new MemberSecurity(getMemberInstance, securityUtils);
             UUID loggedAccountId = UUID.randomUUID();
-            AccountDetails accountDetails = accountDetails(loggedAccountId, List.of(new SimpleGrantedAuthority(PermissionEnum.PRESENCES_SEARCH.name())));
+            AccountDetails accountDetails = accountDetails(loggedAccountId, List.of(new SimpleGrantedAuthority(PermissionEnum.PRESENCES_SEARCH.getCode())));
             SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(accountDetails, "password", accountDetails.getAuthorities()));
 
             assertThat(memberSecurity.canGetMemberPresences(UUID.randomUUID())).isTrue();

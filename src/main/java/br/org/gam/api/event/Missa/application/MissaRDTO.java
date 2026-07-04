@@ -1,7 +1,7 @@
-package br.org.gam.api.event.Missa.application;
+package br.org.gam.api.event.missa.application;
 
 import br.org.gam.api.event.application.EventRDTO;
-import br.org.gam.api.event.Missa.domain.Missa;
+import br.org.gam.api.event.missa.domain.Missa;
 import br.org.gam.api.member.application.MemberRDTO;
 import java.util.Set;
 import java.util.UUID;

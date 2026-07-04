@@ -1,6 +1,6 @@
-package br.org.gam.api.rbac.Role.application;
+package br.org.gam.api.rbac.role.application;
 
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

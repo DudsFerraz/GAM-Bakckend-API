@@ -1,11 +1,12 @@
-package br.org.gam.api.rbac.AccountRole.application.useCases;
+package br.org.gam.api.rbac.accountRole.application.useCases;
 
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleDTO;
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleEntityLoader;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.Role.application.RoleEntityLoader;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleDTO;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleEntityLoader;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
+import br.org.gam.api.rbac.application.RbacSafetyPolicy;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import br.org.gam.api.shared.exception.InvalidCommandException;
 import br.org.gam.api.shared.exception.NotFoundException;
@@ -43,6 +44,9 @@ class DropAccountRoleTest {
     @Mock
     private ActivityEvents activityEvents;
 
+    @Mock
+    private RbacSafetyPolicy rbacSafetyPolicy;
+
     @InjectMocks
     private DropAccountRole dropAccountRole;
 
@@ -66,6 +70,7 @@ class DropAccountRoleTest {
             dropAccountRole.byDTO(dto);
 
             verify(accountRoleRepo).delete(entity);
+            verify(rbacSafetyPolicy).assertCanRemoveRoleThroughAdmin(entity);
             verify(activityEvents).accountRoleRemoved(
                     entity.getId(), dto.accountId(), dto.roleId(), "ADMIN", "Remove admin access");
         }
@@ -79,7 +84,7 @@ class DropAccountRoleTest {
                     .isInstanceOf(InvalidCommandException.class)
                     .hasMessage("Account role changes require an audit reason.");
 
-            verifyNoInteractions(getAccountRoleInstance, activityEvents);
+            verifyNoInteractions(getAccountRoleInstance, activityEvents, rbacSafetyPolicy);
             verify(accountRoleRepo, never()).delete(org.mockito.ArgumentMatchers.any());
         }
 

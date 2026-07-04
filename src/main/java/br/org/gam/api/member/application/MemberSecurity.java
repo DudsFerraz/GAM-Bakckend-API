@@ -3,7 +3,7 @@ package br.org.gam.api.member.application;
 import br.org.gam.api.member.application.MemberEntityLoader;
 import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
-import br.org.gam.api.rbac.Permission.domain.PermissionEnum;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.security.application.AccountDetails;
 import br.org.gam.api.security.SecurityUtils;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class MemberSecurity {
             return false;
         }
 
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissionEnum.PRESENCES_SEARCH.name()))) return true;
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissionEnum.PRESENCES_SEARCH.getCode()))) return true;
 
         AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
         UUID loggedAccountId = accountDetails.getId();
@@ -44,6 +44,6 @@ public class MemberSecurity {
 
         Set<String> userAuthorities = securityUtils.getLoggedUserAuthorities();
 
-        return userAuthorities.contains(PermissionEnum.MEMBER_GET_NON_ACTIVE.name());
+        return userAuthorities.contains(PermissionEnum.MEMBER_GET_NON_ACTIVE.getCode());
     }
 }

@@ -1,11 +1,11 @@
-package br.org.gam.api.rbac.Role.application.useCases.GetRolePermissions;
+package br.org.gam.api.rbac.role.application.useCases.getrolePermissions;
 
-import br.org.gam.api.rbac.Permission.application.PermissionMapper;
-import br.org.gam.api.rbac.Permission.application.PermissionRDTO;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionRepository;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionSpecifications;
+import br.org.gam.api.rbac.permission.application.PermissionMapper;
+import br.org.gam.api.rbac.permission.application.PermissionRDTO;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionRepository;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionSpecifications;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;

@@ -1,13 +1,13 @@
-package br.org.gam.api.event.Missa.application.useCases.CreateMissa;
+package br.org.gam.api.event.missa.application.useCases.createMissa;
 
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEvent;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEventRDTO;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEvent;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEventRDTO;
 import br.org.gam.api.event.application.EventDomainLoader;
 import br.org.gam.api.event.domain.Event;
-import br.org.gam.api.event.Missa.application.MissaMapper;
-import br.org.gam.api.event.Missa.domain.Missa;
-import br.org.gam.api.event.Missa.persistence.MissaEntity;
-import br.org.gam.api.event.Missa.persistence.MissaRepository;
+import br.org.gam.api.event.missa.application.MissaMapper;
+import br.org.gam.api.event.missa.domain.Missa;
+import br.org.gam.api.event.missa.persistence.MissaEntity;
+import br.org.gam.api.event.missa.persistence.MissaRepository;
 import br.org.gam.api.member.application.MemberDomainLoader;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.shared.activitylog.ActivityEvents;

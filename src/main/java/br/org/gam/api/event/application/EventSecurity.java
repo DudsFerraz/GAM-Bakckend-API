@@ -17,6 +17,6 @@ public class EventSecurity {
 
         Set<String> userAuthorities = securityUtils.getLoggedUserAuthorities();
 
-        return userAuthorities.contains(eventEntity.getRequiredPermission().getName());
+        return userAuthorities.contains(eventEntity.getRequiredPermission().getCode());
     }
 }

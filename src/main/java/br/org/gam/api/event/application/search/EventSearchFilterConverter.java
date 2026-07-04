@@ -54,9 +54,9 @@ public class EventSearchFilterConverter implements SearchFilterConverter<EventEn
                     Set.of(ComparationMethods.EQUALS),
                     Map.of(ComparationMethods.EQUALS, SearchValueParsers::uuid)
             )),
-            Map.entry("requiredPermissionName", SearchFilterDefinition.path(
-                    "requiredPermissionName",
-                    "requiredPermission.name",
+            Map.entry("requiredPermissionCode", SearchFilterDefinition.path(
+                    "requiredPermissionCode",
+                    "requiredPermission.code",
                     Set.of(ComparationMethods.EQUALS, ComparationMethods.IN),
                     Map.of(
                             ComparationMethods.EQUALS, SearchValueParsers::text,

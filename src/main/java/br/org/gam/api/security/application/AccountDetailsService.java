@@ -3,10 +3,9 @@ package br.org.gam.api.security.application;
 import br.org.gam.api.account.domain.MyEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -47,17 +46,15 @@ public class AccountDetailsService implements UserDetailsService {
         if (accountEntity.getAccountRoles() != null) {
             for (AccountRoleEntity accountRole : accountEntity.getAccountRoles()) {
 
-                RoleEntity role = accountRole.getRole();
+                var role = accountRole.getRole();
                 if (role == null) continue;
-
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()));
 
                 if (role.getRolePermissions() != null) {
                     for (RolePermissionEntity rolePermission : role.getRolePermissions()) {
                         PermissionEntity permission = rolePermission.getPermission();
 
                         if (permission != null) {
-                            authorities.add(new SimpleGrantedAuthority(permission.getName().toUpperCase()));
+                            authorities.add(new SimpleGrantedAuthority(permission.getCode()));
                         }
                     }
                 }

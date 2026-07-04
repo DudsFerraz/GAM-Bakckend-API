@@ -1,0 +1,148 @@
+package br.org.gam.api.rbac.application;
+
+import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.account.persistence.AccountEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.role.domain.SystemRole;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.shared.exception.ForbiddenOperationException;
+import br.org.gam.api.testing.annotation.FunctionalTest;
+import br.org.gam.api.testing.annotation.UnitTest;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
+
+@UnitTest
+@ExtendWith(MockitoExtension.class)
+@DisplayName("RBAC Safety Policy")
+class RbacSafetyPolicyTest {
+
+    @Mock
+    private AccountRoleRepository accountRoleRepo;
+
+    @Nested
+    @FunctionalTest
+    @DisplayName("Functional")
+    class Functional {
+
+        @Test
+        @DisplayName("EP - admin assigns SUDO -> forbidden")
+        void adminAssignsSudoShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+
+            assertThatThrownBy(() -> policy.assertCanAssignRoleThroughAdmin(role(SystemRole.SUDO.getCode(), true)))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("SUDO role assignment is developer-controlled.");
+        }
+
+        @Test
+        @DisplayName("EP - admin removes SUDO -> forbidden")
+        void adminRemovesSudoShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            AccountRoleEntity sudoAccountRole = accountRole(SystemRole.SUDO.getCode(), UUID.randomUUID());
+
+            assertThatThrownBy(() -> policy.assertCanRemoveRoleThroughAdmin(sudoAccountRole))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("SUDO role removal is developer-controlled.");
+        }
+
+        @Test
+        @DisplayName("EP - internal removal of last active SUDO -> forbidden")
+        void internalRemovalOfLastActiveSudoShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            UUID accountId = UUID.randomUUID();
+            AccountRoleEntity sudoAccountRole = accountRole(SystemRole.SUDO.getCode(), accountId);
+            when(accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.SUDO.getCode()))
+                    .thenReturn(List.of(sudoAccountRole));
+
+            assertThatThrownBy(() -> policy.assertCanRemoveSudoThroughInternalService(sudoAccountRole))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("Cannot remove the last active SUDO account.");
+        }
+
+        @Test
+        @DisplayName("EP - internal removal with another active SUDO -> allowed")
+        void internalRemovalWithAnotherActiveSudoShouldBeAllowed() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            AccountRoleEntity target = accountRole(SystemRole.SUDO.getCode(), UUID.randomUUID());
+            AccountRoleEntity other = accountRole(SystemRole.SUDO.getCode(), UUID.randomUUID());
+            when(accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.SUDO.getCode()))
+                    .thenReturn(List.of(target, other));
+
+            assertThatCode(() -> policy.assertCanRemoveSudoThroughInternalService(target))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("EP - system-managed role edit -> forbidden")
+        void systemManagedRoleEditShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+
+            assertThatThrownBy(() -> policy.assertRoleCanBeManaged(role(SystemRole.MEMBER.getCode(), true)))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("System-managed roles cannot be edited, deleted, or disabled.");
+        }
+
+        @Test
+        @DisplayName("EP - system-managed permission edit -> forbidden")
+        void systemManagedPermissionEditShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            PermissionEntity permission = new PermissionEntity();
+            permission.setSystemManaged(true);
+
+            assertThatThrownBy(() -> policy.assertPermissionCanBeManaged(permission))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("System-managed permissions cannot be edited, deleted, or disabled.");
+        }
+
+        @Test
+        @DisplayName("EP - system role-permission edit -> forbidden")
+        void systemRolePermissionEditShouldBeForbidden() {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            RolePermissionEntity rolePermission = new RolePermissionEntity();
+            rolePermission.setRole(role(SystemRole.MEMBER.getCode(), true));
+
+            assertThatThrownBy(() -> policy.assertRolePermissionCanBeManaged(rolePermission))
+                    .isInstanceOf(ForbiddenOperationException.class)
+                    .hasMessage("System-managed role-permission links cannot be edited.");
+        }
+    }
+
+    private static AccountRoleEntity accountRole(String roleName, UUID accountId) {
+        AccountRoleEntity accountRole = new AccountRoleEntity();
+        accountRole.setId(UUID.randomUUID());
+        accountRole.setRole(role(roleName, true));
+        accountRole.setAccount(account(accountId));
+        return accountRole;
+    }
+
+    private static RoleEntity role(String name, boolean systemManaged) {
+        RoleEntity role = new RoleEntity();
+        role.setId(UUID.randomUUID());
+        role.setName(name);
+        role.setDescription(name + " role");
+        role.setSystemManaged(systemManaged);
+        return role;
+    }
+
+    private static AccountEntity account(UUID accountId) {
+        AccountEntity account = new AccountEntity();
+        account.setId(accountId);
+        account.setEmail(MyEmail.of(accountId + "@example.com"));
+        account.setPasswordHash("encoded-password");
+        account.setDisplayName("Account");
+        return account;
+    }
+}

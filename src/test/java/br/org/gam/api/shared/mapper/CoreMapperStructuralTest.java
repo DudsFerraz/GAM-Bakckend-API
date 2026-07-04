@@ -3,12 +3,12 @@ package br.org.gam.api.shared.mapper;
 import br.org.gam.api.location.application.LocationMapper;
 import br.org.gam.api.location.application.LocationRDTO;
 import br.org.gam.api.location.persistence.LocationEntity;
-import br.org.gam.api.rbac.Permission.application.PermissionMapper;
-import br.org.gam.api.rbac.Permission.application.PermissionRDTO;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.Role.application.RoleMapper;
-import br.org.gam.api.rbac.Role.application.RoleRDTO;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.permission.application.PermissionMapper;
+import br.org.gam.api.rbac.permission.application.PermissionRDTO;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.role.application.RoleMapper;
+import br.org.gam.api.rbac.role.application.RoleRDTO;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import br.org.gam.api.testing.annotation.StructuralTest;
 import br.org.gam.api.testing.annotation.UnitTest;
 import java.util.UUID;
@@ -35,12 +35,18 @@ class CoreMapperStructuralTest {
         @Test
         @DisplayName("permission entity -> response DTO")
         void permissionEntityShouldMapToResponseDto() {
-            PermissionEntity entity = permissionEntity(UUID.randomUUID(), "MEMBER_GET", "View active members");
+            PermissionEntity entity = permissionEntity(
+                    UUID.randomUUID(),
+                    "MEMBER_GET",
+                    "View members",
+                    "View active members"
+            );
 
             PermissionRDTO dto = permissionMapper.entityToRDTO(entity);
 
             assertThat(dto.id()).isEqualTo(entity.getId());
-            assertThat(dto.name()).isEqualTo("MEMBER_GET");
+            assertThat(dto.code()).isEqualTo("MEMBER_GET");
+            assertThat(dto.label()).isEqualTo("View members");
             assertThat(dto.description()).isEqualTo("View active members");
         }
 
@@ -84,10 +90,11 @@ class CoreMapperStructuralTest {
         }
     }
 
-    private static PermissionEntity permissionEntity(UUID id, String name, String description) {
+    private static PermissionEntity permissionEntity(UUID id, String code, String label, String description) {
         PermissionEntity entity = new PermissionEntity();
         entity.setId(id);
-        entity.setName(name);
+        entity.setCode(code);
+        entity.setLabel(label);
         entity.setDescription(description);
         return entity;
     }

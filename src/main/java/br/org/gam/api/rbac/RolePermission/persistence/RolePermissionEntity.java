@@ -1,7 +1,7 @@
-package br.org.gam.api.rbac.RolePermission.persistence;
+package br.org.gam.api.rbac.rolePermission.persistence;
 
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import br.org.gam.api.shared.auditing.JunctionAuditableEntity;
 import jakarta.persistence.*;
 import java.util.UUID;

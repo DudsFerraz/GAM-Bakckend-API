@@ -1,11 +1,11 @@
-package br.org.gam.api.rbac.AccountRole.application.useCases;
+package br.org.gam.api.rbac.accountRole.application.useCases;
 
-import br.org.gam.api.rbac.AccountRole.application.AccountRolesRDTO;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.Role.application.RoleMapper;
-import br.org.gam.api.rbac.Role.application.RoleRDTO;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.role.application.RoleMapper;
+import br.org.gam.api.rbac.role.application.RoleRDTO;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

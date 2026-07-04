@@ -2,7 +2,7 @@ package br.org.gam.api.event.application;
 
 import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.persistence.EventEntity;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.security.SecurityUtils;
 import br.org.gam.api.testing.annotation.StructuralTest;
 import br.org.gam.api.testing.annotation.UnitTest;
@@ -64,9 +64,9 @@ class EventSecurityTest {
         }
     }
 
-    private static EventEntity eventWithRequiredPermission(String permissionName) {
+    private static EventEntity eventWithRequiredPermission(String permissionCode) {
         PermissionEntity permission = new PermissionEntity();
-        permission.setName(permissionName);
+        permission.setCode(permissionCode);
         EventEntity event = new EventEntity();
         event.setRequiredPermission(permission);
         return event;

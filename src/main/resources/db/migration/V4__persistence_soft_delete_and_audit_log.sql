@@ -16,7 +16,7 @@ WHERE name IN ('SUDO', 'COORD', 'MEMBER', 'VISITOR');
 
 UPDATE permissions
 SET system_managed = TRUE
-WHERE name IN (
+WHERE code IN (
     'MEMBER_GET',
     'MEMBER_SEARCH',
     'MEMBER_ACTIVATION',
@@ -29,14 +29,7 @@ WHERE name IN (
     'EVENT_GET_PRESENCES',
     'EVENT_GET_S',
     'EVENT_MANAGE',
-    'PRESENCES_SEARCH',
-    'event:create',
-    'event:update',
-    'event:delete',
-    'event:view',
-    'event:subscribe',
-    'member:manage_status',
-    'location:manage'
+    'PRESENCES_SEARCH'
 );
 
 ALTER TABLE oratorios

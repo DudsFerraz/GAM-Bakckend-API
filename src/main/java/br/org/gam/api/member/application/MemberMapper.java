@@ -1,7 +1,7 @@
 package br.org.gam.api.member.application;
 
 import br.org.gam.api.account.application.AccountMapper;
-import br.org.gam.api.member.application.useCases.RegisterMember.RegisterMemberRDTO;
+import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberRDTO;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.shared.auditing.IgnoreFullAuditFields;

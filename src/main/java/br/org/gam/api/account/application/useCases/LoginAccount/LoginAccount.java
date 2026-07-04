@@ -1,4 +1,4 @@
-package br.org.gam.api.account.application.useCases.LoginAccount;
+package br.org.gam.api.account.application.useCases.loginAccount;
 
 import br.org.gam.api.security.application.TokensDTO;
 import br.org.gam.api.security.jwt.JwtService;

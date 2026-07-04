@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.Role.persistence;
+package br.org.gam.api.rbac.role.persistence;
 
 import br.org.gam.api.shared.persistence.BaseRepository;
 import java.util.Optional;

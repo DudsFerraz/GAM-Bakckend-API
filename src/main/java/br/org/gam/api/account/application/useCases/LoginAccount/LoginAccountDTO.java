@@ -1,4 +1,4 @@
-package br.org.gam.api.account.application.useCases.LoginAccount;
+package br.org.gam.api.account.application.useCases.loginAccount;
 
 import br.org.gam.api.account.domain.MyEmail;
 import jakarta.validation.constraints.NotBlank;

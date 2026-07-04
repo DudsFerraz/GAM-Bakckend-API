@@ -1,7 +1,7 @@
-package br.org.gam.api.event.Oratorio.application;
+package br.org.gam.api.event.oratorio.application;
 
 import br.org.gam.api.event.application.EventRDTO;
-import br.org.gam.api.event.Oratorio.domain.Oratorio;
+import br.org.gam.api.event.oratorio.domain.Oratorio;
 import br.org.gam.api.member.application.MemberRDTO;
 import br.org.gam.api.oratoriano.application.OratorianoRDTO;
 import java.util.Set;

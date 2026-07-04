@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.AccountRole.application;
+package br.org.gam.api.rbac.accountRole.application;
 
 import java.util.UUID;
 

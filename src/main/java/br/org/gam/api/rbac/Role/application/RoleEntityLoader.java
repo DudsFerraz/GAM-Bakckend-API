@@ -1,7 +1,7 @@
-package br.org.gam.api.rbac.Role.application;
+package br.org.gam.api.rbac.role.application;
 
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
-import br.org.gam.api.rbac.Role.persistence.RoleRepository;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
+import br.org.gam.api.rbac.role.persistence.RoleRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

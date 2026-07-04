@@ -1,4 +1,4 @@
-package br.org.gam.api.location.application.useCases.CreateLocation;
+package br.org.gam.api.location.application.useCases.createLocation;
 
 import java.util.UUID;
 

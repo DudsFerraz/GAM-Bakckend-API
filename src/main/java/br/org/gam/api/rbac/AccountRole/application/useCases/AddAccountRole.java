@@ -1,14 +1,15 @@
-package br.org.gam.api.rbac.AccountRole.application.useCases;
+package br.org.gam.api.rbac.accountRole.application.useCases;
 
 import br.org.gam.api.account.application.AccountEntityLoader;
 import br.org.gam.api.account.persistence.AccountEntity;
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleDTO;
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleMapper;
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleRDTO;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.Role.application.RoleEntityLoader;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleDTO;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleMapper;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleRDTO;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
+import br.org.gam.api.rbac.application.RbacSafetyPolicy;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import br.org.gam.api.shared.exception.ConflictException;
 import br.org.gam.api.shared.exception.InvalidCommandException;
@@ -24,15 +25,17 @@ public class AddAccountRole {
     private final RoleEntityLoader getRoleInstance;
     private final AccountRoleMapper accountRoleMapper;
     private final ActivityEvents activityEvents;
+    private final RbacSafetyPolicy rbacSafetyPolicy;
 
     public AddAccountRole(AccountRoleRepository accountRoleRepo, AccountEntityLoader getAccountInstance,
                           RoleEntityLoader getRoleInstance, AccountRoleMapper accountRoleMapper,
-                          ActivityEvents activityEvents) {
+                          ActivityEvents activityEvents, RbacSafetyPolicy rbacSafetyPolicy) {
         this.accountRoleRepo = accountRoleRepo;
         this.getAccountInstance = getAccountInstance;
         this.getRoleInstance = getRoleInstance;
         this.accountRoleMapper = accountRoleMapper;
         this.activityEvents = activityEvents;
+        this.rbacSafetyPolicy = rbacSafetyPolicy;
     }
 
     @Transactional
@@ -46,6 +49,7 @@ public class AddAccountRole {
 
         AccountEntity account = getAccountInstance.requiredById(dto.accountId());
         RoleEntity role = getRoleInstance.requiredById(dto.roleId());
+        rbacSafetyPolicy.assertCanAssignRoleThroughAdmin(role);
 
         if (accountRoleRepo.existsByAccount_IdAndRole_Id(account.getId(), role.getId())) {
             throw ConflictException.resource(

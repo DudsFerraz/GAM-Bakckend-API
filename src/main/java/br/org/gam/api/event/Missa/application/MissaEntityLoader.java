@@ -1,7 +1,7 @@
-package br.org.gam.api.event.Missa.application;
+package br.org.gam.api.event.missa.application;
 
-import br.org.gam.api.event.Missa.persistence.MissaEntity;
-import br.org.gam.api.event.Missa.persistence.MissaRepository;
+import br.org.gam.api.event.missa.persistence.MissaEntity;
+import br.org.gam.api.event.missa.persistence.MissaRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
-package br.org.gam.api.event.Oratorio.application;
+package br.org.gam.api.event.oratorio.application;
 
-import br.org.gam.api.event.Oratorio.persistence.OratorioEntity;
-import br.org.gam.api.event.Oratorio.persistence.OratorioRepository;
+import br.org.gam.api.event.oratorio.persistence.OratorioEntity;
+import br.org.gam.api.event.oratorio.persistence.OratorioRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

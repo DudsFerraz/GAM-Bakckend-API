@@ -1,9 +1,9 @@
-package br.org.gam.api.rbac.Permission.application.useCases;
+package br.org.gam.api.rbac.permission.application.useCases;
 
-import br.org.gam.api.rbac.Permission.application.PermissionMapper;
-import br.org.gam.api.rbac.Permission.application.PermissionRDTO;
-import br.org.gam.api.rbac.Permission.application.PermissionEntityLoader;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.application.PermissionMapper;
+import br.org.gam.api.rbac.permission.application.PermissionRDTO;
+import br.org.gam.api.rbac.permission.application.PermissionEntityLoader;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.shared.exception.NotFoundException;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.UnitTest;
@@ -46,7 +46,12 @@ class GetPermissionTest {
         void existingPermissionIdShouldReturnPermissionResponse() {
             UUID id = UUID.randomUUID();
             PermissionEntity entity = new PermissionEntity();
-            PermissionRDTO expectedResponse = new PermissionRDTO(id, "MEMBER_GET", "View active members");
+            PermissionRDTO expectedResponse = new PermissionRDTO(
+                    id,
+                    "MEMBER_GET",
+                    "View members",
+                    "View active members"
+            );
 
             when(getPermissionInstance.requiredById(id)).thenReturn(entity);
             when(permissionMapper.entityToRDTO(entity)).thenReturn(expectedResponse);

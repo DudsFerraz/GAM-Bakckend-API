@@ -1,4 +1,4 @@
-package br.org.gam.api.presence.application.useCases.RegisterPresence;
+package br.org.gam.api.presence.application.useCases.registerPresence;
 
 import br.org.gam.api.event.application.EventEntityLoader;
 import br.org.gam.api.event.persistence.EventEntity;

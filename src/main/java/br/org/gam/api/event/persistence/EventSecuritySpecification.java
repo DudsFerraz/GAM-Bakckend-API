@@ -13,7 +13,7 @@ public class EventSecuritySpecification {
             }
 
             var permissionJoin = root.join("requiredPermission", JoinType.LEFT);
-            var hasAuthority = permissionJoin.get("name").in(userAuthorities);
+            var hasAuthority = permissionJoin.get("code").in(userAuthorities);
 
             return cb.or(isPublic, hasAuthority);
         };

@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.Permission.persistence;
+package br.org.gam.api.rbac.permission.persistence;
 
 import br.org.gam.api.shared.auditing.FullAuditableEntity;
 import jakarta.persistence.*;
@@ -20,8 +20,11 @@ public class PermissionEntity extends FullAuditableEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "code", nullable = false)
+    private String code;
+
+    @Column(name = "label", nullable = false)
+    private String label;
 
     @Column(name = "description", nullable = false)
     private String description;

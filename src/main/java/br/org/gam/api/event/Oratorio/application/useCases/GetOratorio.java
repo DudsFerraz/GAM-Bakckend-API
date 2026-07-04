@@ -1,11 +1,11 @@
-package br.org.gam.api.event.Oratorio.application.useCases;
+package br.org.gam.api.event.oratorio.application.useCases;
 
 import br.org.gam.api.event.application.EventSecurity;
 import br.org.gam.api.event.application.EventEntityLoader;
-import br.org.gam.api.event.Oratorio.application.OratorioMapper;
-import br.org.gam.api.event.Oratorio.application.OratorioRDTO;
-import br.org.gam.api.event.Oratorio.application.OratorioEntityLoader;
-import br.org.gam.api.event.Oratorio.persistence.OratorioEntity;
+import br.org.gam.api.event.oratorio.application.OratorioMapper;
+import br.org.gam.api.event.oratorio.application.OratorioRDTO;
+import br.org.gam.api.event.oratorio.application.OratorioEntityLoader;
+import br.org.gam.api.event.oratorio.persistence.OratorioEntity;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.RolePermission.persistence;
+package br.org.gam.api.rbac.rolePermission.persistence;
 
 import jakarta.persistence.criteria.JoinType;
 import java.util.UUID;

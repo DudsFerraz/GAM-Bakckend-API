@@ -1,9 +1,9 @@
-package br.org.gam.api.event.Oratorio.application;
+package br.org.gam.api.event.oratorio.application;
 
 import br.org.gam.api.event.application.EventMapper;
-import br.org.gam.api.event.Oratorio.application.useCases.CreateOratorio.CreateOratorioRDTO;
-import br.org.gam.api.event.Oratorio.domain.Oratorio;
-import br.org.gam.api.event.Oratorio.persistence.OratorioEntity;
+import br.org.gam.api.event.oratorio.application.useCases.createOratorio.CreateOratorioRDTO;
+import br.org.gam.api.event.oratorio.domain.Oratorio;
+import br.org.gam.api.event.oratorio.persistence.OratorioEntity;
 import br.org.gam.api.member.application.MemberMapper;
 import br.org.gam.api.oratoriano.application.OratorianoMapper;
 import org.mapstruct.Mapper;

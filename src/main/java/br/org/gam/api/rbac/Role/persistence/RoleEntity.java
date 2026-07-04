@@ -1,7 +1,7 @@
-package br.org.gam.api.rbac.Role.persistence;
+package br.org.gam.api.rbac.role.persistence;
 
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
 import br.org.gam.api.shared.auditing.FullAuditableEntity;
 import jakarta.persistence.*;
 import java.util.HashSet;

@@ -1,9 +1,9 @@
 package br.org.gam.api.location.web;
 
 import br.org.gam.api.location.application.LocationRDTO;
-import br.org.gam.api.location.application.useCases.CreateLocation.CreateLocation;
-import br.org.gam.api.location.application.useCases.CreateLocation.CreateLocationDTO;
-import br.org.gam.api.location.application.useCases.CreateLocation.CreateLocationRDTO;
+import br.org.gam.api.location.application.useCases.createLocation.CreateLocation;
+import br.org.gam.api.location.application.useCases.createLocation.CreateLocationDTO;
+import br.org.gam.api.location.application.useCases.createLocation.CreateLocationRDTO;
 import br.org.gam.api.location.application.useCases.GetLocation;
 import jakarta.validation.Valid;
 import java.net.URI;

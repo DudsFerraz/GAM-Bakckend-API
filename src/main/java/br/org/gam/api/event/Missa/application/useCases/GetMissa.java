@@ -1,11 +1,11 @@
-package br.org.gam.api.event.Missa.application.useCases;
+package br.org.gam.api.event.missa.application.useCases;
 
 import br.org.gam.api.event.application.EventSecurity;
 import br.org.gam.api.event.application.EventEntityLoader;
-import br.org.gam.api.event.Missa.application.MissaMapper;
-import br.org.gam.api.event.Missa.application.MissaRDTO;
-import br.org.gam.api.event.Missa.application.MissaEntityLoader;
-import br.org.gam.api.event.Missa.persistence.MissaEntity;
+import br.org.gam.api.event.missa.application.MissaMapper;
+import br.org.gam.api.event.missa.application.MissaRDTO;
+import br.org.gam.api.event.missa.application.MissaEntityLoader;
+import br.org.gam.api.event.missa.persistence.MissaEntity;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;

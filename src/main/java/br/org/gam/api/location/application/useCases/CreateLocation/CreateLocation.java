@@ -1,4 +1,4 @@
-package br.org.gam.api.location.application.useCases.CreateLocation;
+package br.org.gam.api.location.application.useCases.createLocation;
 
 import br.org.gam.api.location.application.LocationMapper;
 import br.org.gam.api.location.persistence.LocationEntity;

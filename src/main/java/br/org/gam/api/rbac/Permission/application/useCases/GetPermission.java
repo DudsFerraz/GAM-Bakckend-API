@@ -1,9 +1,9 @@
-package br.org.gam.api.rbac.Permission.application.useCases;
+package br.org.gam.api.rbac.permission.application.useCases;
 
-import br.org.gam.api.rbac.Permission.application.PermissionMapper;
-import br.org.gam.api.rbac.Permission.application.PermissionRDTO;
-import br.org.gam.api.rbac.Permission.application.PermissionEntityLoader;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.application.PermissionMapper;
+import br.org.gam.api.rbac.permission.application.PermissionRDTO;
+import br.org.gam.api.rbac.permission.application.PermissionEntityLoader;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 

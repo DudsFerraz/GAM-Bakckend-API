@@ -1,14 +1,15 @@
-package br.org.gam.api.rbac.Permission.application;
+package br.org.gam.api.rbac.permission.application;
 
 import java.util.UUID;
 
 public record PermissionRDTO(
         UUID id,
-        String name,
+        String code,
+        String label,
         String description,
         boolean systemManaged
 ) {
-    public PermissionRDTO(UUID id, String name, String description) {
-        this(id, name, description, false);
+    public PermissionRDTO(UUID id, String code, String label, String description) {
+        this(id, code, label, description, false);
     }
 }

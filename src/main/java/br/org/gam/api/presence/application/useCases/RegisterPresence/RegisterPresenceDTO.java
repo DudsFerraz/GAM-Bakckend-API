@@ -1,4 +1,4 @@
-package br.org.gam.api.presence.application.useCases.RegisterPresence;
+package br.org.gam.api.presence.application.useCases.registerPresence;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;

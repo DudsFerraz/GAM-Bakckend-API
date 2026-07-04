@@ -1,7 +1,7 @@
-package br.org.gam.api.rbac.AccountRole.application;
+package br.org.gam.api.rbac.accountRole.application;
 
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 

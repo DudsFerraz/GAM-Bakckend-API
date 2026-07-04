@@ -29,6 +29,7 @@ CREATE TABLE roles(
     id UUID PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
+    system_managed BOOLEAN NOT NULL DEFAULT FALSE,
 
     created_at TIMESTAMPTZ NOT NULL,
     created_by UUID,
@@ -48,8 +49,10 @@ CREATE UNIQUE INDEX idx_roles_name_not_deleted
 
 CREATE TABLE permissions(
     id UUID PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    code VARCHAR(100) NOT NULL,
+    label VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
+    system_managed BOOLEAN NOT NULL DEFAULT FALSE,
 
     created_at TIMESTAMPTZ NOT NULL,
     created_by UUID,
@@ -62,8 +65,8 @@ CREATE TABLE permissions(
     CONSTRAINT fk_permissions_updated_by FOREIGN KEY(updated_by) REFERENCES accounts(id),
     CONSTRAINT fk_permissions_deleted_by FOREIGN KEY(deleted_by) REFERENCES accounts(id)
 );
-CREATE UNIQUE INDEX idx_permissions_name_not_deleted
-    ON permissions (name)
+CREATE UNIQUE INDEX idx_permissions_code_not_deleted
+    ON permissions (code)
     WHERE (deleted_at IS NULL);
 
 

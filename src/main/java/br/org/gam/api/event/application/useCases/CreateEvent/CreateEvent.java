@@ -1,4 +1,4 @@
-package br.org.gam.api.event.application.useCases.CreateEvent;
+package br.org.gam.api.event.application.useCases.createEvent;
 
 import br.org.gam.api.event.application.EventMapper;
 import br.org.gam.api.event.domain.Event;
@@ -6,8 +6,8 @@ import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.event.persistence.EventRepository;
 import br.org.gam.api.location.application.LocationEntityLoader;
 import br.org.gam.api.location.persistence.LocationEntity;
-import br.org.gam.api.rbac.Permission.application.PermissionEntityLoader;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.application.PermissionEntityLoader;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

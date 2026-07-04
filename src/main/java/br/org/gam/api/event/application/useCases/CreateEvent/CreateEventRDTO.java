@@ -1,4 +1,4 @@
-package br.org.gam.api.event.application.useCases.CreateEvent;
+package br.org.gam.api.event.application.useCases.createEvent;
 
 import java.util.UUID;
 

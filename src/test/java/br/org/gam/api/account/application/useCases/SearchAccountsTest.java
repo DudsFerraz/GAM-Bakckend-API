@@ -6,7 +6,7 @@ import br.org.gam.api.account.application.search.AccountSearchFilterConverter;
 import br.org.gam.api.account.domain.MyEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
-import br.org.gam.api.rbac.AccountRole.application.AccountRolesRDTO;
+import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
 import br.org.gam.api.shared.specification.SearchDTO;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.UnitTest;

@@ -33,7 +33,7 @@ DO $$
         SELECT id INTO v_role_coord_id FROM roles WHERE name = 'COORD';
         SELECT id INTO v_role_visitor_id FROM roles WHERE name = 'VISITOR';
 
-        SELECT id INTO v_perm_event_get_s_id FROM permissions WHERE name = 'EVENT_GET_S';
+        SELECT id INTO v_perm_event_get_s_id FROM permissions WHERE code = 'EVENT_GET_S';
 
         -- 2. CRIAÇÃO DE ACCOUNTS
         SELECT id INTO v_acc_giulia_id FROM accounts WHERE email = 'giulia@gmail.com';

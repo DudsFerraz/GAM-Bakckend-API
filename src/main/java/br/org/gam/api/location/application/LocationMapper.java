@@ -1,6 +1,6 @@
 package br.org.gam.api.location.application;
 
-import br.org.gam.api.location.application.useCases.CreateLocation.CreateLocationRDTO;
+import br.org.gam.api.location.application.useCases.createLocation.CreateLocationRDTO;
 import br.org.gam.api.location.persistence.LocationEntity;
 import org.mapstruct.Mapper;
 

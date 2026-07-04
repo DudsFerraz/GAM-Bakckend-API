@@ -1,9 +1,9 @@
-package br.org.gam.api.rbac.Role.application.useCases;
+package br.org.gam.api.rbac.role.application.useCases;
 
-import br.org.gam.api.rbac.Role.application.RoleMapper;
-import br.org.gam.api.rbac.Role.application.RoleRDTO;
-import br.org.gam.api.rbac.Role.application.RoleEntityLoader;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
+import br.org.gam.api.rbac.role.application.RoleMapper;
+import br.org.gam.api.rbac.role.application.RoleRDTO;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import br.org.gam.api.shared.exception.NotFoundException;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.UnitTest;

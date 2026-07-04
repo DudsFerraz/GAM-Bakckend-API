@@ -19,8 +19,8 @@ import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.member.persistence.MemberRepository;
 import br.org.gam.api.member.persistence.MemberSecuritySpecification;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.Permission.persistence.PermissionRepository;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionRepository;
 import br.org.gam.api.shared.domain.Name;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
 import br.org.gam.api.shared.phonenumber.MyPhoneNumber;
@@ -184,7 +184,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
             List<EventEntity> anonymousResults = inTransaction(() ->
                     eventRepository.findAll(EventSecuritySpecification.canGetEvent(Set.of())));
             List<EventEntity> authorizedResults = inTransaction(() ->
-                    eventRepository.findAll(EventSecuritySpecification.canGetEvent(Set.of(permission.getName()))));
+                    eventRepository.findAll(EventSecuritySpecification.canGetEvent(Set.of(permission.getCode()))));
 
             assertThat(anonymousResults)
                     .extracting(EventEntity::getId)
@@ -260,10 +260,11 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         return member;
     }
 
-    private PermissionEntity permission(String name) {
+    private PermissionEntity permission(String code) {
         PermissionEntity permission = new PermissionEntity();
         permission.setId(UUIDGenerator.generateUUIDV7());
-        permission.setName(name);
+        permission.setCode(code);
+        permission.setLabel("Private event");
         permission.setDescription("Permission for persistence specification test");
         return permission;
     }

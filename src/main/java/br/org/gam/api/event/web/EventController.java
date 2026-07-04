@@ -1,14 +1,14 @@
 package br.org.gam.api.event.web;
 
 import br.org.gam.api.event.application.EventRDTO;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEvent;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEventDTO;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEventRDTO;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEvent;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEventDTO;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEventRDTO;
 import br.org.gam.api.event.application.useCases.GetEvent;
 import br.org.gam.api.event.application.useCases.SearchEvents;
 import br.org.gam.api.presence.application.PresenceRDTO;
 import br.org.gam.api.presence.application.useCases.GetPresence;
-import br.org.gam.api.rbac.Permission.domain.PermissionEnum;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
 import jakarta.validation.Valid;
 import java.net.URI;

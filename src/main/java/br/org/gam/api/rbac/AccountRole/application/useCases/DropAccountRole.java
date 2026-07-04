@@ -1,10 +1,12 @@
-package br.org.gam.api.rbac.AccountRole.application.useCases;
+package br.org.gam.api.rbac.accountRole.application.useCases;
 
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleDTO;
-import br.org.gam.api.rbac.AccountRole.application.AccountRoleEntityLoader;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.Role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleDTO;
+import br.org.gam.api.rbac.accountRole.application.AccountRoleEntityLoader;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.role.domain.SystemRole;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.application.RbacSafetyPolicy;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import br.org.gam.api.shared.exception.InvalidCommandException;
 import jakarta.transaction.Transactional;
@@ -17,13 +19,16 @@ public class DropAccountRole {
     private final AccountRoleRepository accountRoleRepo;
     private final RoleEntityLoader getRoleInstance;
     private final ActivityEvents activityEvents;
+    private final RbacSafetyPolicy rbacSafetyPolicy;
 
     public DropAccountRole(AccountRoleEntityLoader getAccountRoleInstance, AccountRoleRepository accountRoleRepo,
-                           RoleEntityLoader getRoleInstance, ActivityEvents activityEvents) {
+                           RoleEntityLoader getRoleInstance, ActivityEvents activityEvents,
+                           RbacSafetyPolicy rbacSafetyPolicy) {
         this.getAccountRoleInstance = getAccountRoleInstance;
         this.accountRoleRepo = accountRoleRepo;
         this.getRoleInstance = getRoleInstance;
         this.activityEvents = activityEvents;
+        this.rbacSafetyPolicy = rbacSafetyPolicy;
     }
 
     @Transactional
@@ -35,8 +40,13 @@ public class DropAccountRole {
     public void byDTO(AccountRoleDTO dto, boolean audit) {
         String reason = audit ? requiredAuditReason(dto.reason()) : null;
         AccountRoleEntity accountRoleEntity = getAccountRoleInstance.requiredByDTO(dto);
+        rbacSafetyPolicy.assertCanRemoveRoleThroughAdmin(accountRoleEntity);
 
         accountRoleRepo.delete(accountRoleEntity);
+        if (accountRoleEntity.getRole() != null
+                && SystemRole.COORD.getCode().equals(accountRoleEntity.getRole().getName())) {
+            rbacSafetyPolicy.monitorCoordCoverage();
+        }
 
         if (audit) {
             String roleName = accountRoleEntity.getRole() == null ? null : accountRoleEntity.getRole().getName();

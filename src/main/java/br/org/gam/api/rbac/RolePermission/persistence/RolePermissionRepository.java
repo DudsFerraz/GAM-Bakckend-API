@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.RolePermission.persistence;
+package br.org.gam.api.rbac.rolePermission.persistence;
 
 import br.org.gam.api.shared.persistence.BaseRepository;
 import java.util.List;

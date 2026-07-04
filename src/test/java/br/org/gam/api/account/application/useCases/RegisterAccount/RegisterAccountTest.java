@@ -1,4 +1,4 @@
-package br.org.gam.api.account.application.useCases.RegisterAccount;
+package br.org.gam.api.account.application.useCases.registerAccount;
 
 import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.domain.Account;

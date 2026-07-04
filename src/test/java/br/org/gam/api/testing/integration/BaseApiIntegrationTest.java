@@ -5,13 +5,13 @@ import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.event.persistence.EventRepository;
 import br.org.gam.api.location.persistence.LocationRepository;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.Permission.domain.PermissionEnum;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.Permission.persistence.PermissionRepository;
-import br.org.gam.api.rbac.Role.persistence.RoleEntity;
-import br.org.gam.api.rbac.Role.persistence.RoleRepository;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionRepository;
+import br.org.gam.api.rbac.role.persistence.RoleEntity;
+import br.org.gam.api.rbac.role.persistence.RoleRepository;
 import br.org.gam.api.security.refreshtoken.persistence.RefreshTokenRepository;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
 import br.org.gam.api.testing.annotation.ApiTest;
@@ -190,7 +190,7 @@ public abstract class BaseApiIntegrationTest {
 
     protected UUID permissionId(PermissionEnum permissionEnum) {
         return permissionRepository.findAll().stream()
-                .filter(permission -> permission.getName().equals(permissionEnum.name()))
+                .filter(permission -> permission.getCode().equals(permissionEnum.getCode()))
                 .map(PermissionEntity::getId)
                 .findFirst()
                 .orElseThrow();

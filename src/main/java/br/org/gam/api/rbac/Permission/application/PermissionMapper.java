@@ -1,6 +1,6 @@
-package br.org.gam.api.rbac.Permission.application;
+package br.org.gam.api.rbac.permission.application;
 
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

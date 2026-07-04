@@ -1,15 +1,15 @@
-package br.org.gam.api.event.Oratorio.application.useCases.CreateOratorio;
+package br.org.gam.api.event.oratorio.application.useCases.createOratorio;
 
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEvent;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEventDTO;
-import br.org.gam.api.event.application.useCases.CreateEvent.CreateEventRDTO;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEvent;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEventDTO;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEventRDTO;
 import br.org.gam.api.event.application.EventDomainLoader;
 import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.domain.EventType;
-import br.org.gam.api.event.Oratorio.application.OratorioMapper;
-import br.org.gam.api.event.Oratorio.domain.Oratorio;
-import br.org.gam.api.event.Oratorio.persistence.OratorioEntity;
-import br.org.gam.api.event.Oratorio.persistence.OratorioRepository;
+import br.org.gam.api.event.oratorio.application.OratorioMapper;
+import br.org.gam.api.event.oratorio.domain.Oratorio;
+import br.org.gam.api.event.oratorio.persistence.OratorioEntity;
+import br.org.gam.api.event.oratorio.persistence.OratorioRepository;
 import br.org.gam.api.member.application.MemberDomainLoader;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.oratoriano.application.OratorianoDomainLoader;

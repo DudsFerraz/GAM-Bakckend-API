@@ -1,4 +1,4 @@
-package br.org.gam.api.event.Oratorio.domain;
+package br.org.gam.api.event.oratorio.domain;
 
 import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.member.domain.Member;

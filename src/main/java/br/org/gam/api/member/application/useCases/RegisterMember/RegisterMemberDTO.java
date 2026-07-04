@@ -1,4 +1,4 @@
-package br.org.gam.api.member.application.useCases.RegisterMember;
+package br.org.gam.api.member.application.useCases.registerMember;
 
 import br.org.gam.api.shared.phonenumber.MyPhoneNumber;
 import jakarta.validation.constraints.NotBlank;

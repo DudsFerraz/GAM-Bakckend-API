@@ -1,12 +1,12 @@
 package br.org.gam.api.account.application;
 
-import br.org.gam.api.account.application.useCases.RegisterAccount.RegisterAccountRDTO;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountRDTO;
 import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.account.persistence.AccountEntity;
-import br.org.gam.api.rbac.AccountRole.application.AccountRolesRDTO;
-import br.org.gam.api.rbac.AccountRole.persistence.AccountRoleEntity;
-import br.org.gam.api.rbac.Role.application.RoleMapper;
-import br.org.gam.api.rbac.Role.application.RoleRDTO;
+import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
+import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
+import br.org.gam.api.rbac.role.application.RoleMapper;
+import br.org.gam.api.rbac.role.application.RoleRDTO;
 import br.org.gam.api.shared.auditing.IgnoreFullAuditFields;
 import java.util.Collection;
 import java.util.List;

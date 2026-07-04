@@ -1,10 +1,10 @@
-package br.org.gam.api.rbac.Role.application.useCases.GetRolePermissions;
+package br.org.gam.api.rbac.role.application.useCases.getrolePermissions;
 
-import br.org.gam.api.rbac.Permission.application.PermissionMapper;
-import br.org.gam.api.rbac.Permission.application.PermissionRDTO;
-import br.org.gam.api.rbac.Permission.persistence.PermissionEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionEntity;
-import br.org.gam.api.rbac.RolePermission.persistence.RolePermissionRepository;
+import br.org.gam.api.rbac.permission.application.PermissionMapper;
+import br.org.gam.api.rbac.permission.application.PermissionRDTO;
+import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionRepository;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.StructuralTest;
 import br.org.gam.api.testing.annotation.UnitTest;
@@ -101,12 +101,13 @@ class GetRolePermissionsTest {
     private static PermissionEntity permissionEntity() {
         PermissionEntity permission = new PermissionEntity();
         permission.setId(UUID.randomUUID());
-        permission.setName("MEMBER_GET");
+        permission.setCode("MEMBER_GET");
+        permission.setLabel("View members");
         permission.setDescription("View active members");
         return permission;
     }
 
-    private static PermissionRDTO response(UUID id, String name) {
-        return new PermissionRDTO(id, name, "Description");
+    private static PermissionRDTO response(UUID id, String code) {
+        return new PermissionRDTO(id, code, "Label", "Description");
     }
 }

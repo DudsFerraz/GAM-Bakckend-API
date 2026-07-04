@@ -5,8 +5,9 @@ import br.org.gam.api.member.application.MemberDomainLoader;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.member.persistence.MemberRepository;
-import br.org.gam.api.rbac.AccountRole.application.useCases.AddAccountRole;
-import br.org.gam.api.rbac.AccountRole.application.useCases.DropAccountRole;
+import br.org.gam.api.rbac.accountRole.application.useCases.AddAccountRole;
+import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRole;
+import br.org.gam.api.rbac.role.domain.SystemRole;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import br.org.gam.api.shared.exception.InvalidCommandException;
 import jakarta.transaction.Transactional;
@@ -36,7 +37,12 @@ public class Activation {
 
     @Transactional
     public void activate(UUID memberId) {
-        MemberStatusChange change = changeStatus(memberId, Member::activate, "MEMBER", "VISITOR");
+        MemberStatusChange change = changeStatus(
+                memberId,
+                Member::activate,
+                SystemRole.MEMBER.getCode(),
+                SystemRole.VISITOR.getCode()
+        );
         activityEvents.memberActivated(
                 change.memberId(),
                 change.accountId(),
@@ -50,7 +56,12 @@ public class Activation {
     @Transactional
     public void deactivate(UUID memberId, String reason) {
         String auditReason = requiredAuditReason(reason);
-        MemberStatusChange change = changeStatus(memberId, Member::deactivate, "VISITOR", "MEMBER");
+        MemberStatusChange change = changeStatus(
+                memberId,
+                Member::deactivate,
+                SystemRole.VISITOR.getCode(),
+                SystemRole.MEMBER.getCode()
+        );
         activityEvents.memberDeactivated(
                 change.memberId(),
                 change.accountId(),
