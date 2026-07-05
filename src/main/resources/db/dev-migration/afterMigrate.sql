@@ -1,7 +1,10 @@
 -- noinspection SqlResolveForFile @ routine/"uuidv7"
+-- Development fixture accounts use the standard local password: 123456
 
 DO $$
     DECLARE
+        v_dev_password_hash TEXT := '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa';
+
         v_role_member_id UUID;
         v_role_coord_id UUID;
         v_role_visitor_id UUID;
@@ -40,7 +43,7 @@ DO $$
         IF v_acc_giulia_id IS NULL THEN
             v_acc_giulia_id := uuidv7();
             INSERT INTO accounts (id, email, password_hash, display_name, created_at, updated_at)
-            VALUES (v_acc_giulia_id, 'giulia@gmail.com', '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa', 'Giulia', v_now, v_now);
+            VALUES (v_acc_giulia_id, 'giulia@gmail.com', v_dev_password_hash, 'Giulia', v_now, v_now);
 
             INSERT INTO account_roles (id, account_id, role_id, created_at)
             VALUES (uuidv7(), v_acc_giulia_id, v_role_member_id, v_now);
@@ -52,7 +55,7 @@ DO $$
         IF v_acc_borges_id IS NULL THEN
             v_acc_borges_id := uuidv7();
             INSERT INTO accounts (id, email, password_hash, display_name, created_at, updated_at)
-            VALUES (v_acc_borges_id, 'borges@gmail.com', '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa', 'Borges', v_now, v_now);
+            VALUES (v_acc_borges_id, 'borges@gmail.com', v_dev_password_hash, 'Borges', v_now, v_now);
 
             INSERT INTO account_roles (id, account_id, role_id, created_at)
             VALUES (uuidv7(), v_acc_borges_id, v_role_member_id, v_now);
@@ -62,7 +65,7 @@ DO $$
         IF v_acc_carla_id IS NULL THEN
             v_acc_carla_id := uuidv7();
             INSERT INTO accounts (id, email, password_hash, display_name, created_at, updated_at)
-            VALUES (v_acc_carla_id, 'carla.visitante@example.com', '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa', 'Carla Visitante', v_now, v_now);
+            VALUES (v_acc_carla_id, 'carla.visitante@example.com', v_dev_password_hash, 'Carla Visitante', v_now, v_now);
 
             INSERT INTO account_roles (id, account_id, role_id, created_at)
             VALUES (uuidv7(), v_acc_carla_id, v_role_visitor_id, v_now);
@@ -72,7 +75,7 @@ DO $$
         IF v_acc_daniel_id IS NULL THEN
             v_acc_daniel_id := uuidv7();
             INSERT INTO accounts (id, email, password_hash, display_name, created_at, updated_at)
-            VALUES (v_acc_daniel_id, 'daniel.pendente@example.com', '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa', 'Daniel Pendente', v_now, v_now);
+            VALUES (v_acc_daniel_id, 'daniel.pendente@example.com', v_dev_password_hash, 'Daniel Pendente', v_now, v_now);
 
             INSERT INTO account_roles (id, account_id, role_id, created_at)
             VALUES (uuidv7(), v_acc_daniel_id, v_role_member_id, v_now);

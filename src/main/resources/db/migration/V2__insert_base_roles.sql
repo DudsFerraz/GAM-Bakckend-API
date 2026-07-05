@@ -1,1 +1,0 @@
--- System roles are seeded by R__SeedPermissionsAndRoles from the code-owned SystemRole registry.
