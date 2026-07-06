@@ -1,4 +1,4 @@
-# Software Testing Engineering and Guidelines
+# Software Testing Guidelines
 
 This document defines the architecture, strategies, and heuristics for creating automated tests within the project. The goal is to ensure a robust, production-ready system by employing a clear methodological approach to quality engineering.
 

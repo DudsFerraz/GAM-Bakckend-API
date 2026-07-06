@@ -1,4 +1,4 @@
-# Domain Model vs JPA Entity Model Guidelines
+# Domain Models and JPA Entities Guidelines
 
 ## 1. Purpose
 

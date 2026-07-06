@@ -1,8 +1,8 @@
-# Services and Use Cases Guidelines
+# Application Layer Guidelines
 
 ## 1. Purpose
 
-This document defines the naming conventions, structure, and responsibilities for application workflow classes, read operations, data loaders, and input/output data objects in `gam-api`.
+This document defines the naming conventions, structure, and responsibilities for application workflows, read operations, data loaders, and input/output data objects in `gam-api`.
 
 The application layer favors small, focused use-case classes with expressive action or read names over monolithic service classes or vague naming conventions.
 

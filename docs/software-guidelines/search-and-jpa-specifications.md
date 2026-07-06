@@ -1,4 +1,4 @@
-# Search Specifications Guidelines
+# Search and JPA Specifications Guidelines
 
 ## 1. Purpose
 

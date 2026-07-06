@@ -1,4 +1,4 @@
-# Custom Exceptions Guidelines
+# Exception Handling Guidelines
 
 ## 1. Purpose
 
