@@ -12,11 +12,25 @@ Documentation must be simple, versioned, easy to review in pull requests, and st
 
 This project uses:
 
-* Markdown requirements
+* Requirement Specifications
 * ADRs: Architecture Decision Records
 * Mermaid diagrams
 * Swagger/OpenAPI for backend API documentation
 * Videos only as supplemental explanation
+
+---
+
+## Documentation language
+
+Use this vocabulary consistently:
+
+* Requirement Specification: a Markdown document under `docs/requirements/` that describes expected behavior and business rules for one feature, concept, or domain rule group.
+* Requirement: an individual rule inside a Requirement Specification, identified by a stable `REQ-<AREA>-<NUMBER>` ID.
+* ADR: an Architecture Decision Record under `docs/decisions/` that documents an architecture or design decision.
+* Diagram: a Mermaid diagram that supports a Requirement Specification, ADR, or API behavior description.
+* OpenAPI contract: the externally visible backend API contract.
+
+Example relationships:
 
 ---
 
@@ -64,19 +78,15 @@ docs/
 
 ---
 
-# Requirements documentation
+# Requirement Specifications
 
 ## Purpose
 
-Requirements describe what the system must do.
-
-Requirements are not responsible for defining test classes, test methods, or test implementation details.
-
-Testing documentation may reference requirements, but requirements should remain focused on expected behavior and business rules.
+Describe what the system must do, are not responsible for defining test classes, test methods, or test implementation details. Testing documentation may reference Requirement Specifications and requirement IDs, but Requirement Specifications should remain focused on expected behavior and business rules.
 
 ---
 
-## Requirement file naming
+## Requirement Specification file naming
 
 Use one file per feature, concept, or domain rule group. Examples:
 
@@ -130,7 +140,7 @@ Superseded
 
 ---
 
-## Requirement structure template
+## Requirement Specification structure template
 
 ````md
 # Requirement: <Name>
