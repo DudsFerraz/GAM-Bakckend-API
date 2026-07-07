@@ -32,6 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### Codex ###
+.codex/
+
 # Arquivos de log
 *.log
 
