@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Review"
+  short_description: "Review changes against GAM guidelines"
+  default_prompt: "Use $gam-review to review code, tests, and docs against requirements and GAM project guidelines."

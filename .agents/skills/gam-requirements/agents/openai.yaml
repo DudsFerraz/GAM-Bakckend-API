@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Requirements"
+  short_description: "Draft requirement specs from intent"
+  default_prompt: "Use $gam-requirements to turn client or developer intent into a Requirement Specification before implementation."

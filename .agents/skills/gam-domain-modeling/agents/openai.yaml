@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Domain Modeling"
+  short_description: "Sharpen GAM terms, requirements, and ADRs"
+  default_prompt: "Use $gam-domain-modeling to clarify domain terminology, scenarios, requirements, and ADR-worthy decisions before implementation."

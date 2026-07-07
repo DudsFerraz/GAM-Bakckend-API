@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Planning"
+  short_description: "Coordinate feature planning into docs"
+  default_prompt: "Use $gam-planning to evaluate a feature or refactor request, grill the developer, model the domain, and produce planning documentation before tests or implementation."

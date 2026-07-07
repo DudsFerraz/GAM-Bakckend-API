@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Git Commits"
+  short_description: "Draft safe Conventional Commit commands"
+  default_prompt: "Use $gam-git-commits to analyze the current diff and draft PowerShell git add and git commit commands without running them."

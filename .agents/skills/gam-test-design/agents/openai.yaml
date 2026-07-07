@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Test Design"
+  short_description: "Derive tests from GAM requirements"
+  default_prompt: "Use $gam-test-design to derive functional, structural, API, security, or integration tests from requirements."
