@@ -36,6 +36,13 @@ Before changing code or tests, read only the guideline files relevant to the wor
 - If the conflict exposes a durable project decision, ask whether to update the relevant Requirement Specification, ADR, guideline, or skill.
 - Do not silently rewrite project conventions to match an external skill.
 
+## Test preservation policy
+
+- Never delete, disable, skip, or weaken tests merely to make the test suite pass.
+- If a test fails, fix the production code, test fixture, or documented requirement mismatch so the intended behavior is preserved.
+- Removing or materially weakening a test requires explicit developer approval before the change is made.
+- When a test appears obsolete or incorrect, report the rationale and wait for approval instead of deleting it.
+
 ## Git policy
 
 - Never run `git add`, `git commit`, or `git push`.

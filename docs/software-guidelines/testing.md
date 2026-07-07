@@ -30,6 +30,12 @@ In addition to tests established by strict criteria, fundamental heuristics must
 * Test blank strings.
 * **Note:** Additional test cases beyond the minimum required by the criteria can be created if there is sufficient time and resources. Business rules and the test execution context are the determining factors for choosing what, how, and until when to test.
 
+### 1.4. Test Preservation
+
+Agents must not delete, disable, skip, or weaken tests to obtain a green build. A failing test is evidence to investigate: fix the production code, test fixture, environment setup, or documented requirement mismatch while preserving the intended behavior under test.
+
+Deleting or materially weakening a test is allowed only after explicit developer approval. If a test appears obsolete, duplicated, incorrect, or incompatible with the accepted requirements, report the rationale and wait for approval before changing or removing it.
+
 ---
 
 ## 2. Test Derivation Strategies (How to Think)
