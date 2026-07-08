@@ -23,6 +23,7 @@ Use this skill to perform a project-aware review. Prioritize bugs, requirement m
 3. Review behavior against requirements.
    - Check that implementation satisfies accepted requirements.
    - Check that tests exercise the intended behavior, boundaries, and failure modes.
+   - Check terminology against `docs/ubiquitous-language.md` when GAM-wide terms appear.
    - Report missing or ambiguous requirements instead of guessing.
 4. Review guideline compliance.
    - Check layer boundaries, naming, package organization, exception shape, mapper structure, persistence rules, security/RBAC, audit logging, or API conventions as relevant.
@@ -52,6 +53,7 @@ If no issues are found, say that clearly and mention remaining residual risk or 
 - Broken API contracts or error response shape
 - Missing functional, structural, integration, API, security, or persistence tests
 - Bug fixes without a reproduced symptom, regression test or documented test-boundary gap, cleanup of debug instrumentation, or verified cause
+- Terminology drift, ambiguous domain names, or aliases used where a canonical term exists
 - Guideline violations that make future work harder
 - Documentation drift or missing ADRs for durable decisions
 

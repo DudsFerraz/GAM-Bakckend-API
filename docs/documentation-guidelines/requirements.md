@@ -145,6 +145,16 @@ flowchart TD
 
 ---
 
+## Global ubiquitous language
+
+Use `docs/ubiquitous-language.md` for project-wide GAM domain terms that should remain consistent across features, code, tests, APIs, and agent handoffs.
+
+Feature-specific Requirement Specifications may still have their own `Glossary` sections, but they should extend the global glossary rather than redefining global terms. When a feature introduces a synonym, translation, or legacy term, record the canonical term and the alias to avoid.
+
+When a term is ambiguous or overloaded, preserve the ambiguity as an open question until the developer resolves it. Do not turn conversational guesses or existing implementation names into accepted domain language.
+
+---
+
 ## Requirement writing style
 
 Prefer clear, testable statements.

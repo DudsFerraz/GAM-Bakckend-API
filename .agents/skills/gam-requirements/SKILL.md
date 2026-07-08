@@ -29,6 +29,8 @@ Use this skill to turn rough intent into project-standard Requirement Specificat
 ## Quality Gates
 
 - Requirements must be clear, testable, and written before implementation or testing whenever possible.
+- Requirement Specifications must not redefine global terms from `docs/ubiquitous-language.md`; feature glossaries should extend that file with local terms only.
+- Synonyms, translations, and legacy names should be recorded as aliases to avoid when they compete with a canonical term.
 - Requirements must describe expected behavior and business rules, not test classes, test methods, or implementation details.
 - Requirements should capture explicit scope exclusions in `Out of scope` when they prevent scope creep or clarify deferred behavior.
 - Do not infer business rules from existing implementation.

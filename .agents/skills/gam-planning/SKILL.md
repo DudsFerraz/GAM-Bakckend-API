@@ -14,6 +14,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 1. Establish planning scope.
    - Read the user's feature or refactor request.
    - Read relevant context docs such as `docs/about-gam/` when the request depends on GAM domain knowledge.
+   - Read `docs/ubiquitous-language.md` when the request uses GAM-wide domain terms.
    - Read `docs/documentation-guidelines/README.md` and the focused guideline files for the documentation artifacts that planning may produce, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, `docs/documentation-guidelines/diagrams.md`, or `docs/documentation-guidelines/agent-workflow.md`.
    - Locate existing related requirements, ADRs, and diagrams.
 2. Grill until shared understanding is reached.
@@ -21,7 +22,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
    - Explore the codebase instead of asking when the answer can be discovered locally.
    - Do not proceed to documentation until major ambiguities, tradeoffs, and boundaries are explicit.
 3. Model the domain while grilling.
-   - Use `$gam-domain-modeling` to sharpen terminology, identify canonical terms, stress-test edge cases, and decide which choices deserve ADRs.
+   - Use `$gam-domain-modeling` to sharpen terminology, identify canonical terms, aliases to avoid, relationships between terms, stress-test edge cases, and decide which choices deserve ADRs.
    - Convert resolved answers into domain rules, examples, acceptance scenarios, diagrams, or ADR candidates.
    - Convert unresolved answers into open questions.
 4. Consolidate planning documentation.

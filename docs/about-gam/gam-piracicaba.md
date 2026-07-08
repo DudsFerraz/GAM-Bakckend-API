@@ -13,7 +13,7 @@ The Salesians are a Catholic religious congregation founded by Saint John Bosco 
 
 In the Salesian tradition, education and evangelization are not separate paths. To educate is also to welcome, accompany, protect, and open possibilities. To evangelize is also to create spaces where young people can experience joy, belonging, responsibility, prayer, and service.
 
-GAM Piracicaba lives this spirituality in a concrete way: through oratory, missionary visits, celebrations, formation, volunteer work, and a strong commitment to being present among children and young people.
+GAM Piracicaba lives this spirituality in a concrete way: through Oratorio, missionary visits, celebrations, formation, volunteer work, and a strong commitment to being present among children and young people.
 
 ## History
 
@@ -31,21 +31,21 @@ The group is connected to local pastoral work and to the broader provincial yout
 
 Its main activities include:
 
-- weekly oratory with children and teenagers;
+- weekly Oratorio with children and teenagers;
 - annual missionary action in another community;
 - support for missionary weeks organized by the Dom Bosco schools;
 - moments of prayer, celebration, formation, and volunteer service;
 - social initiatives connected to the needs of the families reached by the group.
 
-## Oratory
+## Oratorio
 
-The oratory is one of the central expressions of the Salesian mission. In Piracicaba, it usually happens on Saturday afternoons at Colegio Dom Bosco Sao Mario.
+The Oratorio is one of the central expressions of the Salesian mission. In Piracicaba, it usually happens on Saturday afternoons at Colegio Dom Bosco Sao Mario.
 
 Children and teenagers, many of them from lower-income families, are welcomed for an afternoon of recreation, friendship, and care. The activities may include games, sports, face painting, drawing, group dynamics, and other forms of simple, joyful entertainment.
 
-The most important moment of the day is the `Good Afternoon`, a Salesian tradition inspired by Mamma Margaret, Don Bosco's mother. At the end of the oratory, the children and teenagers gather with the volunteers for a short moment of welcome, prayer, reflection, and encouragement.
+The most important moment of the day is the `Boa Tarde`, a Salesian tradition inspired by Mamma Margaret, Don Bosco's mother. At the end of the Oratorio, the children and teenagers gather with the volunteers for a short moment of welcome, prayer, reflection, and encouragement.
 
-The oratory is not only an event. It is a place of relationship. Week after week, it creates trust between volunteers, children, teenagers, and families.
+The Oratorio is not only an event. It is a place of relationship. Week after week, it creates trust between volunteers, children, teenagers, and families.
 
 ## Missionary Action
 
@@ -56,7 +56,7 @@ The missionary routine is usually organized around three moments:
 | Time | Activity | Meaning |
 | --- | --- | --- |
 | Morning | House blessings | Missionaries visit families in small groups, offering prayer, conversation, listening, and reflection. |
-| Afternoon | Oratory and workshops | Children and teenagers take part in recreational activities; adults may be invited to simple workshops or community activities. |
+| Afternoon | Oratorio and workshops | Children and teenagers take part in recreational activities; adults may be invited to simple workshops or community activities. |
 | Evening | Celebration | The group prepares moments such as the Salesian rosary, celebration of forgiveness, celebration of light, Stations of the Cross, and other prayer experiences. |
 
 The missionary action is one of the clearest signs of the group's identity. It asks members to leave their usual routine, live with simplicity, work together, and meet each community with respect.

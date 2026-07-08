@@ -33,7 +33,7 @@ Authorization is enforced exclusively through permissions, never through roles.
 The API handles unauthorized access dynamically based on the sensitivity of the resource's existence.
 
 * **Use `404 Not Found`:** When revealing the mere existence of a resource is sensitive (e.g., fetching a specific `Member` or `Event` that the user has no visibility over).
-* **Use `403 Forbidden`:** When the user knows the resource or action exists, but lacks the permission to perform the requested operation (e.g., an admin attempting to edit a system-managed role, or a user attempting to activate a member without the `MEMBER_ACTIVATE` permission).
+* **Use `403 Forbidden`:** When the user knows the resource or action exists, but lacks the permission to perform the requested operation (e.g., a Coordinator attempting to edit a system-managed role, or a user attempting to activate a member without the `MEMBER_ACTIVATE` permission).
 
 ## 3. Roles and Permissions Model
 
@@ -53,7 +53,7 @@ The application defines four baseline system-managed roles. Their definitions an
 | Role | Definition |
 | --- | --- |
 | `SUDO` | Developer role. Automatically receives every system permission that exists. |
-| `COORD` | System administrator role (GAM coordinators). |
+| `COORD` | Coordinator role. Reuses the GAM domain term for system authorization. |
 | `MEMBER` | Volunteer worker role. |
 | `VISITOR` | Public/unauthenticated viewer role. |
 
@@ -69,15 +69,15 @@ A permission definition consists of:
 
 ### 3.4. Custom Roles and Permissions
 
-* **Custom Roles:** Are allowed (`systemManaged = false`). Administrators can create custom roles, assign them system permissions, and edit or delete them (subject to RBAC and soft-delete policies).
+* **Custom Roles:** Are allowed (`systemManaged = false`). Coordinators can create custom roles, assign them system permissions, and edit or delete them (subject to RBAC and soft-delete policies).
 * **Custom Permissions:** Are **strictly forbidden**. The application does not support admin-created custom permissions at this stage.
 
 ## 4. Assignment Rules and Lockout Prevention
 
 ### 4.1. Account-Role Assignment
 
-* Administrators can assign and remove ordinary roles (system or custom) to accounts based on their granted permissions.
-* **`SUDO` Exception:** Administrators cannot assign or remove the `SUDO` role via the HTTP API. `SUDO` management is strictly developer-controlled and must be executed via the command-line `maintenance` Spring profile.
+* Coordinators can assign and remove ordinary roles (system or custom) to accounts based on their granted permissions.
+* **`SUDO` Exception:** Coordinators cannot assign or remove the `SUDO` role via the HTTP API. `SUDO` management is strictly developer-controlled and must be executed via the command-line `maintenance` Spring profile.
 
 ```bash
 # Example: Assigning SUDO via developer maintenance CLI
@@ -94,4 +94,4 @@ The system will block and throw a `ForbiddenOperationException` for the followin
 
 1. Removing the last active `SUDO` account role.
 2. Deactivating or disabling the last active `SUDO` account.
-3. An administrator attempting to remove their own last admin capability when no other active admin exists in the system.
+3. A Coordinator attempting to remove their own last coordination capability when no other active Coordinator exists in the system.
