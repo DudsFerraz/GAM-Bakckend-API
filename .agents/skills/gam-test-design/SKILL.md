@@ -53,3 +53,4 @@ Use this skill to design tests from documented behavior. Tests must protect the 
 - API/security tests must distinguish authentication failures from authorization failures.
 - Shared API test support, authentication, authorization, token behavior, or security configuration changes require broad verification such as full `mvn verify`.
 - If a test reveals a production defect, fix production behavior instead of weakening the test.
+- Continuation notes, including handoff documents produced by `$handoff`, may summarize test context for another session, but they must reference Requirement Specifications and test files instead of replacing them.

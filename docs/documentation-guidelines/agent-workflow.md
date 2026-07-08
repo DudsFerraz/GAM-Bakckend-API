@@ -60,3 +60,24 @@ Agent D is responsible for production implementation. It starts from the Require
 ### Agent R: review
 
 Agent R is responsible for independent review. It reviews requirements, ADRs, diagrams, code, tests, and verification evidence against the documented behavior and project guidelines. Agent R leads with findings, reports conflicts or gaps, and does not implement fixes unless explicitly asked.
+
+---
+
+## Continuation notes
+
+A continuation note is an ephemeral handoff aid for moving work to a fresh agent session. When the external `$handoff` skill is available, use it to create continuation notes for fresh agent sessions. The resulting handoff document remains ephemeral and non-authoritative.
+
+Continuation notes are useful when context is long, when Agent T / Agent D / Agent R should resume in a separate chat, or when the developer wants a compact summary before pausing.
+
+Continuation notes are not project documentation and are not a source of truth. They must reference durable artifacts such as Requirement Specifications, ADRs, diagrams, relevant files, diffs, test output, and commit references instead of duplicating them.
+
+A useful continuation note includes:
+
+- The intended next agent role and suggested skill, such as Agent T with `$gam-test-design`, Agent D with `$gam-implementation`, or Agent R with `$gam-review`.
+- Current status and what has already been completed.
+- Relevant durable artifacts by path or URL.
+- Open questions, blockers, pending decisions, and known risks.
+- Verification state, including tests run, expected failures, unexpected failures, and tests not run.
+- Relevant changed files or diff references when local changes matter.
+
+Continuation notes must redact secrets, credentials, tokens, private keys, and unnecessary personal data. They should be stored outside the repository unless the developer explicitly asks to version a durable project artifact.

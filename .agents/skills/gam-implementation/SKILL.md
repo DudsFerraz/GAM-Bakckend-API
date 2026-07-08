@@ -27,3 +27,4 @@ Use this skill for Agent D: the implementation agent responsible for production 
 - Do not broaden scope beyond the current Requirement Specifications without developer approval.
 - If tests and requirements conflict, report the mismatch and ask for clarification.
 - If implementation requires an architectural decision not covered by an ADR, ask whether an ADR should be created or updated.
+- Continuation notes, including handoff documents produced by `$handoff`, may summarize implementation context for another session, but they must reference requirements, tests, changed files, and verification output instead of replacing them.
