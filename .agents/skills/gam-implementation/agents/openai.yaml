@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAM Implementation"
+  short_description: "Implement against GAM requirements"
+  default_prompt: "Use $gam-implementation to implement production code against requirements and failing tests while following GAM guidelines."

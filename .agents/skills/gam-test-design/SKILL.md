@@ -11,30 +11,31 @@ Use this skill to design tests from documented behavior. Tests must protect the 
 
 ## Workflow
 
-1. Read `docs/software-guidelines/testing.md`.
-2. Read the related Requirement Specification under `docs/requirements/`.
-3. Read related ADRs or diagrams when they affect behavior, architecture, or flow.
-4. Stop and ask for clarification when the requirement is incomplete, ambiguous, or missing important constraints.
-5. Derive functional tests first:
+1. Read `docs/documentation-guidelines/agent-workflow.md` to understand the Agent T role and the Agent T / Agent D alternation.
+2. Read `docs/software-guidelines/testing.md`.
+3. Read the related Requirement Specification under `docs/requirements/`.
+4. Read related ADRs or diagrams when they affect behavior, architecture, or flow.
+5. Stop and ask for clarification when the requirement is incomplete, ambiguous, or missing important constraints.
+6. Derive functional tests first:
    - Select the narrowest public test seam that protects the requirement behavior.
    - Map equivalence classes.
    - Map boundary values.
    - Cover valid behavior, invalid behavior, and error outputs.
    - Avoid duplicate cases that produce the same behavioral signal.
-6. Derive structural tests when source code is available and the functional contract is clear:
+7. Derive structural tests when source code is available and the functional contract is clear:
    - Map decisions and individual boolean conditions.
    - Select the narrowest meaningful public or intentionally exposed seam that can exercise the mapped decisions.
    - Cover true and false outcomes for relevant conditions.
    - Apply loop boundary adequacy when loops matter.
-7. Choose the right execution level:
+8. Choose the right execution level:
    - Unit tests for isolated domain/application behavior.
    - Integration, API, security, or persistence tests when behavior crosses boundaries.
-8. Use project test organization rules:
+9. Use project test organization rules:
    - Prefer custom test annotations over raw `@Tag`.
    - Use clear `@DisplayName` values.
    - Use `@Nested` only when it improves readability.
    - Use parameterized tests for repeated behavior over varied values.
-9. Apply behavior-focused test design rules:
+10. Apply behavior-focused test design rules:
    - Test through public seams rather than private implementation details for functional and integration tests.
    - For structural tests, derive cases from code decisions but execute them through public or intentionally exposed seams whenever possible.
    - Prefer tests that survive internal refactors when behavior is unchanged.

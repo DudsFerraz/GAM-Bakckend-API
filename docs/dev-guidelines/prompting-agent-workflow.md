@@ -45,7 +45,7 @@ Agent T should not implement production code.
 Use Agent D after tests exist and the intended behavior is documented.
 
 ```text
-You are Agent D.
+You are Agent D. Use $gam-implementation.
 
 Context:
 <feature name, requirement files, and test files>

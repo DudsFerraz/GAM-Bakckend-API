@@ -16,6 +16,7 @@ Use this skill to perform a project-aware review. Prioritize bugs, requirement m
    - Identify whether the review covers code, tests, docs, or all of them.
    - Ignore unrelated user changes unless they affect the reviewed behavior.
 2. Load the correct project context.
+   - Read `docs/documentation-guidelines/agent-workflow.md` to understand the Agent R role and review boundary.
    - Read related Requirement Specifications under `docs/requirements/`.
    - Read related ADRs under `docs/decisions/` when architecture or design choices are involved.
    - Use `AGENTS.md` guideline routing to read only the relevant software guidelines.
