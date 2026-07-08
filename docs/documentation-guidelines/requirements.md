@@ -130,6 +130,11 @@ flowchart TD
 * Question 1
 * Question 2
 
+## Out of scope
+
+* Behavior, workflow, or integration that this Requirement Specification intentionally does not cover.
+* Deferred idea or future capability that should not be implemented from this requirement.
+
 ## Related ADRs
 
 * ADR-0001: <Decision title>
@@ -311,6 +316,11 @@ flowchart TD
 
 * Should single-letter surnames ever be allowed?
 * Should multiple internal spaces be normalized or rejected?
+
+## Out of scope
+
+* Honorifics, titles, and preferred names.
+* Name deduplication or matching across different people.
 
 ## Related ADRs
 

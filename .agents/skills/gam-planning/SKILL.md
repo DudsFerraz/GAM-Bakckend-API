@@ -26,10 +26,13 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
    - Convert unresolved answers into open questions.
 4. Consolidate planning documentation.
    - Use `$gam-requirements` to create or update Requirement Specifications with stable IDs.
+   - Capture problem statement, solution intent, in-scope behavior, and out-of-scope boundaries inside the relevant Requirement Specification sections instead of creating a separate PRD.
    - Create or update ADRs only for decisions with meaningful consequences, tradeoffs, or future maintenance impact.
    - Add Mermaid diagrams when they clarify flow, state, architecture, or decisions.
 5. End with a handoff.
+   - Summarize the problem being solved and the intended user or domain outcome.
    - Summarize produced or updated docs.
+   - List in-scope behavior and explicit out-of-scope boundaries.
    - List open questions and decisions still pending.
    - State that the next step is a fresh Agent T session using `$gam-test-design` to write functional tests from the accepted requirements.
 
@@ -37,6 +40,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 
 - Do not write tests.
 - Do not implement production code.
+- Do not create PRDs or publish issue-tracker items unless the developer explicitly asks for that external workflow.
 - Do not infer business rules from existing implementation.
 - Do not mark Draft requirements as Accepted unless the developer explicitly approves.
 - Do not hide unresolved ambiguity; preserve it as open questions.

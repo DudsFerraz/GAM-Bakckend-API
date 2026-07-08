@@ -23,13 +23,14 @@ Use this skill to turn rough intent into project-standard Requirement Specificat
    - Functional requirements with stable `REQ-<AREA>-<NUMBER>` IDs
    - Valid and invalid examples when applicable
    - Acceptance scenarios
-   - Diagrams, open questions, related ADRs, and related videos when relevant
+   - Diagrams, open questions, out-of-scope boundaries, related ADRs, and related videos when relevant
 7. Preserve uncertainty as open questions instead of inventing business rules.
 
 ## Quality Gates
 
 - Requirements must be clear, testable, and written before implementation or testing whenever possible.
 - Requirements must describe expected behavior and business rules, not test classes, test methods, or implementation details.
+- Requirements should capture explicit scope exclusions in `Out of scope` when they prevent scope creep or clarify deferred behavior.
 - Do not infer business rules from existing implementation.
 - If a requirement changes meaning significantly, create a new requirement ID rather than reusing the old one.
 - If a decision has architecture consequences, ask whether an ADR should be created or updated.

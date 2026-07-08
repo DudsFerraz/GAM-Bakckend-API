@@ -8,7 +8,7 @@ flowchart TD
     P --> B["Evaluate requirements"]
     B --> C["Grilling + developer interpretation"]
     C --> M["Domain modeling + docs decisions"]
-    M --> D["Requirement Specification with stable IDs"]
+    M --> D["Requirement Specification with stable IDs, scope, and out-of-scope"]
 
     D --> T1["Agent T: write functional tests from requirements"]
     T1 --> RED["Functional tests fail red"]
@@ -35,6 +35,24 @@ flowchart TD
 
 This workflow may be compressed for small or low-risk changes, but requirement clarity, test derivation, implementation, verification, and review must remain distinct concerns.
 
-Agent P is responsible for the planning phase: evaluate the request, grill the developer until shared understanding is reached, sharpen domain terminology, identify ADR-worthy decisions, create diagrams when useful, and produce Requirement Specifications with stable IDs. Agent P stops before tests or implementation; Agent T starts from the resulting requirements in a fresh context.
-
 ---
+
+## Agent responsibilities
+
+### Agent P: planning
+
+Agent P is responsible for the planning phase. It evaluates the request, grills the developer until shared understanding is reached, sharpens domain terminology, identifies ADR-worthy decisions, creates diagrams when useful, and produces Requirement Specifications with stable IDs, clear scope, and explicit out-of-scope boundaries.
+
+Agent P ends with a planning synthesis that summarizes the problem, intended outcome, produced documentation, in-scope behavior, out-of-scope behavior, open questions, and pending decisions. Agent P stops before tests or implementation.
+
+### Agent T: test design
+
+Agent T is responsible for test design and test implementation. Its first pass writes functional tests from the Requirement Specifications and leaves them failing for the expected reasons. After Agent D implements the production code, Agent T resumes in the same testing context to add structural, integration, API, security, or persistence tests when the feature risk calls for them. Agent T does not implement production code.
+
+### Agent D: implementation
+
+Agent D is responsible for production implementation. It starts from the Requirement Specifications and Agent T's failing tests, implements the minimum production behavior needed to satisfy them, and follows `AGENTS.md` plus the relevant software guidelines. After Agent T adds structural or integration tests, Agent D resumes in the same implementation context to fix exposed bugs without weakening tests or inventing missing business rules.
+
+### Agent R: review
+
+Agent R is responsible for independent review. It reviews requirements, ADRs, diagrams, code, tests, and verification evidence against the documented behavior and project guidelines. Agent R leads with findings, reports conflicts or gaps, and does not implement fixes unless explicitly asked.
