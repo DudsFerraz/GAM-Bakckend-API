@@ -12,7 +12,15 @@ Before changing code or tests, read only the guideline files relevant to the wor
 
 | If touching | Read |
 | --- | --- |
-| Requirements, ADRs, diagrams, OpenAPI docs, or agent workflow | `docs/documentation-guidelines.md` |
+| Documentation structure, vocabulary, or general documentation rules | `docs/documentation-guidelines/README.md` |
+| Requirements or Requirement Specifications | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/requirements.md` |
+| ADRs or architecture decision records | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/adrs.md` |
+| Mermaid diagrams | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/diagrams.md` |
+| Swagger/OpenAPI docs | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/openapi.md` |
+| Video documentation | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/videos.md` |
+| LLM agent documentation instructions | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/llm-agents.md` |
+| Agent implementation workflow | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/agent-workflow.md` |
+| Source-of-truth priority or documentation conflicts | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/source-of-truth.md` |
 | Package placement, layer boundaries, or feature/module structure | `docs/software-guidelines/package-organization.md` |
 | Controllers, routes, request/response shapes, HTTP status codes, or endpoint authorization | `docs/software-guidelines/controllers-and-http-api.md` |
 | Application services, use cases, loaders, DTOs, or RDTOs | `docs/software-guidelines/application-layer.md` |

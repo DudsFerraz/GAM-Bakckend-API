@@ -14,7 +14,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 1. Establish planning scope.
    - Read the user's feature or refactor request.
    - Read relevant context docs such as `docs/about-gam/` when the request depends on GAM domain knowledge.
-   - Read `docs/documentation-guidelines.md`.
+   - Read `docs/documentation-guidelines/README.md` and the focused guideline files for the documentation artifacts that planning may produce, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, `docs/documentation-guidelines/diagrams.md`, or `docs/documentation-guidelines/agent-workflow.md`.
    - Locate existing related requirements, ADRs, and diagrams.
 2. Grill until shared understanding is reached.
    - Use `$grilling` to ask one question at a time.

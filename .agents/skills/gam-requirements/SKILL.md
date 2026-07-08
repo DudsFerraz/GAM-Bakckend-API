@@ -11,7 +11,7 @@ Use this skill to turn rough intent into project-standard Requirement Specificat
 
 ## Workflow
 
-1. Read `docs/documentation-guidelines.md`.
+1. Read `docs/documentation-guidelines/README.md` and `docs/documentation-guidelines/requirements.md`.
 2. Locate related requirements under `docs/requirements/`, related ADRs under `docs/decisions/`, and related diagrams under `docs/diagrams/` when they exist.
 3. Clarify missing or ambiguous business rules before writing requirements.
 4. Use `$gam-domain-modeling` when terminology, domain boundaries, or glossary choices are unclear.

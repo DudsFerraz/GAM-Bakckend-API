@@ -9,14 +9,15 @@ description: Build and sharpen the GAM domain model using project documentation 
 
 Actively sharpen the project's domain language as requirements and designs evolve. Challenge vague terms, force concrete scenarios, and record durable decisions when they crystallize.
 
-Project documentation is the source of truth. Read `docs/documentation-guidelines.md` before creating or changing Requirement Specifications, ADRs, diagrams, or glossary material.
+Project documentation is the source of truth. Read `docs/documentation-guidelines/README.md` and the relevant focused file under `docs/documentation-guidelines/` before creating or changing Requirement Specifications, ADRs, diagrams, or glossary material.
 
 ## Workflow
 
 1. Identify the domain area and existing documentation.
    - Read relevant files under `docs/requirements/`.
    - Read related ADRs under `docs/decisions/` when architecture or design choices are involved.
-   - Read `docs/documentation-guidelines.md` before writing project documentation.
+   - Read `docs/documentation-guidelines/README.md` before writing project documentation.
+   - Read the focused documentation guideline for the artifact being changed, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, or `docs/documentation-guidelines/diagrams.md`.
 2. Challenge fuzzy or overloaded language.
    - Ask whether a term means one domain concept or another when ambiguity matters.
    - Propose one canonical term and list discouraged alternatives when useful.
@@ -36,7 +37,7 @@ Project documentation is the source of truth. Read `docs/documentation-guideline
 
 When a domain rule, term, valid example, invalid example, or acceptance scenario becomes clear, offer to update the relevant Requirement Specification under `docs/requirements/`.
 
-Follow the structure and wording rules in `docs/documentation-guidelines.md`:
+Follow the structure and wording rules in `docs/documentation-guidelines/requirements.md`:
 
 - Use stable requirement IDs.
 - Prefer clear, testable statements.
@@ -52,7 +53,7 @@ Offer an ADR only when all are true:
 2. A future maintainer would need to know why the choice was made.
 3. There were real alternatives or tradeoffs.
 
-When creating an ADR, use `docs/decisions/` and the ADR template from `docs/documentation-guidelines.md`.
+When creating an ADR, use `docs/decisions/` and the ADR template from `docs/documentation-guidelines/adrs.md`.
 
 ## Conflict Handling
 
