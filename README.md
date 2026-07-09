@@ -54,54 +54,16 @@ Architecture notes and refactor direction are documented in:
 - [Project Architecture Review](docs/refactor/project-refactor-roadmap.md)
 - [Architecture Refactor Roadmap](docs/refactor/architecture-refactor-roadmap.md)
 
-## Getting Started
+## Running Locally
 
-Prerequisites:
-
-- Java 21
-- Maven, or the included Maven Wrapper
-- Docker Desktop
-
-Run the test suite:
-
-```powershell
-.\mvnw.cmd test
-```
-
-Run the application with the development shortcut:
-
-```powershell
-$env:JWT_SECRET_KEY = "<base64-encoded-32-byte-secret>"
-.\mvnw.cmd -Pdev
-```
-
-This command activates the Maven profile named `dev`. That Maven profile is only a shortcut: it runs the `spring-boot:run` goal and passes the Spring profile named `dev` to the application. The Spring profile then loads `application-dev.properties`.
-
-The development profile requires `JWT_SECRET_KEY` to be set in the environment. Use a local-only base64-encoded secret with at least 32 bytes of decoded key material.
-
-The development Spring profile uses Spring Boot Docker Compose support to start PostgreSQL from `compose.yml` when needed. The PostgreSQL container is kept running after the application exits so later application restarts are faster.
-
-The development and integration-test databases use PostgreSQL 18 because the migrations call PostgreSQL's built-in `uuidv7()` function. The project overrides Spring Boot's managed Flyway version so migrations run with PostgreSQL 18 support.
-
-Stop the development database when you are done:
-
-```powershell
-docker compose stop
-```
-
-Reset the development database and remove its volume:
-
-```powershell
-docker compose down -v
-```
-
-The application does not activate a Spring profile by default. Use `.\mvnw.cmd -Pdev` for local development. Plain `.\mvnw.cmd spring-boot:run` intentionally does not load development settings or start Docker Compose. Flyway validates and migrates the PostgreSQL schema during startup.
+For local setup, backend startup, Maven commands, Docker Compose commands, and dependency checks, see [Running the System](docs/dev-guidelines/running-the-system/README.md).
 
 ## Documentation
 
 Project documentation is organized under `docs/`.
 
 - `docs/about-gam/` describes the social and religious context behind the project.
+- `docs/dev-guidelines/` contains practical human developer guides for running the backend, using Docker and Maven, inspecting dependencies, and working with agents in this project.
 - `docs/refactor/` records architecture review notes and planned improvements.
 
 ## Status

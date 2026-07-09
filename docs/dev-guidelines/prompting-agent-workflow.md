@@ -2,6 +2,8 @@
 
 Use this guide when starting fresh agent sessions for the workflow in `docs/documentation-guidelines/agent-workflow.md`.
 
+This document is for human developers preparing prompts. It is not an LLM instruction file or a source of agent policy.
+
 ## Core rule
 
 Start a fresh chat when entering a new role. The first prompt should tell the agent:
