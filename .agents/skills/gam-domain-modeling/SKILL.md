@@ -1,6 +1,6 @@
 ---
 name: gam-domain-modeling
-description: Build and sharpen the GAM domain model using project documentation standards. Use when clarifying domain terminology, creating or updating Requirement Specifications, deciding whether an ADR is warranted, resolving glossary or requirement ambiguity, or when another skill needs project-specific domain modeling before implementation.
+description: Build and sharpen the GAM domain model using project documentation standards. Use when clarifying domain terminology, creating or updating Requirement Specifications, deciding whether an ADR is warranted, resolving ubiquitous language or requirement ambiguity, or when another skill needs project-specific domain modeling before implementation.
 ---
 
 # GAM Domain Modeling
@@ -9,7 +9,7 @@ description: Build and sharpen the GAM domain model using project documentation 
 
 Actively sharpen the project's domain language as requirements and designs evolve. Challenge vague terms, force concrete scenarios, and record durable decisions when they crystallize.
 
-Project documentation is the source of truth. Read `docs/documentation-guidelines/README.md` and the relevant focused file under `docs/documentation-guidelines/` before creating or changing Requirement Specifications, ADRs, diagrams, or glossary material.
+Project documentation is the source of truth. Read `docs/documentation-guidelines/README.md` and the relevant focused file under `docs/documentation-guidelines/` before creating or changing Requirement Specifications, ADRs, diagrams, or ubiquitous language material.
 
 ## Workflow
 
@@ -34,7 +34,7 @@ Project documentation is the source of truth. Read `docs/documentation-guideline
    - Use Requirement Specifications for business behavior, rules, examples, and acceptance scenarios.
    - Use ADRs for architecture or design decisions with meaningful tradeoffs or future maintenance impact.
    - Use `docs/ubiquitous-language.md` for GAM-wide canonical terms, aliases to avoid, and term relationships.
-   - Use a Requirement Specification `Glossary` section for feature-specific terms.
+   - Use a Requirement Specification `Ubiquitous Language` section for feature-specific terms that are not already defined in `docs/ubiquitous-language.md`.
    - Use short example dialogue only when it clarifies boundaries between easily confused terms.
 
 ## Requirement Specifications

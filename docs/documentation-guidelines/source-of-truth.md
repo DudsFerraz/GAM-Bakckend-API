@@ -4,7 +4,7 @@ When sources conflict the user must be notified, use this priority if the confli
 
 ```text
 1. Accepted requirements
-2. Global glossary for canonical GAM terminology
+2. Global ubiquitous language for canonical GAM terminology
 3. Accepted ADRs
 4. OpenAPI contract
 5. Mermaid diagrams
@@ -15,6 +15,6 @@ When sources conflict the user must be notified, use this priority if the confli
 
 Existing implementation must not be treated as the source of truth for business rules unless explicitly documented.
 
-The global glossary defines canonical terms and aliases to avoid, but it does not define feature behavior. If a terminology rule and an accepted Requirement Specification appear to conflict, report the conflict and prefer the accepted requirement for behavior while preserving the glossary as the terminology baseline until updated.
+The global ubiquitous language defines canonical terms and aliases to avoid, but it does not define feature behavior. If a terminology rule and an accepted Requirement Specification appear to conflict, report the conflict and prefer the accepted requirement for behavior while preserving the global ubiquitous language as the terminology baseline until updated.
 
 

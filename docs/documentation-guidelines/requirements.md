@@ -71,7 +71,7 @@ Draft | Accepted | Deprecated | Superseded
 ## Context
 Explain why this requirement exists.
 
-## Glossary
+## Ubiquitous Language
 - `<term>`: Definition.
 - `<term>`: Definition.
 
@@ -145,11 +145,13 @@ flowchart TD
 
 ---
 
-## Global ubiquitous language
+## Global and local ubiquitous language
 
 Use `docs/ubiquitous-language.md` for project-wide GAM domain terms that should remain consistent across features, code, tests, APIs, and agent handoffs.
 
-Feature-specific Requirement Specifications may still have their own `Glossary` sections, but they should extend the global glossary rather than redefining global terms. When a feature introduces a synonym, translation, or legacy term, record the canonical term and the alias to avoid.
+Feature-specific Requirement Specifications may still have their own `Ubiquitous Language` sections, but they must only contain terms that are local to that Requirement Specification. Before adding a local term, check `docs/ubiquitous-language.md`; if the term, alias, synonym, translation, or legacy name is already defined there, do not repeat it locally.
+
+Local `Ubiquitous Language` sections may define feature-specific terms, aliases, translations, or legacy names that are not project-wide. If a local term later becomes shared across multiple Requirement Specifications, move it to `docs/ubiquitous-language.md` and remove the duplicate local entries.
 
 When a term is ambiguous or overloaded, preserve the ambiguity as an open question until the developer resolves it. Do not turn conversational guesses or existing implementation names into accepted domain language.
 
@@ -162,19 +164,19 @@ Prefer clear, testable statements.
 Good:
 
 ```text
-The Name value object shall reject null firstName and null surname.
+The GamName primitive shall reject null firstName and null surname.
 ````
 
 Bad:
 
 ```text
-The Name should probably have valid data.
+The name should probably have valid data.
 ```
 
 Good:
 
 ```text
-The Name value object shall reject names made only of separators.
+The GamName primitive shall reject names made only of separators.
 ```
 
 Bad:
@@ -201,13 +203,13 @@ If these words are necessary, define them in the requirement.
 ## Markdown requirement example
 
 ```text
-docs/requirements/common/name.md
+docs/requirements/common/gam-name.md
 ```
 
 Content:
 
 ````md
-# Requirement: Name
+# Requirement: GamName
 
 ## Status
 Accepted
@@ -215,17 +217,15 @@ Accepted
 ## Context
 The system stores personal names. Name validation must be centralized so that all parts of the application apply the same rules.
 
-The `Name` value object is responsible for validating and normalizing personal names.
+The `GamName` primitive is responsible for validating and normalizing personal names.
 
-## Glossary
-- `firstName`: The person's given name.
-- `surname`: The person's family name or last name.
+## Ubiquitous Language
 - `separator`: A space, hyphen, or apostrophe used inside a name.
 
 ## Functional requirements
 
 ### REQ-NAME-001: Required fields
-The `Name` value object shall reject null `firstName` and null `surname`.
+The `GamName` primitive shall reject null `firstName` and null `surname`.
 
 Rationale:
 A persisted name must always have both required components.
@@ -240,9 +240,9 @@ Invalid examples:
 ---
 
 ### REQ-NAME-002: Length limits
-The `Name` value object shall reject `firstName` values shorter than 2 characters or longer than 32 characters.
+The `GamName` primitive shall reject `firstName` values shorter than 2 characters or longer than 32 characters.
 
-The `Name` value object shall reject `surname` values shorter than 2 characters or longer than 64 characters.
+The `GamName` primitive shall reject `surname` values shorter than 2 characters or longer than 64 characters.
 
 Rationale:
 Name fields must have explicit domain limits instead of relying only on database column limits.
@@ -259,9 +259,9 @@ Invalid examples:
 ---
 
 ### REQ-NAME-003: Allowed characters
-The `Name` value object shall accept Unicode letters, spaces, hyphens, and apostrophes.
+The `GamName` primitive shall accept Unicode letters, spaces, hyphens, and apostrophes.
 
-The `Name` value object shall reject numbers, symbols, repeated separators, and names made only of separators.
+The `GamName` primitive shall reject numbers, symbols, repeated separators, and names made only of separators.
 
 Rationale:
 The system must support real names with accents and common separators while rejecting invalid formats.
@@ -280,7 +280,7 @@ Invalid examples:
 ---
 
 ### REQ-NAME-004: Normalization
-The `Name` value object shall trim leading and trailing whitespace before validation.
+The `GamName` primitive shall trim leading and trailing whitespace before validation.
 
 Rationale:
 User input may contain accidental leading or trailing whitespace.
@@ -298,13 +298,13 @@ Invalid examples:
 Scenario: Reject name made only of separators
   Given the first name is "------------"
   And the surname is "Ferraz"
-  When a Name value object is created
+  When a GamName value is created
   Then the creation should fail
 
 Scenario: Accept name with accent
   Given the first name is "JosÃ©"
   And the surname is "Ferraz"
-  When a Name value object is created
+  When a GamName value is created
   Then the creation should succeed
 ````
 

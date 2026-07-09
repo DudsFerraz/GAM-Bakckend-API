@@ -26,7 +26,7 @@ Use this vocabulary consistently:
 
 * Requirement Specification: a Markdown document under `docs/requirements/` that describes expected behavior and business rules for one feature, concept, or domain rule group.
 * Requirement: an individual rule inside a Requirement Specification, identified by a stable `REQ-<AREA>-<NUMBER>` ID.
-* Global glossary: `docs/ubiquitous-language.md`, the project-wide source for canonical GAM domain terms and aliases to avoid.
+* Global ubiquitous language: `docs/ubiquitous-language.md`, the project-wide source for canonical GAM domain terms and aliases to avoid.
 * ADR: an Architecture Decision Record under `docs/decisions/` that documents an architecture or design decision.
 * Diagram: a Mermaid diagram that supports a Requirement Specification, ADR, or API behavior description.
 * OpenAPI contract: the externally visible backend API contract.
