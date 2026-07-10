@@ -1,7 +1,7 @@
 package br.org.gam.api.account.application;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public class AccountDomainLoader {
                 .orElseThrow(() -> NotFoundException.resource("Account", id));
     }
 
-    public Account requiredByEmail(MyEmail email) {
+    public Account requiredByEmail(GamEmail email) {
         return accountRepo.findByEmail(email)
                 .map(accountMapper::entityToDomain)
                 .orElseThrow(() -> NotFoundException.resource("Account", email));

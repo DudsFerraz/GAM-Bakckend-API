@@ -1,6 +1,6 @@
 package br.org.gam.api.rbac.application;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
@@ -140,7 +140,7 @@ class RbacSafetyPolicyTest {
     private static AccountEntity account(UUID accountId) {
         AccountEntity account = new AccountEntity();
         account.setId(accountId);
-        account.setEmail(MyEmail.of(accountId + "@example.com"));
+        account.setEmail(GamEmail.of(accountId + "@example.com"));
         account.setPasswordHash("encoded-password");
         account.setDisplayName("Account");
         return account;

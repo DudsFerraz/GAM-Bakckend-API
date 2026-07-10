@@ -1,5 +1,6 @@
 package br.org.gam.api.account.domain;
 
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.UnitTest;
 import org.junit.jupiter.api.DisplayName;
@@ -25,13 +26,13 @@ class AccountTest {
         @Test
         @DisplayName("EP - valid registration data -> account with generated identity")
         void validRegistrationDataShouldCreateAccountWithGeneratedIdentity() {
-            MyEmail email = MyEmail.of("USER@example.com");
+            GamEmail email = GamEmail.of("USER@example.com");
 
             Account account = Account.register(email, "encoded-password", " Eduardo ");
 
             assertThat(account.getId()).isNotNull();
             assertThat(account.getId().version()).isEqualTo(7);
-            assertThat(account.getEmail()).isEqualTo(MyEmail.of("user@example.com"));
+            assertThat(account.getEmail()).isEqualTo(GamEmail.of("user@example.com"));
             assertThat(account.getPasswordHash()).isEqualTo("encoded-password");
             assertThat(account.getDisplayName()).isEqualTo("Eduardo");
         }
@@ -51,12 +52,12 @@ class AccountTest {
         void invalidPasswordHashShouldReturnValidationError(String passwordHash) {
             if (passwordHash == null) {
                 assertThatNullPointerException()
-                        .isThrownBy(() -> Account.register(MyEmail.of("user@example.com"), null, "Eduardo"))
+                        .isThrownBy(() -> Account.register(GamEmail.of("user@example.com"), null, "Eduardo"))
                         .withMessage("Password hash cannot be null.");
                 return;
             }
 
-            assertThatThrownBy(() -> Account.register(MyEmail.of("user@example.com"), passwordHash, "Eduardo"))
+            assertThatThrownBy(() -> Account.register(GamEmail.of("user@example.com"), passwordHash, "Eduardo"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Password hash cannot be blank.");
         }
@@ -68,12 +69,12 @@ class AccountTest {
         void invalidDisplayNameShouldReturnValidationError(String displayName) {
             if (displayName == null) {
                 assertThatNullPointerException()
-                        .isThrownBy(() -> Account.register(MyEmail.of("user@example.com"), "encoded-password", null))
+                        .isThrownBy(() -> Account.register(GamEmail.of("user@example.com"), "encoded-password", null))
                         .withMessage("Display name cannot be null.");
                 return;
             }
 
-            assertThatThrownBy(() -> Account.register(MyEmail.of("user@example.com"), "encoded-password", displayName))
+            assertThatThrownBy(() -> Account.register(GamEmail.of("user@example.com"), "encoded-password", displayName))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Display name cannot be blank.");
         }

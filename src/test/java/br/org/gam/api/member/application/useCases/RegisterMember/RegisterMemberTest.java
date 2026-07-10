@@ -2,7 +2,7 @@ package br.org.gam.api.member.application.useCases.registerMember;
 
 import br.org.gam.api.account.application.AccountDomainLoader;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.member.application.MemberMapper;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.domain.MemberStatus;
@@ -57,7 +57,7 @@ class RegisterMemberTest {
         @DisplayName("EP - account without member -> member is registered")
         void accountWithoutMemberShouldRegisterMember() {
             UUID accountId = UUID.randomUUID();
-            Account account = Account.register(MyEmail.of("member@example.com"), "encoded-password", "Member Account");
+            Account account = Account.register(GamEmail.of("member@example.com"), "encoded-password", "Member Account");
             GamPhoneNumber phoneNumber = phoneNumber();
             RegisterMemberDTO dto = new RegisterMemberDTO(accountId, "Ana", "Silva", LocalDate.now().minusYears(20), phoneNumber);
             MemberEntity mappedEntity = new MemberEntity();

@@ -1,7 +1,7 @@
 package br.org.gam.api.shared.maintenance;
 
 import br.org.gam.api.account.application.AccountEntityLoader;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.rbac.accountRole.application.useCases.ManageSudoRole;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -70,7 +70,7 @@ public class ManageSudoMaintenanceJob implements ApplicationRunner {
         }
 
         if (accountEmail != null) {
-            return accountEntityLoader.requiredByEmail(MyEmail.of(accountEmail)).getId();
+            return accountEntityLoader.requiredByEmail(GamEmail.of(accountEmail)).getId();
         }
 
         throw new IllegalArgumentException(

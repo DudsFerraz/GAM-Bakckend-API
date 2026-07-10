@@ -1,6 +1,6 @@
 package br.org.gam.api.security.application;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
@@ -37,7 +37,14 @@ public class AccountDetailsService implements UserDetailsService {
             accountEntity = accountRepo.findById(id)
                     .orElseThrow(() -> new UsernameNotFoundException("User ID not found: " + subject));
         } catch (IllegalArgumentException e) {
-            accountEntity = accountRepo.findByEmail(MyEmail.of(subject))
+            GamEmail email;
+            try {
+                email = GamEmail.of(subject);
+            } catch (IllegalArgumentException invalidEmail) {
+                throw new UsernameNotFoundException("User subject not found: " + subject, invalidEmail);
+            }
+
+            accountEntity = accountRepo.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User Email not found: " + subject));
         }
 

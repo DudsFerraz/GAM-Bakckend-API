@@ -1,6 +1,6 @@
 package br.org.gam.api.shared.specification;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.shared.phonenumber.GamPhoneNumber;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
@@ -39,7 +39,7 @@ public final class SearchValueParsers {
     }
 
     public static Object emailEquals(JsonNode value) {
-        return MyEmail.of(text(value));
+        return GamEmail.of(text(value));
     }
 
     public static Object emailLike(JsonNode value) {

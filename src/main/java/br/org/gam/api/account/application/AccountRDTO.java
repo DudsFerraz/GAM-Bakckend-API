@@ -1,12 +1,12 @@
 package br.org.gam.api.account.application;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
 import java.util.UUID;
 
 public record AccountRDTO(
         UUID id,
-        MyEmail email,
+        GamEmail email,
         String displayName,
         AccountRolesRDTO roles
 ) {

@@ -1,6 +1,6 @@
 package br.org.gam.api.security.application;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
@@ -20,7 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -57,12 +59,21 @@ class AccountDetailsServiceTest {
                     .containsExactly(PermissionEnum.MEMBER_GET.getCode())
                     .doesNotContain("ROLE_MEMBER");
         }
+
+        @Test
+        @DisplayName("invalid subject -> username-not-found error")
+        void invalidSubjectShouldReturnUsernameNotFoundError() {
+            AccountDetailsService service = new AccountDetailsService(accountRepo);
+
+            assertThatThrownBy(() -> service.loadUserByUsername("not-a-valid-subject"))
+                    .isInstanceOf(UsernameNotFoundException.class);
+        }
     }
 
     private static AccountEntity account(UUID accountId) {
         AccountEntity account = new AccountEntity();
         account.setId(accountId);
-        account.setEmail(MyEmail.of(accountId + "@example.com"));
+        account.setEmail(GamEmail.of(accountId + "@example.com"));
         account.setPasswordHash("encoded-password");
         account.setDisplayName("Account");
         return account;

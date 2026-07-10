@@ -2,7 +2,7 @@ package br.org.gam.api.persistence;
 
 import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.event.domain.Event;
@@ -85,7 +85,7 @@ class PersistenceRepositoryIT extends PostgreSQLIntegrationTest {
 
             UUID replacementId = inTransaction(() -> accountRepository.saveAndFlush(account(email, "Replacement Account")).getId());
 
-            AccountEntity replacement = inTransaction(() -> accountRepository.findByEmail(MyEmail.of(email)).orElseThrow());
+            AccountEntity replacement = inTransaction(() -> accountRepository.findByEmail(GamEmail.of(email)).orElseThrow());
             assertThat(replacement.getId()).isEqualTo(replacementId);
             assertThat(deletedAccountIds())
                     .extracting(AccountEntity::getId)
@@ -160,7 +160,7 @@ class PersistenceRepositoryIT extends PostgreSQLIntegrationTest {
     }
 
     private AccountEntity account(String email, String displayName) {
-        Account account = Account.register(MyEmail.of(email), "{bcrypt}hash", displayName);
+        Account account = Account.register(GamEmail.of(email), "{bcrypt}hash", displayName);
         return accountMapper.domainToEntity(account);
     }
 

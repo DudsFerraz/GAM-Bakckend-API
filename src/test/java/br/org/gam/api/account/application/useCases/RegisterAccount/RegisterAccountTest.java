@@ -2,7 +2,7 @@ package br.org.gam.api.account.application.useCases.registerAccount;
 
 import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.shared.exception.ConflictException;
@@ -52,7 +52,7 @@ class RegisterAccountTest {
         @Test
         @DisplayName("EP - available email -> account is registered")
         void availableEmailShouldRegisterAccount() {
-            RegisterAccountDTO dto = new RegisterAccountDTO(MyEmail.of("USER@example.com"), "plain-password", " Eduardo ");
+            RegisterAccountDTO dto = new RegisterAccountDTO(GamEmail.of("USER@example.com"), "plain-password", " Eduardo ");
             AccountEntity mappedEntity = new AccountEntity();
             AccountEntity savedEntity = new AccountEntity();
             RegisterAccountRDTO expectedResponse = new RegisterAccountRDTO(UUID.randomUUID());
@@ -73,7 +73,7 @@ class RegisterAccountTest {
 
             assertThat(registeredAccount.getId()).isNotNull();
             assertThat(registeredAccount.getId().version()).isEqualTo(7);
-            assertThat(registeredAccount.getEmail()).isEqualTo(MyEmail.of("user@example.com"));
+            assertThat(registeredAccount.getEmail()).isEqualTo(GamEmail.of("user@example.com"));
             assertThat(registeredAccount.getPasswordHash()).isEqualTo("encoded-password");
             assertThat(registeredAccount.getDisplayName()).isEqualTo("Eduardo");
             verify(accountRepo).save(mappedEntity);
@@ -82,7 +82,7 @@ class RegisterAccountTest {
         @Test
         @DisplayName("EP - already registered email -> conflict error")
         void alreadyRegisteredEmailShouldReturnConflictError() {
-            RegisterAccountDTO dto = new RegisterAccountDTO(MyEmail.of("user@example.com"), "plain-password", "Eduardo");
+            RegisterAccountDTO dto = new RegisterAccountDTO(GamEmail.of("user@example.com"), "plain-password", "Eduardo");
 
             when(accountRepo.existsByEmail(dto.email())).thenReturn(true);
 

@@ -1,7 +1,7 @@
 package br.org.gam.api.rbac.accountRole.application.useCases;
 
 import br.org.gam.api.account.application.AccountEntityLoader;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.rbac.accountRole.application.AccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.AccountRoleMapper;
@@ -196,7 +196,7 @@ class AddAccountRoleTest {
     private static AccountEntity account() {
         AccountEntity account = new AccountEntity();
         account.setId(UUID.randomUUID());
-        account.setEmail(MyEmail.of("rbac-account@example.com"));
+        account.setEmail(GamEmail.of("rbac-account@example.com"));
         account.setPasswordHash("encoded-password");
         account.setDisplayName("RBAC Account");
         return account;

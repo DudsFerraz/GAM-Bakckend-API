@@ -1,7 +1,7 @@
 package br.org.gam.api.account.application.useCases.loginAccount;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.security.application.TokensDTO;
 import br.org.gam.api.security.jwt.JwtService;
 import br.org.gam.api.security.refreshtoken.application.RefreshTokenService;
@@ -58,7 +58,7 @@ class LoginAccountTest {
         @Test
         @DisplayName("EP - valid credentials -> access and refresh tokens")
         void validCredentialsShouldReturnTokens() {
-            LoginAccountDTO dto = new LoginAccountDTO(MyEmail.of("USER@example.com"), "plain-password");
+            LoginAccountDTO dto = new LoginAccountDTO(GamEmail.of("USER@example.com"), "plain-password");
             UserDetails userDetails = User.withUsername("user@example.com")
                     .password("encoded-password")
                     .roles("USER")
@@ -83,13 +83,13 @@ class LoginAccountTest {
             assertThat(authentication.getCredentials()).isEqualTo("plain-password");
             verify(accountDetailsService).loadUserByUsername("user@example.com");
             verify(jwtService).generateToken(userDetails);
-            verify(refreshTokenService).createRefreshToken(MyEmail.of("user@example.com"));
+            verify(refreshTokenService).createRefreshToken(GamEmail.of("user@example.com"));
         }
 
         @Test
         @DisplayName("EP - invalid credentials -> authentication error")
         void invalidCredentialsShouldReturnAuthenticationError() {
-            LoginAccountDTO dto = new LoginAccountDTO(MyEmail.of("user@example.com"), "wrong-password");
+            LoginAccountDTO dto = new LoginAccountDTO(GamEmail.of("user@example.com"), "wrong-password");
 
             when(authenticationManager.authenticate(any()))
                     .thenThrow(new BadCredentialsException("Bad credentials"));

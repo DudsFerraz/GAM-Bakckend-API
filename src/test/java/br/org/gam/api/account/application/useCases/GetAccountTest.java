@@ -4,7 +4,7 @@ import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.application.AccountRDTO;
 import br.org.gam.api.account.application.AccountEntityLoader;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
 import br.org.gam.api.shared.exception.NotFoundException;
@@ -51,7 +51,7 @@ class GetAccountTest {
             AccountEntity entity = new AccountEntity();
             AccountRDTO expectedResponse = new AccountRDTO(
                     id,
-                    MyEmail.of("user@example.com"),
+                    GamEmail.of("user@example.com"),
                     "Eduardo",
                     new AccountRolesRDTO()
             );

@@ -3,7 +3,7 @@ package br.org.gam.api.account.application.useCases;
 import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.application.AccountRDTO;
 import br.org.gam.api.account.application.search.AccountSearchFilterConverter;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
@@ -129,6 +129,6 @@ class SearchAccountsTest {
     }
 
     private static AccountRDTO response(UUID id, String email, String displayName) {
-        return new AccountRDTO(id, MyEmail.of(email), displayName, new AccountRolesRDTO());
+        return new AccountRDTO(id, GamEmail.of(email), displayName, new AccountRolesRDTO());
     }
 }

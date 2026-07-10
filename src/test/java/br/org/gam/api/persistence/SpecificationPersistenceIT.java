@@ -3,7 +3,7 @@ package br.org.gam.api.persistence;
 import br.org.gam.api.account.application.AccountMapper;
 import br.org.gam.api.account.application.search.AccountSearchFilterConverter;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.event.application.search.EventSearchFilterConverter;
@@ -245,7 +245,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
     }
 
     private AccountEntity account(String email, String displayName) {
-        Account account = Account.register(MyEmail.of(email), "{bcrypt}hash", displayName);
+        Account account = Account.register(GamEmail.of(email), "{bcrypt}hash", displayName);
         return accountMapper.domainToEntity(account);
     }
 

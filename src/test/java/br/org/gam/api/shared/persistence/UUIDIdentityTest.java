@@ -2,7 +2,7 @@ package br.org.gam.api.shared.persistence;
 
 import br.org.gam.api.account.application.AccountRDTO;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.web.AccountController;
 import br.org.gam.api.event.application.EventRDTO;
@@ -136,7 +136,7 @@ class UUIDIdentityTest {
     }
 
     private static Account account() {
-        return Account.register(MyEmail.of("person@example.com"), "hash", "Ana Silva");
+        return Account.register(GamEmail.of("person@example.com"), "hash", "Ana Silva");
     }
 
     private static GamName name() {

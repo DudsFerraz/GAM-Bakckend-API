@@ -1,29 +1,30 @@
 package br.org.gam.api.account.domain;
 
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Account {
     private UUID id;
-    private MyEmail email;
+    private GamEmail email;
     private String passwordHash;
     private String displayName;
 
     /**
      * @deprecated <b>ESTE CONSTRUTOR É EXCLUSIVO PARA USO INTERNO E JPA/MapStruct.</b>
      * <br> <br>
-     * <b> Use o método fábrica {@link #register(MyEmail email, String passwordHash, String displayName)}.
+     * <b> Use o método fábrica {@link #register(GamEmail email, String passwordHash, String displayName)}.
      */
     @Deprecated
-    public Account(UUID id, MyEmail email, String passwordHash, String displayName) {
+    public Account(UUID id, GamEmail email, String passwordHash, String displayName) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
     }
 
-    public static Account register(MyEmail email, String passwordHash, String displayName) {
+    public static Account register(GamEmail email, String passwordHash, String displayName) {
         Objects.requireNonNull(email, "Email cannot be null.");
         Objects.requireNonNull(passwordHash, "Password hash cannot be null.");
         Objects.requireNonNull(displayName, "Display name cannot be null.");
@@ -41,7 +42,7 @@ public class Account {
         return id;
     }
 
-    public MyEmail getEmail() {
+    public GamEmail getEmail() {
         return email;
     }
 

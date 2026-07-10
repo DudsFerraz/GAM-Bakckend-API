@@ -1,6 +1,6 @@
 package br.org.gam.api.account.application;
 
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.shared.exception.NotFoundException;
@@ -21,7 +21,7 @@ public class AccountEntityLoader {
                 .orElseThrow(() -> NotFoundException.resource("Account", id));
     }
 
-    public AccountEntity requiredByEmail(MyEmail email) {
+    public AccountEntity requiredByEmail(GamEmail email) {
         return accountRepo.findByEmail(email)
                 .orElseThrow(() -> NotFoundException.resource("Account", email));
     }

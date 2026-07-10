@@ -1,7 +1,7 @@
 package br.org.gam.api.member.application;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.member.application.MemberEntityLoader;
 import br.org.gam.api.member.domain.Member;
@@ -145,7 +145,7 @@ class MemberSecurityTest {
     private static AccountEntity account(UUID accountId) {
         AccountEntity account = new AccountEntity();
         account.setId(accountId);
-        account.setEmail(MyEmail.of(accountId + "@example.com"));
+        account.setEmail(GamEmail.of(accountId + "@example.com"));
         account.setPasswordHash("encoded-password");
         account.setDisplayName("Account");
         return account;

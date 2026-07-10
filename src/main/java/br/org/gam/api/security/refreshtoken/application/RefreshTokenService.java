@@ -2,7 +2,7 @@ package br.org.gam.api.security.refreshtoken.application;
 
 import br.org.gam.api.account.application.AccountDomainLoader;
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.security.application.InvalidTokenFormatException;
 import br.org.gam.api.security.application.RefreshTokenExpiredException;
@@ -54,7 +54,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public UUID createRefreshToken(MyEmail email) {
+    public UUID createRefreshToken(GamEmail email) {
 
         UUID token = UUIDGenerator.generateUUIDV4();
         Instant expiryDate = Instant.now().plusMillis(refreshTokenDurationMs);

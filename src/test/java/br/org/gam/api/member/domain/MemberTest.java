@@ -1,7 +1,7 @@
 package br.org.gam.api.member.domain;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.shared.domain.GamName;
 import br.org.gam.api.shared.phonenumber.GamPhoneNumber;
 import br.org.gam.api.testing.annotation.FunctionalTest;
@@ -121,7 +121,7 @@ class MemberTest {
     }
 
     private static Account account() {
-        return Account.register(MyEmail.of("member@example.com"), "encoded-password", "Member Account");
+        return Account.register(GamEmail.of("member@example.com"), "encoded-password", "Member Account");
     }
 
     private static GamPhoneNumber phoneNumber() {

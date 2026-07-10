@@ -1,7 +1,7 @@
 package br.org.gam.api.member.application.useCases;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.member.application.MemberMapper;
 import br.org.gam.api.member.application.MemberDomainLoader;
 import br.org.gam.api.member.domain.Member;
@@ -148,6 +148,6 @@ class ActivationTest {
     }
 
     private static Account account() {
-        return Account.register(MyEmail.of("member@example.com"), "encoded-password", "Member Account");
+        return Account.register(GamEmail.of("member@example.com"), "encoded-password", "Member Account");
     }
 }

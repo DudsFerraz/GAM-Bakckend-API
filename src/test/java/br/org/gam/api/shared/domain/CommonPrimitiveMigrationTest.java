@@ -1,7 +1,10 @@
 package br.org.gam.api.shared.domain;
 
 import br.org.gam.api.account.domain.Account;
-import br.org.gam.api.account.domain.MyEmail;
+import br.org.gam.api.account.application.AccountRDTO;
+import br.org.gam.api.account.application.useCases.loginAccount.LoginAccountDTO;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountDTO;
+import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.member.application.MemberRDTO;
 import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberDTO;
 import br.org.gam.api.member.domain.Member;
@@ -42,7 +45,7 @@ class CommonPrimitiveMigrationTest {
         @Test
         @DisplayName("EP - member registration -> uses GamName and GamPhoneNumber")
         void memberRegistrationShouldUseGamNameAndGamPhoneNumber() {
-            Account account = Account.register(MyEmail.of("member@example.com"), "hash", "Member Account");
+            Account account = Account.register(GamEmail.of("member@example.com"), "hash", "Member Account");
             GamName name = new GamName("Ana", "Silva");
             GamPhoneNumber phoneNumber = GamPhoneNumber.fromString("+5519998877665");
 
@@ -63,12 +66,37 @@ class CommonPrimitiveMigrationTest {
             assertThat(oratoriano.getName()).isSameAs(name);
             assertThat(oratoriano.getPhoneNumber()).isSameAs(phoneNumber);
         }
+
+        @Test
+        @DisplayName("EP - account registration -> uses GamEmail")
+        void accountRegistrationShouldUseGamEmail() {
+            GamEmail email = GamEmail.of(" Account@Example.COM ");
+
+            Account account = Account.register(email, "hash", "Account");
+
+            assertThat(account.getEmail()).isSameAs(email);
+            assertThat(account.getEmail().value()).isEqualTo("account@example.com");
+        }
     }
 
     @Nested
     @StructuralTest
     @DisplayName("Structural")
     class Structural {
+
+        @ParameterizedTest
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#emailFields")
+        @DisplayName("COND - account email field type -> GamEmail")
+        void accountEmailFieldShouldUseGamEmail(Class<?> ownerType, String fieldName) throws NoSuchFieldException {
+            assertThat(ownerType.getDeclaredField(fieldName).getType()).isEqualTo(GamEmail.class);
+        }
+
+        @ParameterizedTest
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#emailRecordComponents")
+        @DisplayName("COND - API and use-case email component type -> GamEmail")
+        void apiAndUseCaseEmailComponentShouldUseGamEmail(Class<?> recordType, String componentName) {
+            assertThat(recordComponentType(recordType, componentName)).isEqualTo(GamEmail.class);
+        }
 
         @ParameterizedTest
         @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#nameFields")
@@ -130,6 +158,21 @@ class CommonPrimitiveMigrationTest {
         );
     }
 
+    private static Stream<Arguments> emailFields() {
+        return Stream.of(
+                Arguments.of(Account.class, "email"),
+                Arguments.of(AccountEntity.class, "email")
+        );
+    }
+
+    private static Stream<Arguments> emailRecordComponents() {
+        return Stream.of(
+                Arguments.of(RegisterAccountDTO.class, "email"),
+                Arguments.of(LoginAccountDTO.class, "email"),
+                Arguments.of(AccountRDTO.class, "email")
+        );
+    }
+
     private static Stream<Arguments> phoneNumberFields() {
         return Stream.of(
                 Arguments.of(Member.class, "phoneNumber"),
@@ -150,6 +193,7 @@ class CommonPrimitiveMigrationTest {
     private static Stream<String> retiredValueObjectClassNames() {
         return Stream.of(
                 "br.org.gam.api.shared.domain.Name",
+                "br.org.gam.api.account.domain.MyEmail",
                 "br.org.gam.api.shared.phonenumber.MyPhoneNumber",
                 "br.org.gam.api.shared.phonenumber.MyPhoneNumberConverter",
                 "br.org.gam.api.shared.phonenumber.MyPhoneNumberConverterJPA"
@@ -159,6 +203,7 @@ class CommonPrimitiveMigrationTest {
     private static List<Path> retiredSourceFiles() {
         return List.of(
                 Path.of("src", "main", "java", "br", "org", "gam", "api", "shared", "domain", "Name.java"),
+                Path.of("src", "main", "java", "br", "org", "gam", "api", "account", "domain", "MyEmail.java"),
                 Path.of("src", "main", "java", "br", "org", "gam", "api", "shared", "phonenumber", "MyPhoneNumber.java"),
                 Path.of("src", "main", "java", "br", "org", "gam", "api", "shared", "phonenumber", "MyPhoneNumberConverter.java"),
                 Path.of("src", "main", "java", "br", "org", "gam", "api", "shared", "phonenumber", "MyPhoneNumberConverterJPA.java")
@@ -180,6 +225,8 @@ class CommonPrimitiveMigrationTest {
         try {
             String source = Files.readString(path);
             return source.contains("br.org.gam.api.shared.domain.Name")
+                    || source.contains("br.org.gam.api.account.domain.MyEmail")
+                    || source.contains("MyEmail")
                     || source.contains("br.org.gam.api.shared.phonenumber.MyPhoneNumber")
                     || source.contains("MyPhoneNumberConverter")
                     || path.endsWith(Path.of("shared", "domain", "Name.java"))

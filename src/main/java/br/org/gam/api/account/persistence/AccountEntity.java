@@ -1,8 +1,9 @@
 package br.org.gam.api.account.persistence;
 
-import br.org.gam.api.account.domain.MyEmail;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.shared.auditing.FullAuditableEntity;
+import br.org.gam.api.shared.domain.GamEmail;
+import br.org.gam.api.shared.domain.GamEmailConverterJPA;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -26,9 +27,9 @@ public class AccountEntity extends FullAuditableEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Convert(converter = EmailConverterJPA.class)
+    @Convert(converter = GamEmailConverterJPA.class)
     @Column(name = "email", nullable = false)
-    private MyEmail email;
+    private GamEmail email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
