@@ -79,7 +79,9 @@ Invalid filters must **fail fast**. The API immediately rejects the request if:
 * The value cannot be parsed into the target persistence type.
 * Partial searches (like `LIKE` on emails) fail their specific structural rules.
 
-**Error Message Rule:** Validation errors must always reference the **public field name**. Never expose the internal JPA path in an error message.
+**Error Message Rule:** Errors for unsupported comparison methods or invalid filter values must reference the **public field name**. Unknown filter fields must return the generic message `Unknown filter field.` Never expose the submitted field name or an internal JPA path in an error message.
 
 * **Correct:** `Invalid filter value for email.`
+* **Correct:** `Unknown filter field.`
 * **Forbidden:** `Invalid filter value for account.email.`
+* **Forbidden:** `Unknown filter field account.accountRoles.role.name.`

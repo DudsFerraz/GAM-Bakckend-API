@@ -107,7 +107,7 @@ Account search shall accept only the following public filter fields and comparis
 | `createdAt` | `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL` |
 | `updatedAt` | `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL` |
 
-Search filter errors shall reference the public field name and shall not expose internal persistence paths.
+Errors for unsupported comparison methods or invalid filter values shall reference the public field name. Unknown filter fields shall return the generic message `Unknown filter field.` and shall not expose the submitted field name or internal persistence paths.
 
 Rationale:
 Account search needs a strict product contract. Public filter names must remain stable and must not require clients to know internal JPA paths or join structures.
