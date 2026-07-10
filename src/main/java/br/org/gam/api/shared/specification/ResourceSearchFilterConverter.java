@@ -34,7 +34,7 @@ public final class ResourceSearchFilterConverter {
 
         SearchFilterDefinition<E> definition = definitions.get(dto.field());
         if (definition == null) {
-            throw new InvalidSearchFilterException("Unknown filter field " + dto.field() + ".");
+            throw new InvalidSearchFilterException("Unknown filter field.");
         }
 
         return definition.toSpecification(dto);

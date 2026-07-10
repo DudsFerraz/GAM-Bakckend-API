@@ -65,7 +65,7 @@ class SpecificationFilterFunctionalTest {
 
         assertThatThrownBy(() -> ResourceSearchFilterConverter.convert(new SearchDTO(List.of(dto)), Map.of()))
                 .isInstanceOf(InvalidSearchFilterException.class)
-                .hasMessage("Unknown filter field unknown.");
+                .hasMessage("Unknown filter field.");
     }
 
     @Test
