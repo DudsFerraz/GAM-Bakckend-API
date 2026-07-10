@@ -259,6 +259,19 @@ public abstract class BaseApiIntegrationTest {
         createdAccountIds.add(accountId);
     }
 
+    protected void softDeleteAccount(UUID accountId) {
+        jdbcTemplate.update("UPDATE accounts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?", accountId);
+    }
+
+    protected void softDeleteAccountRole(UUID accountId, String roleName) {
+        jdbcTemplate.update(
+                "UPDATE account_roles SET deleted_at = CURRENT_TIMESTAMP "
+                        + "WHERE account_id = ? AND role_id = (SELECT id FROM roles WHERE name = ?)",
+                accountId,
+                roleName
+        );
+    }
+
     protected boolean refreshTokenExists(String refreshToken) {
         return refreshTokenRepository.findByToken(UUID.fromString(refreshToken)).isPresent();
     }

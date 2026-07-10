@@ -26,7 +26,7 @@ public class AccountController {
         this.searchAccountsService = searchAccountsService;
     }
 
-    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
+    @PreAuthorize("@accountSecurity.canGetAccount(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<AccountRDTO> getAccountById(@PathVariable UUID id) {
         AccountRDTO dto = getAccount.byId(id);

@@ -9,6 +9,7 @@ import br.org.gam.api.shared.specification.SearchFilterDefinition;
 import br.org.gam.api.shared.specification.SearchValueParsers;
 import java.util.Map;
 import java.util.Set;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +44,8 @@ public class AccountSearchFilterConverter implements SearchFilterConverter<Accou
                             ComparationMethods.LIKE, SearchValueParsers::emailLike
                     )
             )),
-            Map.entry("roleName", SearchFilterDefinition.path(
-                    "roleName",
+            Map.entry("role", SearchFilterDefinition.path(
+                    "role",
                     "accountRoles.role.name",
                     Set.of(ComparationMethods.EQUALS, ComparationMethods.IN),
                     Map.of(
@@ -71,7 +72,6 @@ public class AccountSearchFilterConverter implements SearchFilterConverter<Accou
                     )
             ))
     );
-
     @Override
     public Specification<AccountEntity> convert(SearchDTO searchDTO) {
         return ResourceSearchFilterConverter.convert(searchDTO, DEFINITIONS);
