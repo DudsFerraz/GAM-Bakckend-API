@@ -5,25 +5,27 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-      "computedHash": "871aa9bd7d283910becea8f77859b469045d048ab2497d6e24e6d0e76c5fb201"
-    },
-    "grill-with-docs": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
-      "computedHash": "559d4de044394b86af53a5cedd2d3a689770088c3c5361646c91f5d7ea59f78a"
+      "computedHash": "871aa9bd7d283910becea8f77859b469045d048ab2497d6e24e6d0e76c5fb201",
+      "adaptedForGAM": true,
+      "adaptationNote": "Keeps the upstream diagnosis loop, but narrows invocation to explicit GAM diagnosis-mode requests and uses Developer terminology for the person interacting with agents."
     },
     "grilling": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "250c2622b0035a3536fdd8bfae5b008da473174617387306860dff8e0866dba6"
+      "computedHash": "250c2622b0035a3536fdd8bfae5b008da473174617387306860dff8e0866dba6",
+      "adaptedForGAM": true,
+      "adaptationNote": "Lightly adapted from upstream: uses Developer terminology and simplifies codebase lookup guidance while preserving the one-question-at-a-time grilling workflow."
+    }
+  },
+  "externalDerivedLocalSkills": {
+    "gam-handoff": {
+      "formerExternalSkill": "handoff",
+      "reason": "Rewritten into a GAM-specific chat handoff workflow with Agent P/T/D/R handoff types, chat output, and repository source-of-truth rules."
     },
-    "handoff": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "skillPath": "skills/productivity/handoff/SKILL.md",
-      "computedHash": "b7c38b5061b73217e5478f9446fc403be17ce311d4c23a108cc37b5b4604fa37"
+    "gam-grill": {
+      "formerExternalSkill": "grill-with-docs",
+      "reason": "Rewritten as a GAM-specific coordinator for $grilling, $gam-domain-modeling, and $gam-requirements instead of the upstream generic docs workflow."
     }
   }
 }

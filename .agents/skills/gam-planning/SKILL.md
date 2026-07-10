@@ -17,20 +17,15 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
    - Read `docs/ubiquitous-language.md` when the request uses GAM-wide domain terms.
    - Read `docs/documentation-guidelines/README.md` and the focused guideline files for the documentation artifacts that planning may produce, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, `docs/documentation-guidelines/diagrams.md`, or `docs/documentation-guidelines/agent-workflow.md`.
    - Locate existing related requirements, ADRs, and diagrams.
-2. Grill until shared understanding is reached.
-   - Use `$grilling` to ask one question at a time.
-   - Explore the codebase instead of asking when the answer can be discovered locally.
-   - Do not proceed to documentation until major ambiguities, tradeoffs, and boundaries are explicit.
-3. Model the domain while grilling.
-   - Use `$gam-domain-modeling` to sharpen terminology, identify canonical terms, aliases to avoid, relationships between terms, stress-test edge cases, and decide which choices deserve ADRs.
-   - Convert resolved answers into domain rules, examples, acceptance scenarios, diagrams, or ADR candidates.
-   - Convert unresolved answers into open questions.
-4. Consolidate planning documentation.
+2. Grill and model the domain until shared understanding is reached.
+   - Use `$gam-grill` to coordinate the grilling interview, domain modeling, and requirements capture.
+   - Do not proceed to final planning documentation until major ambiguities, tradeoffs, and boundaries are explicit.
+3. Consolidate planning documentation.
    - Use `$gam-requirements` to create or update Requirement Specifications with stable IDs.
    - Capture problem statement, solution intent, in-scope behavior, and out-of-scope boundaries inside the relevant Requirement Specification sections instead of creating a separate PRD.
    - Create or update ADRs only for decisions with meaningful consequences, tradeoffs, or future maintenance impact.
    - Add Mermaid diagrams when they clarify flow, state, architecture, or decisions.
-5. End with a handoff.
+4. End with a handoff.
    - Summarize the problem being solved and the intended User or domain outcome.
    - Summarize produced or updated docs.
    - List in-scope behavior and explicit out-of-scope boundaries.
@@ -47,7 +42,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 - Do not implement production code.
 - Do not create PRDs or publish issue-tracker items unless the developer explicitly asks for that external workflow.
 - Do not treat implementation slices as replacement requirements; they are planning handoff notes derived from Requirement Specifications.
-- Treat handoffs produced by `$handoff` as ephemeral context-transfer aids, not project documentation or source-of-truth artifacts.
+- Treat handoffs produced by `$gam-handoff` as ephemeral context-transfer aids, not project documentation or source-of-truth artifacts.
 - Do not infer business rules from existing implementation.
 - Do not mark Draft requirements as Accepted unless the developer explicitly approves.
 - Do not hide unresolved ambiguity; preserve it as open questions.

@@ -1,8 +1,6 @@
 ---
-name: handoff
+name: gam-handoff
 description: Compact the current conversation into a chat-ready handoff for another agent chat or role transition.
-argument-hint: "What will the next session be used for?"
-disable-model-invocation: true
 ---
 
 Write a handoff directly in the chat response so the developer can copy and paste it into the intended next agent chat.

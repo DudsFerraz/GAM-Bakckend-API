@@ -75,10 +75,10 @@ The diagnosis output is not a source-of-truth artifact. To turn a diagnosis into
 
 ## Handoffs
 
-A handoff is an ephemeral continuation aid for moving work between agent chats or between the Agent T / Agent D loop contexts. When the `$handoff` skill is available, use it to produce a chat-ready handoff that the developer can copy and paste into the intended next chat. The resulting handoff remains ephemeral and non-authoritative.
+A handoff is an ephemeral continuation aid for moving work between agent chats or between the Agent T / Agent D loop contexts. When the `$gam-handoff` skill is available, use it to produce a chat-ready handoff that the developer can copy and paste into the intended next chat. The resulting handoff remains ephemeral and non-authoritative.
 
 Handoffs are useful when context is long, when work moves from Agent P to a fresh Agent T chat, when Agent T / Agent D / Agent R should resume in a separate chat, when the Agent T / Agent D alternation needs a concise return note, or when the developer wants a compact summary before pausing.
 
 Handoffs are not project documentation and are not a source of truth. They must reference durable artifacts such as Requirement Specifications, ADRs, diagrams, relevant files, diffs, test output, and commit references instead of duplicating them.
 
-For handoff types, output shape, and compactness rules, read `.agents/skills/handoff/SKILL.md`.
+For handoff types, output shape, and compactness rules, read `.agents/skills/gam-handoff/SKILL.md`.
