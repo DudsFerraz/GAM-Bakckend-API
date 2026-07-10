@@ -1,6 +1,6 @@
 ---
 name: gam-git-commits
-description: Draft safe Conventional Commit commands for GAM without staging, committing, or pushing. Use when the user asks to commit, stage changes, push, write a commit message, prepare commit commands, split work into commits, or summarize the current diff for version control.
+description: Draft safe Conventional Commit commands for GAM without staging, committing, or pushing. Use when the developer asks to commit, stage changes, push, write a commit message, prepare commit commands, split work into commits, or summarize the current diff for version control.
 ---
 
 # GAM Git Commits
@@ -18,7 +18,7 @@ Use this skill to help the developer commit work while preserving manual control
    - For untracked files, read or summarize only the files needed to understand the intended commit.
 2. Identify the task scope.
    - Include only files changed by the current implementation scope.
-   - Exclude unrelated user changes.
+   - Exclude unrelated developer changes.
    - If the diff contains distinct logical changes, split the proposal into multiple commits.
 3. Draft Conventional Commit messages.
    - Use the format `type(scope): summary`.
@@ -47,5 +47,5 @@ For multiple commits, group each command pair under a short label and explain wh
 
 - Never run `git add`, `git commit`, or `git push`.
 - Never suggest `git add .` unless the diff has been proven to contain only files that belong in the commit.
-- Never include unrelated user changes in proposed staging commands.
+- Never include unrelated developer changes in proposed staging commands.
 - If unsure whether a file belongs to the implementation scope, call it out and leave it unstaged.

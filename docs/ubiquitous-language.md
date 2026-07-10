@@ -16,7 +16,9 @@ This document is not a Requirement Specification. It defines canonical terms, di
 | **Member**         | A lifetime member of GAM Piracicaba. A Member may become active or inactive, but does not stop being a Member because of inactivity.                                                         | None                 | Participant                      |
 | **Coordinator**    | A Member responsible for coordinating a GAM activity, team, responsibility area, or system capability. System authorization roles may reuse this domain term.                                | coord                | Admin, director                  |
 | **Account**        | A persisted identity that can authenticate to GAM. An Account is not automatically a Member, Coordinator, or any other role-bearing domain person.                                           | None                 | User account                     |
-| **displayName**    | It is how the user wants to be known. It is not a legal name, personal name, or GamName.                                                                                                     | None                 | name, full name, GamName         |
+| **User**           | A person who uses the GAM application or appears as an actor in product-facing workflows. Do not use this term for the developer interacting with an LLM agent.                              | None                 | Developer                        |
+| **Developer**      | The person working on the GAM project, preparing prompts, making decisions, and interacting with LLM agents. Do not use `User` for this role.                                                | Dev                  | User                             |
+| **displayName**    | It is how the User wants to be known. It is not a legal name, personal name, or GamName.                                                                                                     | None                 | name, full name, GamName         |
 | **GamName**        | The common primitive for a person's required name components: `firstName` and `surname`.                                                                                                     | None                 | Name, full name                  |
 | **firstName**      | The given or personal name component inside a **GamName**.                                                                                                                                   | None                 | first name                       |
 | **surname**        | The family name component inside a **GamName**.                                                                                                                                              | None                 | lastName, last name              |
@@ -33,6 +35,7 @@ This document is not a Requirement Specification. It defines canonical terms, di
 - A **Coordinator** may inactivate a **Member** in the system because of real-life inactivity in GAM actions and events.
 - An **Account** may authenticate to GAM and may receive roles or permissions through RBAC workflows.
 - An **Account** is not automatically a **Member** or **Coordinator**.
+- A **User** may have an **Account**, but product-facing User language must not be used for the **Developer** interacting with agents.
 - A **displayName** belongs to an **Account** and must not be treated as a **GamName**.
 - A **GamName** is composed of `firstName` and `surname`.
 - **UUID** is used to identify persisted resources such as Accounts, Members, Oratorianos, Events, Locations, Roles, and Permissions.
@@ -41,6 +44,7 @@ This document is not a Requirement Specification. It defines canonical terms, di
 
 - Prefer canonical terms when naming domain concepts in documentation, APIs, code, tests, and agent handoffs.
 - Use accepted short forms only when the context remains clear. `coord` is accepted as user-facing shorthand and as an informal internal abbreviation for **Coordinator**.
+- In agent-facing documentation, use **Developer** for the person prompting or directing agents. Reserve **User** for product-facing GAM actors.
 - Treat aliases to avoid as clarification aids, not as competing domain names.
 - Feature-specific Requirement Specification `Ubiquitous Language` sections may introduce local terms, but must not repeat or redefine terms, aliases, synonyms, translations, or legacy names already defined here.
 - If a term is ambiguous, preserve the ambiguity as an open question in the relevant Requirement Specification or planning handoff until the developer resolves it.

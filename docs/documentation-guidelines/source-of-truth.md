@@ -1,6 +1,6 @@
 # Source of truth priority
 
-When sources conflict the user must be notified, use this priority if the conflicts are not resolved:
+When sources conflict the developer must be notified, use this priority if the conflicts are not resolved:
 
 ```text
 1. Accepted requirements

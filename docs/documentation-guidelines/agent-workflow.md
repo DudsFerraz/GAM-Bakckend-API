@@ -73,23 +73,12 @@ The diagnosis output is not a source-of-truth artifact. To turn a diagnosis into
 
 ---
 
-## Continuation notes
+## Handoffs
 
-A continuation note is an ephemeral handoff aid for moving work to a fresh agent session. When the `$handoff` skill is available, use it to produce a chat-ready handoff that the developer can copy and paste into the next fresh agent session. The resulting handoff remains ephemeral and non-authoritative.
+A handoff is an ephemeral continuation aid for moving work between agent chats or between the Agent T / Agent D loop contexts. When the `$handoff` skill is available, use it to produce a chat-ready handoff that the developer can copy and paste into the intended next chat. The resulting handoff remains ephemeral and non-authoritative.
 
-Continuation notes are useful when context is long, when Agent T / Agent D / Agent R should resume in a separate chat, or when the developer wants a compact summary before pausing.
+Handoffs are useful when context is long, when work moves from Agent P to a fresh Agent T chat, when Agent T / Agent D / Agent R should resume in a separate chat, when the Agent T / Agent D alternation needs a concise return note, or when the developer wants a compact summary before pausing.
 
-Continuation notes are not project documentation and are not a source of truth. They must reference durable artifacts such as Requirement Specifications, ADRs, diagrams, relevant files, diffs, test output, and commit references instead of duplicating them.
+Handoffs are not project documentation and are not a source of truth. They must reference durable artifacts such as Requirement Specifications, ADRs, diagrams, relevant files, diffs, test output, and commit references instead of duplicating them.
 
-Continuation notes should be compact. Do not repeat project-wide rules, role boundaries, or skill workflow details that the next agent is expected to load from `AGENTS.md`, the suggested skill, and the relevant project guidelines. Include those rules only when the current session discovered a task-specific exception, conflict, or clarification.
-
-A useful continuation note includes:
-
-- The intended next agent role and suggested skill, such as Agent T with `$gam-test-design`, Agent D with `$gam-implementation`, or Agent R with `$gam-review`.
-- Current status and what has already been completed.
-- Relevant durable artifacts by path or URL.
-- Open questions, blockers, pending decisions, and known risks.
-- Verification state, including tests run, expected failures, unexpected failures, and tests not run.
-- Relevant changed files or diff references when local changes matter.
-
-Continuation notes must redact secrets, credentials, tokens, private keys, and unnecessary personal data. They should be emitted in chat, not saved to the repository or to temporary files, unless the developer explicitly asks for a saved artifact.
+For handoff types, output shape, and compactness rules, read `.agents/skills/handoff/SKILL.md`.

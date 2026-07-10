@@ -12,7 +12,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 ## Workflow
 
 1. Establish planning scope.
-   - Read the user's feature or refactor request.
+   - Read the developer's feature or refactor request.
    - Read relevant context docs such as `docs/about-gam/` when the request depends on GAM domain knowledge.
    - Read `docs/ubiquitous-language.md` when the request uses GAM-wide domain terms.
    - Read `docs/documentation-guidelines/README.md` and the focused guideline files for the documentation artifacts that planning may produce, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, `docs/documentation-guidelines/diagrams.md`, or `docs/documentation-guidelines/agent-workflow.md`.
@@ -31,7 +31,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
    - Create or update ADRs only for decisions with meaningful consequences, tradeoffs, or future maintenance impact.
    - Add Mermaid diagrams when they clarify flow, state, architecture, or decisions.
 5. End with a handoff.
-   - Summarize the problem being solved and the intended user or domain outcome.
+   - Summarize the problem being solved and the intended User or domain outcome.
    - Summarize produced or updated docs.
    - List in-scope behavior and explicit out-of-scope boundaries.
    - List open questions and decisions still pending.
@@ -47,7 +47,7 @@ Use this skill for Agent P: the planning agent responsible for turning an initia
 - Do not implement production code.
 - Do not create PRDs or publish issue-tracker items unless the developer explicitly asks for that external workflow.
 - Do not treat implementation slices as replacement requirements; they are planning handoff notes derived from Requirement Specifications.
-- Treat continuation notes, including chat handoffs produced by `$handoff`, as ephemeral context-transfer aids, not project documentation or source-of-truth artifacts.
+- Treat handoffs produced by `$handoff` as ephemeral context-transfer aids, not project documentation or source-of-truth artifacts.
 - Do not infer business rules from existing implementation.
 - Do not mark Draft requirements as Accepted unless the developer explicitly approves.
 - Do not hide unresolved ambiguity; preserve it as open questions.

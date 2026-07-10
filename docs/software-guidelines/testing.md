@@ -137,7 +137,7 @@ When an external dependency must be mocked, design the boundary intentionally:
 
 Functional tests are based on the specification, though nothing prevents analyzing the code. The process must be iterative, not sequential. The Equivalence Partitioning and Boundary Value Analysis criteria must be used alongside JUnit, AssertJ, and Mockito.
 
-1. **Requirements Comprehension:** Carefully read the requirements to understand how the program works, its inputs and outputs, boundary conditions, data types, etc. (If the tester does not understand how the program works, they cannot evaluate if it functions properly). If there is any doubt about the requirement the LLM model should ask the user about it, rather than make assumptions.
+1. **Requirements Comprehension:** Carefully read the requirements to understand how the program works, its inputs and outputs, boundary conditions, data types, etc. (If the tester does not understand how the program works, they cannot evaluate if it functions properly). If there is any doubt about the requirement the LLM model should ask the developer about it, rather than make assumptions.
 2. **Seam Selection:** Select the narrowest public seam that protects the requirement behavior and risk being tested. If the seam is unclear, ask for clarification before writing tests.
 3. **Exploratory Analysis:** Execute the program with different input and output values to improve your understanding of what it does.
 4. **Partition Identification:** Investigate inputs and outputs to map equivalence classes. Analyze each input individually, potential interactions between inputs, and all possible outputs.

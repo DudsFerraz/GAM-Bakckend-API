@@ -14,7 +14,7 @@ Use this skill to perform a project-aware review. Prioritize bugs, requirement m
 1. Establish review scope.
    - Inspect the diff and changed files.
    - Identify whether the review covers code, tests, docs, or all of them.
-   - Ignore unrelated user changes unless they affect the reviewed behavior.
+   - Ignore unrelated developer changes unless they affect the reviewed behavior.
 2. Load the correct project context.
    - Read `docs/documentation-guidelines/agent-workflow.md` to understand the Agent R role and review boundary.
    - Read related Requirement Specifications under `docs/requirements/`.
@@ -57,4 +57,4 @@ If no issues are found, say that clearly and mention remaining residual risk or 
 - Guideline violations that make future work harder
 - Documentation drift or missing ADRs for durable decisions
 
-Continuation notes, including chat handoffs produced by `$handoff`, may help another review session resume context, but they are not review findings or source-of-truth artifacts. Review findings must still be reported directly with file and line references when possible.
+Handoffs produced by `$handoff` may help another review chat resume context, but they are not review findings or source-of-truth artifacts. Review findings must still be reported directly with file and line references when possible.

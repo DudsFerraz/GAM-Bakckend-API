@@ -27,7 +27,7 @@ Context:
 <feature or refactor context>
 ```
 
-Agent P should produce planning documentation and a handoff summary for Agent T.
+Agent P should produce planning documentation and a fresh Agent T handoff.
 
 ## Agent T: test design
 
@@ -59,13 +59,17 @@ Agent D should report requirement gaps instead of guessing business rules.
 
 After Agent P finishes, keep Agent T and Agent D in separate open chat sessions for the test/implementation loop.
 
-1. Start Agent T in a fresh chat to write functional tests from the requirements.
-2. Start Agent D in a separate fresh chat to implement production code against Agent T's failing tests.
-3. Return to the same Agent T chat to add structural and integration tests after Agent D's implementation passes the functional tests.
-4. Return to the same Agent D chat to fix bugs exposed by Agent T's expanded suite.
+1. Use a fresh Agent T handoff to start Agent T in a fresh chat to write functional tests from the requirements.
+2. Use a fresh Agent D handoff to start Agent D in a separate fresh chat to implement production code against Agent T's failing tests.
+3. Use a return-to-Agent-T handoff to return to the same Agent T chat and add structural and integration tests after Agent D's implementation passes the functional tests.
+4. Use a return-to-Agent-D handoff to return to the same Agent D chat and fix bugs exposed by Agent T's expanded suite.
 5. Repeat the Agent T and Agent D handoff until the agreed verification scope is satisfied.
 
 When switching between Agent T and Agent D, reference the relevant handoff data: changed files, test files, test output, requirement IDs, and any unresolved questions. Do not merge the roles into one chat.
+
+Fresh-agent handoffs should identify the next role, suggested skill, source-of-truth artifacts, current status, verification state, and open questions or risks.
+
+Return-to-same-chat handoffs should be shorter. The receiving Agent T or Agent D chat already has the earlier role and requirement context, so include only valuable new context: current status, changed files, verification changes, important scope notes, and open questions or risks.
 
 ## Agent R: review
 
@@ -79,3 +83,5 @@ Context:
 ```
 
 Agent R should lead with findings and keep summaries secondary.
+
+Use a fresh Agent R handoff after the Agent T / Agent D alternation is complete. Include the requirements, changed files, verification evidence, known risks, and any review focus requested by the developer.
