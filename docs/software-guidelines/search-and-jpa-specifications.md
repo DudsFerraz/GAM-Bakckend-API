@@ -65,7 +65,7 @@ The public `name` field does not map to a single database column. Using the `LIK
 **Example 2: Contextual Parsing (`email` and `phoneNumber`)**
 The parser applies different rules based on the comparison method:
 
-* **`email EQUALS`**: Parses strictly to the rich `MyEmail` domain object.
+* **`email EQUALS`**: Parses strictly to the `GamEmail` common primitive.
 * **`email LIKE`**: Parses as a normalized `String`. It applies custom validation (rejects blank values, trims/lowercases, rejects inputs shorter than 3 characters, and enforces structural rules like requiring at least 2 characters before an `@`).
 
 ---

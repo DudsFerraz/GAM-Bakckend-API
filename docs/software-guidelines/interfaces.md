@@ -63,7 +63,7 @@ When the application must plug into an external framework's ecosystem, you must 
 
 * **Spring Security:** Implementing `UserDetails` or `UserDetailsService`.
 * **Spring Web:** Implementing `AuthenticationEntryPoint`.
-* **JPA:** Implementing `AttributeConverter<MyEmail, String>`.
+* **JPA:** Implementing `AttributeConverter<GamEmail, String>`.
 
 ### 4.3. Multiple Real Implementations
 
