@@ -181,7 +181,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             TokenNotFoundException.class,
-            InvalidTokenFormatException.class
+            InvalidTokenFormatException.class,
+            RefreshTokenExpiredException.class
     })
     public ResponseEntity<ApiErrorDTO> handleTokenExceptions(RuntimeException e) {
         return buildErrorResponse(
@@ -189,11 +190,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "INVALID_REFRESH_TOKEN",
                 "Invalid or expired refresh token. Please sign in again."
         );
-    }
-
-    @ExceptionHandler(RefreshTokenExpiredException.class)
-    public ResponseEntity<ApiErrorDTO> handleTokenExpired(RefreshTokenExpiredException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "REFRESH_TOKEN_EXPIRED", e.getMessage());
     }
 
     // =====================================================================================

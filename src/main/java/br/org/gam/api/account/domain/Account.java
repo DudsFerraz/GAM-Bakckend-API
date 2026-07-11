@@ -29,11 +29,14 @@ public class Account {
         Objects.requireNonNull(passwordHash, "Password hash cannot be null.");
         Objects.requireNonNull(displayName, "Display name cannot be null.");
         if (passwordHash.isBlank()) throw new IllegalArgumentException("Password hash cannot be blank.");
-        if (displayName.isBlank()) throw new IllegalArgumentException("Display name cannot be blank.");
-
-        UUID id = UUIDGenerator.generateUUIDV7();
 
         displayName = displayName.trim();
+        if (displayName.isBlank()) throw new IllegalArgumentException("Display name cannot be blank.");
+        if (displayName.length() > 50) {
+            throw new IllegalArgumentException("Display name cannot exceed 50 characters.");
+        }
+
+        UUID id = UUIDGenerator.generateUUIDV7();
 
         return new Account(id, email, passwordHash, displayName);
     }

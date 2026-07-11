@@ -3,7 +3,7 @@
 
 DO $$
     DECLARE
-        v_dev_password_hash TEXT := '$2a$10$VtLNVkjqyJGQVrFFMSEo0e51JOC7Ilqrq9MINVDp9ysWTwa1hFrxa';
+        v_dev_password_hash TEXT := '{pbkdf2}626cc6b07d7c377eef0399b7ea312cad6945b4783354fd719fe22b9c1693042dc3a50c3020334391930fd0113ee16c29';
 
         v_role_member_id UUID;
         v_role_coord_id UUID;

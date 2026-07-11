@@ -42,12 +42,7 @@ public class RefreshTokenService {
     }
 
     public RefreshTokenEntity findByToken(String tokenString) {
-        UUID tokenUUID;
-        try {
-            tokenUUID = UUID.fromString(tokenString);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidTokenFormatException("token has invalid format");
-        }
+        UUID tokenUUID = parseRefreshToken(tokenString);
 
         return refreshTokenRepository.findByToken(tokenUUID)
                 .orElseThrow(() -> new TokenNotFoundException("Refresh token is not in database!"));
@@ -68,24 +63,26 @@ public class RefreshTokenService {
     }
 
     public void verifyExpiration(RefreshTokenEntity token) {
-        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+        if (!token.getExpiryDate().isAfter(Instant.now())) {
             refreshTokenRepository.deleteByToken(token.getToken());
             throw new RefreshTokenExpiredException("Refresh token was expired. Please make a new signin request");
         }
     }
 
-    @Transactional
+    @Transactional(dontRollbackOn = RefreshTokenExpiredException.class)
     public TokensDTO refresh(String refreshTokenStr){
-        RefreshTokenEntity oldTokenEntity = this.findByToken(refreshTokenStr);
+        RefreshTokenEntity oldTokenEntity = findByTokenForUpdate(refreshTokenStr);
         this.verifyExpiration(oldTokenEntity);
 
         AccountEntity accountEntity = oldTokenEntity.getAccount();
+        GamEmail accountEmail = accountEntity.getEmail();
+        UUID accountId = accountEntity.getId();
 
         refreshTokenRepository.deleteByToken(oldTokenEntity.getToken());
 
-        UUID newRefreshToken = this.createRefreshToken(accountEntity.getEmail());
+        UUID newRefreshToken = this.createRefreshToken(accountEmail);
 
-        UserDetails accountDetails = accountDetailsService.loadUserByUsername(accountEntity.getId().toString());
+        UserDetails accountDetails = accountDetailsService.loadUserByUsername(accountId.toString());
         String newAccessToken = jwtService.generateToken(accountDetails);
 
         return new TokensDTO(newAccessToken, newRefreshToken);
@@ -93,11 +90,39 @@ public class RefreshTokenService {
 
     @Transactional
     public void logout(String refreshTokenStr){
+        if (refreshTokenStr == null || refreshTokenStr.isBlank()) {
+            return;
+        }
+
+        UUID token;
+        try {
+            token = parseRefreshToken(refreshTokenStr);
+        } catch (InvalidTokenFormatException ignored) {
+            return;
+        }
+
+        refreshTokenRepository.deleteByToken(token);
+    }
+
+    private UUID parseRefreshToken(String tokenString) {
+        if (tokenString == null || tokenString.isBlank()) {
+            throw new InvalidTokenFormatException("token has invalid format");
+        }
 
         try {
-            refreshTokenRepository.deleteByToken(this.findByToken(refreshTokenStr).getToken());
-        }catch (Exception e){
-            // Ignored Exception. User has already logged out
+            UUID token = UUID.fromString(tokenString);
+            if (token.version() != 4 || !token.toString().equalsIgnoreCase(tokenString)) {
+                throw new InvalidTokenFormatException("token has invalid format");
+            }
+            return token;
+        } catch (IllegalArgumentException e) {
+            throw new InvalidTokenFormatException("token has invalid format");
         }
+    }
+
+    private RefreshTokenEntity findByTokenForUpdate(String tokenString) {
+        UUID tokenUUID = parseRefreshToken(tokenString);
+        return refreshTokenRepository.findByTokenForUpdate(tokenUUID)
+                .orElseThrow(() -> new TokenNotFoundException("Refresh token is not in database!"));
     }
 }

@@ -6,6 +6,7 @@ import br.org.gam.api.account.application.useCases.loginAccount.LoginAccountRDTO
 import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccount;
 import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountDTO;
 import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountRDTO;
+import br.org.gam.api.security.application.TokenNotFoundException;
 import br.org.gam.api.security.application.TokensDTO;
 import br.org.gam.api.security.refreshtoken.application.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
@@ -15,7 +16,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,21 +27,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
+
     private final RegisterAccount registerAccountService;
     private final LoginAccount loginAccount;
     private final Long refreshTokenExpirationMs;
     private final RefreshTokenService refreshTokenService;
-    private final Boolean isCookieSecure;
 
     public AuthController(RegisterAccount registerAccountService, LoginAccount loginAccount,
                           @Value("${jwt.refresh-expiration-ms}") Long refreshTokenExpirationMs,
                           RefreshTokenService refreshTokenService,
-                          @Value("${app.auth.cookie.secure}") Boolean isCookieSecure) {
+                          @Value("${app.auth.cookie.secure:true}") Boolean ignoredCookieSecure) {
         this.registerAccountService = registerAccountService;
         this.loginAccount = loginAccount;
         this.refreshTokenExpirationMs = refreshTokenExpirationMs;
         this.refreshTokenService = refreshTokenService;
-        this.isCookieSecure = isCookieSecure;
     }
 
     @PostMapping("/register")
@@ -49,7 +49,7 @@ public class AuthController {
         RegisterAccountRDTO responseDTO = registerAccountService.register(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
+                .replacePath("/accounts/{id}")
                 .buildAndExpand(responseDTO.id())
                 .toUri();
 
@@ -72,7 +72,9 @@ public class AuthController {
     public ResponseEntity<LoginAccountRDTO> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshTokenStr = getRefreshTokenFromCookies(request);
-        if (refreshTokenStr == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (refreshTokenStr == null) {
+            throw new TokenNotFoundException("Refresh token was not provided.");
+        }
 
         TokensDTO refreshedTokens = refreshTokenService.refresh(refreshTokenStr);
 
@@ -100,7 +102,7 @@ public class AuthController {
         if (request.getCookies() == null) return null;
 
         for (Cookie cookie : request.getCookies()) {
-            if ("refreshToken".equals(cookie.getName())) {
+            if (REFRESH_TOKEN_COOKIE.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
@@ -108,12 +110,12 @@ public class AuthController {
     }
 
     private void setRefreshTokenCookie(HttpServletResponse response, String token, long maxAgeMs) {
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", token)
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, token)
                 .httpOnly(true)
-                .secure(isCookieSecure)
+                .secure(true)
                 .path("/")
                 .maxAge(maxAgeMs / 1000)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
