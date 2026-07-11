@@ -27,6 +27,7 @@ Before changing code or tests, read only the guideline files relevant to the wor
 | Domain models, value objects, aggregates, entities, or rich vs. simplified model decisions | `docs/software-guidelines/domain-models-and-jpa-entities.md` |
 | JPA repositories, persistence behavior, soft delete, restore behavior, or deleted-row visibility | `docs/software-guidelines/persistence-and-soft-delete.md` |
 | Database schema, Flyway migrations, seed data, fixture data, or enum mirrors | `docs/software-guidelines/database-and-migrations.md` |
+| Pre-production lifecycle state, migration scope, backward compatibility, or legacy support | `docs/software-guidelines/pre-production-development-state.md` |
 | Mapper files or domain/persistence/API transformations | `docs/software-guidelines/mappers.md` |
 | Exceptions, validation failures, API error shape, or custom exception choices | `docs/software-guidelines/exception-handling.md` |
 | Interfaces, ports, abstractions, test doubles, or strategy contracts | `docs/software-guidelines/interfaces.md` |
