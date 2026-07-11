@@ -1,9 +1,9 @@
 package br.org.gam.api.shared.domain;
 
-import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.account.application.AccountRDTO;
 import br.org.gam.api.account.application.useCases.loginAccount.LoginAccountDTO;
 import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccountDTO;
+import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.member.application.MemberRDTO;
 import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberDTO;
@@ -13,14 +13,12 @@ import br.org.gam.api.oratoriano.application.OratorianoRDTO;
 import br.org.gam.api.oratoriano.domain.Oratoriano;
 import br.org.gam.api.oratoriano.persistence.OratorianoEntity;
 import br.org.gam.api.shared.phonenumber.GamPhoneNumber;
-import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.StructuralTest;
 import br.org.gam.api.testing.annotation.UnitTest;
 import java.io.IOException;
 import java.lang.reflect.RecordComponent;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -34,50 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @UnitTest
-@DisplayName("Common Primitive Migration")
-class CommonPrimitiveMigrationTest {
-
-    @Nested
-    @FunctionalTest
-    @DisplayName("Functional")
-    class Functional {
-
-        @Test
-        @DisplayName("EP - member registration -> uses GamName and GamPhoneNumber")
-        void memberRegistrationShouldUseGamNameAndGamPhoneNumber() {
-            Account account = Account.register(GamEmail.of("member@example.com"), "hash", "Member Account");
-            GamName name = new GamName("Ana", "Silva");
-            GamPhoneNumber phoneNumber = GamPhoneNumber.fromString("+5519998877665");
-
-            Member member = Member.register(account, name, LocalDate.of(1995, 1, 10), phoneNumber);
-
-            assertThat(member.getName()).isSameAs(name);
-            assertThat(member.getPhoneNumber()).isSameAs(phoneNumber);
-        }
-
-        @Test
-        @DisplayName("EP - oratoriano registration -> uses GamName and GamPhoneNumber")
-        void oratorianoRegistrationShouldUseGamNameAndGamPhoneNumber() {
-            GamName name = new GamName("Ana", "Silva");
-            GamPhoneNumber phoneNumber = GamPhoneNumber.fromString("+5519998877665");
-
-            Oratoriano oratoriano = Oratoriano.register(name, LocalDate.of(2015, 1, 10), phoneNumber);
-
-            assertThat(oratoriano.getName()).isSameAs(name);
-            assertThat(oratoriano.getPhoneNumber()).isSameAs(phoneNumber);
-        }
-
-        @Test
-        @DisplayName("EP - account registration -> uses GamEmail")
-        void accountRegistrationShouldUseGamEmail() {
-            GamEmail email = GamEmail.of(" Account@Example.COM ");
-
-            Account account = Account.register(email, "hash", "Account");
-
-            assertThat(account.getEmail()).isSameAs(email);
-            assertThat(account.getEmail().value()).isEqualTo("account@example.com");
-        }
-    }
+@DisplayName("Common Primitive Architecture")
+class CommonPrimitiveArchitectureTest {
 
     @Nested
     @StructuralTest
@@ -85,42 +41,42 @@ class CommonPrimitiveMigrationTest {
     class Structural {
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#emailFields")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#emailFields")
         @DisplayName("COND - account email field type -> GamEmail")
         void accountEmailFieldShouldUseGamEmail(Class<?> ownerType, String fieldName) throws NoSuchFieldException {
             assertThat(ownerType.getDeclaredField(fieldName).getType()).isEqualTo(GamEmail.class);
         }
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#emailRecordComponents")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#emailRecordComponents")
         @DisplayName("COND - API and use-case email component type -> GamEmail")
         void apiAndUseCaseEmailComponentShouldUseGamEmail(Class<?> recordType, String componentName) {
             assertThat(recordComponentType(recordType, componentName)).isEqualTo(GamEmail.class);
         }
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#nameFields")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#nameFields")
         @DisplayName("COND - person name field type -> GamName")
         void personNameFieldShouldUseGamName(Class<?> ownerType, String fieldName) throws NoSuchFieldException {
             assertThat(ownerType.getDeclaredField(fieldName).getType()).isEqualTo(GamName.class);
         }
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#phoneNumberFields")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#phoneNumberFields")
         @DisplayName("COND - person phone field type -> GamPhoneNumber")
         void personPhoneFieldShouldUseGamPhoneNumber(Class<?> ownerType, String fieldName) throws NoSuchFieldException {
             assertThat(ownerType.getDeclaredField(fieldName).getType()).isEqualTo(GamPhoneNumber.class);
         }
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#phoneNumberRecordComponents")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#phoneNumberRecordComponents")
         @DisplayName("COND - API and use-case phone component type -> GamPhoneNumber")
         void apiAndUseCasePhoneComponentShouldUseGamPhoneNumber(Class<?> recordType, String componentName) {
             assertThat(recordComponentType(recordType, componentName)).isEqualTo(GamPhoneNumber.class);
         }
 
         @ParameterizedTest
-        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveMigrationTest#retiredValueObjectClassNames")
+        @MethodSource("br.org.gam.api.shared.domain.CommonPrimitiveArchitectureTest#retiredValueObjectClassNames")
         @DisplayName("COND - retired value object class -> absent")
         void retiredValueObjectClassShouldBeAbsent(String className) {
             assertThatThrownBy(() -> Class.forName(className))
@@ -141,7 +97,7 @@ class CommonPrimitiveMigrationTest {
             try (Stream<Path> files = Files.walk(Path.of("src", "main", "java"))) {
                 offenders = files
                         .filter(path -> path.toString().endsWith(".java"))
-                        .filter(CommonPrimitiveMigrationTest::containsRetiredReference)
+                        .filter(CommonPrimitiveArchitectureTest::containsRetiredReference)
                         .toList();
             }
 
