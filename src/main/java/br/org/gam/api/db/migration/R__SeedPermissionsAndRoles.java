@@ -21,26 +21,14 @@ import static br.org.gam.api.rbac.permission.domain.PermissionEnum.*;
 
 @Component
 public class R__SeedPermissionsAndRoles extends BaseJavaMigration {
-    private static final Set<PermissionEnum> COORD_PERMISSIONS = EnumSet.of(
-            MEMBER_GET,
-            MEMBER_SEARCH,
-            MEMBER_ACTIVATION,
-            MEMBER_GET_NON_ACTIVE,
-            MEMBER_MANAGE,
-            ACCOUNT_GET,
-            ACCOUNT_SEARCH,
-            EVENT_CREATE,
-            EVENT_SEARCH,
-            EVENT_GET_PRESENCES,
-            EVENT_MANAGE,
-            PRESENCES_SEARCH
-    );
+    private static final Set<PermissionEnum> COORD_PERMISSIONS = EnumSet.allOf(PermissionEnum.class);
 
     private static final Set<PermissionEnum> MEMBER_PERMISSIONS = EnumSet.of(
             MEMBER_GET,
             ACCOUNT_GET,
             EVENT_SEARCH,
-            EVENT_GET_PRESENCES
+            EVENT_GET_PRESENCES,
+            EVENT_GET_MEMBER
     );
 
     private static final Set<PermissionEnum> VISITOR_PERMISSIONS = EnumSet.noneOf(PermissionEnum.class);
@@ -56,7 +44,8 @@ public class R__SeedPermissionsAndRoles extends BaseJavaMigration {
     }
 
     private Map<SystemRole, UUID> seedSystemRoles(Connection connection, Timestamp now) throws Exception {
-        try (PreparedStatement selectRoleStmt = connection.prepareStatement("SELECT id FROM roles WHERE name = ?");
+        try (PreparedStatement selectRoleStmt = connection.prepareStatement(
+                     "SELECT id FROM roles WHERE name = ? AND deleted_at IS NULL");
              PreparedStatement insertRoleStmt = connection.prepareStatement(
                      "INSERT INTO roles (id, name, description, system_managed, created_at, updated_at) "
                              + "VALUES (?, ?, ?, TRUE, ?, ?)");
@@ -87,7 +76,8 @@ public class R__SeedPermissionsAndRoles extends BaseJavaMigration {
     }
 
     private Map<PermissionEnum, UUID> seedSystemPermissions(Connection connection, Timestamp now) throws Exception {
-        try (PreparedStatement selectPermStmt = connection.prepareStatement("SELECT id FROM permissions WHERE code = ?");
+            try (PreparedStatement selectPermStmt = connection.prepareStatement(
+                     "SELECT id FROM permissions WHERE code = ? AND deleted_at IS NULL");
              PreparedStatement insertPermStmt = connection.prepareStatement(
                      "INSERT INTO permissions (id, code, label, description, system_managed, created_at, updated_at) "
                              + "VALUES (?, ?, ?, ?, TRUE, ?, ?)");
@@ -122,7 +112,8 @@ public class R__SeedPermissionsAndRoles extends BaseJavaMigration {
 
     private void seedSystemRolePermissions(Connection connection, Map<SystemRole, UUID> roleIds,
                                            Map<PermissionEnum, UUID> permissionIds, Timestamp now) throws Exception {
-        String checkRolePermSql = "SELECT 1 FROM role_permissions WHERE role_id = ? AND permission_id = ?";
+        String checkRolePermSql = "SELECT 1 FROM role_permissions "
+                + "WHERE role_id = ? AND permission_id = ? AND deleted_at IS NULL";
         String insertRolePermSql = "INSERT INTO role_permissions (id, role_id, permission_id, created_at) "
                 + "VALUES (?, ?, ?, ?)";
 

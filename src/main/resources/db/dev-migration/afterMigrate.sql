@@ -25,7 +25,7 @@ DO $$
         v_event_encontro_id UUID;
         v_event_palestra_id UUID;
 
-        v_perm_event_get_s_id UUID;
+        v_perm_event_get_coord_id UUID;
 
         v_now TIMESTAMPTZ := NOW();
 
@@ -36,7 +36,7 @@ DO $$
         SELECT id INTO v_role_coord_id FROM roles WHERE name = 'COORD';
         SELECT id INTO v_role_visitor_id FROM roles WHERE name = 'VISITOR';
 
-        SELECT id INTO v_perm_event_get_s_id FROM permissions WHERE code = 'EVENT_GET_S';
+        SELECT id INTO v_perm_event_get_coord_id FROM permissions WHERE code = 'EVENT_GET_COORD';
 
         -- 2. CRIAÇÃO DE ACCOUNTS
         SELECT id INTO v_acc_giulia_id FROM accounts WHERE email = 'giulia@gmail.com';
@@ -123,7 +123,7 @@ DO $$
         IF v_event_reuniao_id IS NULL THEN
             v_event_reuniao_id := uuidv7();
             INSERT INTO events (id, title, description, location_id, required_permission_id, begin_date, end_date, created_at, updated_at, created_by, type, status)
-            VALUES (v_event_reuniao_id, 'Reunião de Coordenadores', 'Planejamento estratégico.', v_loc_sede_id, v_perm_event_get_s_id, v_now + interval '2 day', v_now + interval '2 day 2 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'SCHEDULED');
+            VALUES (v_event_reuniao_id, 'Reunião de Coordenadores', 'Planejamento estratégico.', v_loc_sede_id, v_perm_event_get_coord_id, v_now + interval '2 day', v_now + interval '2 day 2 hour', v_now, v_now, v_acc_giulia_id, 'GENERIC', 'SCHEDULED');
         END IF;
 
         SELECT id INTO v_event_encontro_id FROM events WHERE title = 'Encontro Semanal GAM';

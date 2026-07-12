@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum SystemRole {
-    SUDO("SUDO", "Super user with unrestricted system access"),
-    COORD("COORD", "Coordinator with administrative access to GAM operations"),
-    MEMBER("MEMBER", "Volunteer member with standard authenticated access"),
-    VISITOR("VISITOR", "Visitor with limited public access");
+    SUDO("SUDO", "Developer-controlled unrestricted system access"),
+    COORD("COORD", "Coordinator access to GAM operational administration"),
+    MEMBER("MEMBER", "Standard authenticated member access"),
+    VISITOR("VISITOR", "No baseline permission; public visibility is represented by a null event requiredPermissionId");
 
     private final String code;
     private final String description;

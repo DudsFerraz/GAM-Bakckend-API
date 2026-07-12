@@ -2,8 +2,13 @@ package br.org.gam.api.rbac.role.web;
 
 import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissions;
 import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissionsRDTO;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.role.application.RoleRDTO;
+import br.org.gam.api.rbac.role.application.useCases.GetRole;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +17,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/roles")
 @RestController
 public class RoleController {
+    private final GetRole getRole;
     private final GetRolePermissions getRolePermissions;
+    private final RoleEntityLoader roleEntityLoader;
 
-    public RoleController(GetRolePermissions getRolePermissions) {
+    public RoleController(GetRole getRole, GetRolePermissions getRolePermissions, RoleEntityLoader roleEntityLoader) {
+        this.getRole = getRole;
         this.getRolePermissions = getRolePermissions;
+        this.roleEntityLoader = roleEntityLoader;
     }
 
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ROLE_GET + "')")
+    @GetMapping("/{roleId}")
+    public ResponseEntity<RoleRDTO> getById(@PathVariable UUID roleId) {
+        return ResponseEntity.ok(getRole.byId(roleId));
+    }
+
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ROLE_GET + "') and hasAuthority('"
+            + PermissionEnum.Code.PERMISSION_GET + "')")
     @GetMapping("/{roleId}/permissions")
     public ResponseEntity<GetRolePermissionsRDTO> getPermissionsById(@PathVariable UUID roleId){
+        roleEntityLoader.requiredById(roleId);
 
         return ResponseEntity.ok(
                 getRolePermissions.allById(roleId)

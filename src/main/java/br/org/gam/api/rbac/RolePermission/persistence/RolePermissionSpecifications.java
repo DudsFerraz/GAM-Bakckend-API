@@ -17,7 +17,7 @@ public class RolePermissionSpecifications {
     public static Specification<RolePermissionEntity> fetchPermission() {
         return (root, query, builder) -> {
             if (Long.class != query.getResultType()) {
-                root.fetch("permission", JoinType.LEFT);
+                root.fetch("permission", JoinType.INNER);
             }
             return null;
         };
