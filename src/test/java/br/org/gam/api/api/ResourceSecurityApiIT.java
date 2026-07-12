@@ -1,7 +1,6 @@
 package br.org.gam.api.api;
 
 import br.org.gam.api.event.domain.Event;
-import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.testing.annotation.ApiTest;
 import br.org.gam.api.testing.annotation.IntegrationTest;
 import br.org.gam.api.testing.annotation.SecurityTest;
@@ -67,7 +66,7 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     void missingPermissionShouldReturnForbidden() {
         AuthSession member = registerAndLogin("MEMBER");
         UUID locationId = createLocation(member, "Forbidden Event Location");
-        UUID requiredPermissionId = permissionId(PermissionEnum.EVENT_GET_S);
+        UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
 
         authenticatedJsonRequest(member)
                 .body(eventPayload("Forbidden Event", locationId, requiredPermissionId))
@@ -115,7 +114,7 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     void validEventRequestWithPermissionShouldReturnCreatedPayloadAndPersistRow() {
         AuthSession coord = registerAndLogin("COORD");
         UUID locationId = createLocation(coord, "API Event Location");
-        UUID requiredPermissionId = permissionId(PermissionEnum.EVENT_GET_S);
+        UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
 
         ExtractableResponse<Response> response = authenticatedJsonRequest(coord)
                 .body(eventPayload("API Event", locationId, requiredPermissionId))
@@ -136,7 +135,7 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     void invalidEventPayloadShouldReturnBadRequest() {
         AuthSession coord = registerAndLogin("COORD");
         UUID locationId = createLocation(coord, "Invalid Event Location");
-        UUID requiredPermissionId = permissionId(PermissionEnum.EVENT_GET_S);
+        UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
         Map<String, Object> payload = eventPayload("Invalid Event", locationId, requiredPermissionId);
         payload = new java.util.HashMap<>(payload);
         payload.put("title", "");

@@ -199,8 +199,12 @@ public abstract class BaseApiIntegrationTest {
     }
 
     protected UUID permissionId(PermissionEnum permissionEnum) {
+        return permissionId(permissionEnum.getCode());
+    }
+
+    protected UUID permissionId(String permissionCode) {
         return permissionRepository.findAll().stream()
-                .filter(permission -> permission.getCode().equals(permissionEnum.getCode()))
+                .filter(permission -> permission.getCode().equals(permissionCode))
                 .map(PermissionEntity::getId)
                 .findFirst()
                 .orElseThrow();

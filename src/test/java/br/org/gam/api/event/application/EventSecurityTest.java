@@ -45,9 +45,9 @@ class EventSecurityTest {
         @DisplayName("event required permission in authorities -> visible")
         void eventRequiredPermissionInAuthoritiesShouldBeVisible() {
             EventSecurity eventSecurity = new EventSecurity(securityUtils);
-            EventEntity event = eventWithRequiredPermission("EVENT_GET_S");
+            EventEntity event = eventWithRequiredPermission("EVENT_GET_MEMBER");
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_GET_S"));
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_GET_MEMBER"));
 
             assertThat(eventSecurity.canGetEvent(event)).isTrue();
         }
@@ -56,9 +56,9 @@ class EventSecurityTest {
         @DisplayName("event required permission missing from authorities -> hidden")
         void eventRequiredPermissionMissingFromAuthoritiesShouldBeHidden() {
             EventSecurity eventSecurity = new EventSecurity(securityUtils);
-            EventEntity event = eventWithRequiredPermission("EVENT_GET_S");
+            EventEntity event = eventWithRequiredPermission("EVENT_GET_MEMBER");
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_SEARCH"));
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_GET_COORD"));
 
             assertThat(eventSecurity.canGetEvent(event)).isFalse();
         }

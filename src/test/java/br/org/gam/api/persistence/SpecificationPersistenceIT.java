@@ -32,14 +32,17 @@ import br.org.gam.api.testing.annotation.PersistenceTest;
 import br.org.gam.api.testing.integration.PostgreSQLIntegrationTest;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -79,6 +82,24 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private final List<UUID> specificationEventIds = new ArrayList<>();
+    private final List<UUID> specificationPermissionIds = new ArrayList<>();
+
+    @AfterEach
+    void cleanupSpecificationFixtures() {
+        for (UUID eventId : specificationEventIds) {
+            jdbcTemplate.update("DELETE FROM events WHERE id = ?", eventId);
+        }
+        for (UUID permissionId : specificationPermissionIds) {
+            jdbcTemplate.update("DELETE FROM permissions WHERE id = ?", permissionId);
+        }
+        specificationEventIds.clear();
+        specificationPermissionIds.clear();
+    }
 
     @Nested
     @PersistenceTest
@@ -178,8 +199,11 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         @DisplayName("event security specification -> public and authorized events visible")
         void eventSecuritySpecificationShouldHideAndShowRecordsByRequiredPermission() {
             PermissionEntity permission = inTransaction(() -> permissionRepository.saveAndFlush(permission("EVENT_PRIVATE_" + UUID.randomUUID())));
+            specificationPermissionIds.add(permission.getId());
             EventEntity publicEvent = inTransaction(() -> eventRepository.saveAndFlush(event("Public Event", null)));
+            specificationEventIds.add(publicEvent.getId());
             EventEntity privateEvent = inTransaction(() -> eventRepository.saveAndFlush(event("Private Event", permission)));
+            specificationEventIds.add(privateEvent.getId());
 
             List<EventEntity> anonymousResults = inTransaction(() ->
                     eventRepository.findAll(EventSecuritySpecification.canGetEvent(Set.of())));
