@@ -37,8 +37,8 @@ public class ManageSudoMaintenanceJob implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         String action = requiredOption(args, "maintenance.action");
+        String reason = requiredReason(args);
         UUID accountId = requiredAccountId(args);
-        String reason = requiredOption(args, "maintenance.reason");
 
         switch (action) {
             case "assign-sudo" -> {
@@ -56,8 +56,8 @@ public class ManageSudoMaintenanceJob implements ApplicationRunner {
     }
 
     private UUID requiredAccountId(ApplicationArguments args) {
-        String accountId = optionalOption(args, "maintenance.account-id");
-        String accountEmail = optionalOption(args, "maintenance.account-email");
+        String accountId = rawOption(args, "maintenance.account-id");
+        String accountEmail = rawOption(args, "maintenance.account-email");
 
         if (accountId != null && accountEmail != null) {
             throw new IllegalArgumentException(
@@ -66,11 +66,17 @@ public class ManageSudoMaintenanceJob implements ApplicationRunner {
         }
 
         if (accountId != null) {
-            return UUID.fromString(accountId);
+            if (accountId.isBlank()) {
+                throw new IllegalArgumentException("Account selector must not be blank.");
+            }
+            return UUID.fromString(accountId.trim());
         }
 
         if (accountEmail != null) {
-            return accountEntityLoader.requiredByEmail(GamEmail.of(accountEmail)).getId();
+            if (accountEmail.isBlank()) {
+                throw new IllegalArgumentException("Account selector must not be blank.");
+            }
+            return accountEntityLoader.requiredByEmail(GamEmail.of(accountEmail.trim())).getId();
         }
 
         throw new IllegalArgumentException(
@@ -84,6 +90,28 @@ public class ManageSudoMaintenanceJob implements ApplicationRunner {
             throw new IllegalArgumentException("Missing required option --" + name);
         }
         return value;
+    }
+
+    private String requiredReason(ApplicationArguments args) {
+        String reason = requiredOption(args, "maintenance.reason");
+        String normalizedReason = reason.strip();
+        if (normalizedReason.isEmpty()
+                || normalizedReason.codePointCount(0, normalizedReason.length()) > 2_000) {
+            throw new IllegalArgumentException("SUDO role changes require an audit reason.");
+        }
+        return normalizedReason;
+    }
+
+    private String rawOption(ApplicationArguments args, String name) {
+        if (!args.containsOption(name)) {
+            return null;
+        }
+
+        List<String> values = args.getOptionValues(name);
+        if (values == null || values.isEmpty()) {
+            return "";
+        }
+        return values.getFirst();
     }
 
     private String optionalOption(ApplicationArguments args, String name) {

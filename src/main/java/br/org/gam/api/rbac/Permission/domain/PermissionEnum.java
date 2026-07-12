@@ -12,6 +12,7 @@ public enum PermissionEnum {
 
     ACCOUNT_GET(Code.ACCOUNT_GET, "View accounts", "Allows viewing accounts"),
     ACCOUNT_SEARCH(Code.ACCOUNT_SEARCH, "Search accounts", "Allows searching accounts"),
+    ACCOUNT_ROLE_MANAGE(Code.ACCOUNT_ROLE_MANAGE, "Manage account roles", "Allows adding and removing account roles"),
 
     EVENT_CREATE(Code.EVENT_CREATE, "Create events", "Allows creating events"),
     EVENT_SEARCH(Code.EVENT_SEARCH, "Search events", "Allows searching events"),
@@ -44,6 +45,7 @@ public enum PermissionEnum {
 
         public static final String ACCOUNT_GET = "ACCOUNT_GET";
         public static final String ACCOUNT_SEARCH = "ACCOUNT_SEARCH";
+        public static final String ACCOUNT_ROLE_MANAGE = "ACCOUNT_ROLE_MANAGE";
 
         public static final String EVENT_CREATE = "EVENT_CREATE";
         public static final String EVENT_SEARCH = "EVENT_SEARCH";

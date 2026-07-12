@@ -4,7 +4,6 @@ import br.org.gam.api.rbac.accountRole.application.AccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.AccountRoleEntityLoader;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
-import br.org.gam.api.rbac.role.domain.SystemRole;
 import br.org.gam.api.rbac.role.application.RoleEntityLoader;
 import br.org.gam.api.rbac.application.RbacSafetyPolicy;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
@@ -43,10 +42,6 @@ public class DropAccountRole {
         rbacSafetyPolicy.assertCanRemoveRoleThroughAdmin(accountRoleEntity);
 
         accountRoleRepo.delete(accountRoleEntity);
-        if (accountRoleEntity.getRole() != null
-                && SystemRole.COORD.getCode().equals(accountRoleEntity.getRole().getName())) {
-            rbacSafetyPolicy.monitorCoordCoverage();
-        }
 
         if (audit) {
             String roleName = accountRoleEntity.getRole() == null ? null : accountRoleEntity.getRole().getName();
@@ -75,9 +70,15 @@ public class DropAccountRole {
     }
 
     private String requiredAuditReason(String reason) {
-        if (reason == null || reason.isBlank()) {
+        if (reason == null) {
             throw InvalidCommandException.reason("Account role changes require an audit reason.");
         }
-        return reason.trim();
+
+        String normalizedReason = reason.strip();
+        if (normalizedReason.isEmpty()
+                || normalizedReason.codePointCount(0, normalizedReason.length()) > 2_000) {
+            throw InvalidCommandException.reason("Account role changes require an audit reason.");
+        }
+        return normalizedReason;
     }
 }

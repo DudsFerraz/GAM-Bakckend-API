@@ -93,9 +93,15 @@ public class ManageSudoRole {
     }
 
     private String requiredAuditReason(String reason) {
-        if (reason == null || reason.isBlank()) {
+        if (reason == null) {
             throw InvalidCommandException.reason("SUDO role changes require an audit reason.");
         }
-        return reason.trim();
+
+        String normalizedReason = reason.strip();
+        if (normalizedReason.isEmpty()
+                || normalizedReason.codePointCount(0, normalizedReason.length()) > 2_000) {
+            throw InvalidCommandException.reason("SUDO role changes require an audit reason.");
+        }
+        return normalizedReason;
     }
 }

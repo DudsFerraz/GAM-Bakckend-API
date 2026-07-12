@@ -6,18 +6,18 @@ import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.rbac.role.domain.SystemRole;
 import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import br.org.gam.api.rbac.rolePermission.persistence.RolePermissionEntity;
+import br.org.gam.api.security.application.AccountDetails;
 import br.org.gam.api.shared.exception.ForbiddenOperationException;
+import br.org.gam.api.shared.exception.NotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RbacSafetyPolicy {
-    private static final Logger log = LoggerFactory.getLogger(RbacSafetyPolicy.class);
-
     private final AccountRoleRepository accountRoleRepo;
 
     public RbacSafetyPolicy(AccountRoleRepository accountRoleRepo) {
@@ -34,6 +34,8 @@ public class RbacSafetyPolicy {
         if (isSudo(accountRole.getRole())) {
             throw ForbiddenOperationException.reason("SUDO role removal is developer-controlled.");
         }
+
+        assertCanRemoveOnlyCoordCapabilityFromSelf(accountRole);
     }
 
     public void assertCanRemoveSudoThroughInternalService(AccountRoleEntity accountRole) {
@@ -43,22 +45,25 @@ public class RbacSafetyPolicy {
 
         List<AccountRoleEntity> activeSudoRoles =
                 accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.SUDO.getCode());
+        if (activeSudoRoles == null) {
+            activeSudoRoles = List.of();
+        }
         UUID targetAccountId = accountRole.getAccount().getId();
+        UUID sudoRoleId = accountRole.getRole().getId();
         boolean targetIsActiveSudo = activeSudoRoles.stream()
                 .map(AccountRoleEntity::getAccount)
                 .filter(Objects::nonNull)
                 .anyMatch(account -> targetAccountId.equals(account.getId()));
 
-        if (targetIsActiveSudo && activeSudoRoles.size() <= 1) {
-            throw ForbiddenOperationException.reason("Cannot remove the last active SUDO account.");
+        if (!targetIsActiveSudo) {
+            throw NotFoundException.resource(
+                    "AccountRole",
+                    "%s:%s".formatted(targetAccountId, sudoRoleId)
+            );
         }
-    }
 
-    public void monitorCoordCoverage() {
-        List<AccountRoleEntity> activeCoordRoles =
-                accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.COORD.getCode());
-        if (activeCoordRoles.isEmpty()) {
-            log.warn("RBAC monitor: no active account currently has the COORD role.");
+        if (activeSudoRoles.size() <= 1) {
+            throw ForbiddenOperationException.reason("Cannot remove the last active SUDO account.");
         }
     }
 
@@ -83,5 +88,45 @@ public class RbacSafetyPolicy {
 
     private boolean isSudo(RoleEntity role) {
         return role != null && SystemRole.SUDO.getCode().equals(role.getName());
+    }
+
+    private void assertCanRemoveOnlyCoordCapabilityFromSelf(AccountRoleEntity accountRole) {
+        if (!isCoord(accountRole.getRole())) {
+            return;
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof AccountDetails accountDetails)) {
+            return;
+        }
+
+        UUID targetAccountId = accountRole.getAccount() == null ? null : accountRole.getAccount().getId();
+        if (!Objects.equals(accountDetails.getId(), targetAccountId)) {
+            return;
+        }
+
+        if (isSudoAccount(accountDetails.getId())) {
+            return;
+        }
+
+        List<AccountRoleEntity> activeCoordRoles =
+                accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.COORD.getCode());
+        if (activeCoordRoles == null || activeCoordRoles.size() <= 1) {
+            throw ForbiddenOperationException.reason("Cannot remove the last active COORD account.");
+        }
+    }
+
+    private boolean isSudoAccount(UUID accountId) {
+        List<AccountRoleEntity> activeSudoRoles =
+                accountRoleRepo.lockActiveAccountRolesByRoleName(SystemRole.SUDO.getCode());
+        return activeSudoRoles != null
+                && activeSudoRoles.stream()
+                .map(AccountRoleEntity::getAccount)
+                .filter(Objects::nonNull)
+                .anyMatch(account -> accountId.equals(account.getId()));
+    }
+
+    private boolean isCoord(RoleEntity role) {
+        return role != null && SystemRole.COORD.getCode().equals(role.getName());
     }
 }

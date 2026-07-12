@@ -78,6 +78,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorDTO> dataIntegrityViolationHandler(DataIntegrityViolationException e) {
         log.warn("Data integrity violation detected.", e);
+        if (isActiveAccountRoleDuplicate(e)) {
+            return buildApplicationErrorResponse(
+                    HttpStatus.CONFLICT,
+                    ConflictException.reason("Account role already exists.")
+            );
+        }
+
         // Generic message to avoid exposing DB schema details
         String message = "Data integrity error. The request may violate a database constraint.";
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "DATA_INTEGRITY_ERROR", message);
@@ -236,5 +243,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(new ApiErrorDTO(status, code, message));
+    }
+
+    private boolean isActiveAccountRoleDuplicate(DataIntegrityViolationException exception) {
+        Throwable current = exception;
+        while (current != null) {
+            if (current instanceof org.hibernate.exception.ConstraintViolationException constraintViolation
+                    && "idx_account_role_not_deleted".equals(constraintViolation.getConstraintName())) {
+                return true;
+            }
+            current = current.getCause();
+        }
+
+        return exception.getMessage() != null
+                && exception.getMessage().contains("idx_account_role_not_deleted");
     }
 }
