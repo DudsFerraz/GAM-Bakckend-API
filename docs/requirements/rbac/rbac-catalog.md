@@ -1,7 +1,7 @@
 # Requirement: RBAC Catalog
 
 ## Status
-Draft
+Accepted
 
 ## Context
 
@@ -9,7 +9,7 @@ GAM needs a documented contract for the role and permission catalog that support
 
 The role, permission, and role-permission persistence model already exists. The current implementation and tests predate the Requirement Specification workflow and were used only as discovery material. This document records the intended behavior agreed during planning; it is not a description of implementation details.
 
-The permission registry is intentionally still open to changes during development. This Requirement Specification shall remain `Draft` until the registry and its role-permission bundles are accepted.
+This Requirement Specification is the accepted contract for the current permission registry and baseline role-permission bundles. Future registry or bundle changes require an explicit update to this specification; adding a permission to the code registry alone shall not expand the `COORD` bundle.
 
 ## Ubiquitous Language
 
@@ -20,6 +20,9 @@ The permission registry is intentionally still open to changes during developmen
 - `audience-tier permission`: An event-view permission whose code identifies the minimum intended audience tier, such as `EVENT_GET_MEMBER` or `EVENT_GET_COORD`.
 - `public event`: An Event whose `requiredPermissionId` is null.
 - `restricted event`: An Event whose `requiredPermissionId` references a permission; visibility requires that exact permission authority.
+- `stale registry record`: A persisted system-managed Role or Permission whose stable role name or permission code is absent from the current accepted registry.
+- `stale registry link`: A persisted role-permission link that involves a stale registry record or is absent from the current accepted bundle for a system role.
+- `registry collision`: More than one persisted record with the same registry key, or a system registry key already used by a custom record.
 
 ## Functional requirements
 
@@ -51,7 +54,7 @@ Invalid examples:
 
 ### REQ-RBAC-002: Code-defined system permission registry
 
-The RBAC catalog shall maintain a code-defined registry of system permissions. The current planning baseline is:
+The RBAC catalog shall maintain a code-defined registry of system permissions. The accepted registry is:
 
 | Area | Permission codes |
 | --- | --- |
@@ -65,16 +68,29 @@ Each system permission shall have a stable machine `code`, a human-readable `lab
 
 `EVENT_GET_VISITOR` is not part of the baseline because a null `requiredPermissionId` already represents public event visibility.
 
-The approved display metadata for the RBAC catalog permissions is:
+The accepted display metadata for every system permission is:
 
 | Permission code | Label | Description |
 | --- | --- | --- |
+| `MEMBER_GET` | `View members` | `Allows viewing active members` |
+| `MEMBER_SEARCH` | `Search members` | `Allows searching members` |
+| `MEMBER_ACTIVATION` | `Activate members` | `Allows activating and deactivating members` |
+| `MEMBER_GET_NON_ACTIVE` | `View inactive members` | `Allows viewing non-active members` |
+| `MEMBER_MANAGE` | `Manage members` | `Allows managing members` |
+| `ACCOUNT_GET` | `View accounts` | `Allows viewing accounts` |
+| `ACCOUNT_SEARCH` | `Search accounts` | `Allows searching accounts` |
+| `ACCOUNT_ROLE_MANAGE` | `Manage account roles` | `Allows adding and removing account roles` |
+| `EVENT_CREATE` | `Create events` | `Allows creating events` |
+| `EVENT_SEARCH` | `Search events` | `Allows searching events` |
+| `EVENT_GET_PRESENCES` | `View event presences` | `Allows viewing presences for an event` |
 | `EVENT_GET_MEMBER` | `View member events` | `Allows viewing events requiring member access` |
 | `EVENT_GET_COORD` | `View coordinator events` | `Allows viewing events requiring coordinator access` |
+| `EVENT_MANAGE` | `Manage events` | `Allows managing events` |
+| `PRESENCES_SEARCH` | `Search presences` | `Allows searching presences` |
 | `ROLE_GET` | `View roles` | `Allows reading role catalog entries` |
 | `PERMISSION_GET` | `View permissions` | `Allows reading permission catalog entries` |
 
-The baseline list may change while this document is Draft. Any addition or removal shall update the role-permission matrix and seeding contract before acceptance.
+Any addition, removal, or metadata change shall update this registry, the role-permission matrix, and the seeding contract in the same change.
 
 Rationale:
 Authorization code and event permission references require stable capability identifiers, while labels and descriptions may be synchronized display metadata.
@@ -95,12 +111,12 @@ The current baseline shall seed these active permission bundles:
 
 | Role | Permissions |
 | --- | --- |
-| `SUDO` | Every permission in the current system permission registry. |
-| `COORD` | Every permission in the current system permission registry. |
+| `SUDO` | Every permission in the accepted system permission registry. |
+| `COORD` | `MEMBER_GET`, `MEMBER_SEARCH`, `MEMBER_ACTIVATION`, `MEMBER_GET_NON_ACTIVE`, `MEMBER_MANAGE`, `ACCOUNT_GET`, `ACCOUNT_SEARCH`, `ACCOUNT_ROLE_MANAGE`, `EVENT_CREATE`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, `EVENT_GET_MEMBER`, `EVENT_GET_COORD`, `EVENT_MANAGE`, `PRESENCES_SEARCH`, `ROLE_GET`, and `PERMISSION_GET`. |
 | `MEMBER` | `MEMBER_GET`, `ACCOUNT_GET`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, and `EVENT_GET_MEMBER`. |
 | `VISITOR` | No permissions. |
 
-The `ACCOUNT_ROLE_MANAGE` permission is included in the `SUDO` and `COORD` bundles through their all-permissions baseline and is not included in the `MEMBER` or `VISITOR` bundles.
+`SUDO` shall receive a newly accepted system permission automatically. `COORD` shall receive only the permissions explicitly listed above; a future permission shall not be added to `COORD` unless this requirement is deliberately updated. `ACCOUNT_ROLE_MANAGE` is explicitly included in `COORD` and is not included in `MEMBER` or `VISITOR`.
 
 The cumulative event-view behavior shall be produced by seeded links, not by runtime role inheritance:
 
@@ -128,13 +144,16 @@ The system shall synchronize the code-defined system role and permission registr
 The seed shall:
 
 - create missing system roles and permissions;
-- preserve the identifier of an existing active record matched by its stable role name or permission code;
-- mark registry-owned roles and permissions as `systemManaged`;
+- match registry records by stable role name or permission code across both active and soft-deleted rows;
+- preserve the identifier of a unique matching system-managed record;
+- restore a unique soft-deleted system-managed match when its registry entry reappears;
+- reject a registry collision without converting, deleting, or overwriting the conflicting record;
+- mark newly created registry-owned roles and permissions as `systemManaged`;
 - synchronize role descriptions, permission labels, and permission descriptions;
-- create each missing active role-permission link exactly once; and
+- create each missing active role-permission link exactly once or restore its unique soft-deleted registry-owned link when the bundle entry reappears; and
 - seed the bundles defined by `REQ-RBAC-003`.
 
-Running the seed repeatedly with the same registry shall not create duplicate roles, permissions, or active role-permission links.
+Running the seed repeatedly with the same registry shall not create duplicate roles, permissions, or active role-permission links. A matching custom record, whether active or soft-deleted, shall be treated as a registry collision. Multiple persisted matches for one registry key or bundle pair shall also be treated as a registry collision. A collision shall fail synchronization before any partial catalog mutation commits.
 
 Rationale:
 System roles and permissions are required security data. Repeatable synchronization must repair missing registry data without changing identifiers referenced by Accounts, Events, or other persisted records.
@@ -154,22 +173,37 @@ Invalid examples:
 
 Removing a role, permission, or role-permission link from the code registry shall not automatically delete or soft-delete the existing database record or link.
 
-Removal, conversion, or cleanup of registry data shall require an explicit developer-controlled maintenance action.
+The removed record or link shall become stale immediately and shall no longer be authoritative. Stale registry data shall:
+
+- contribute no permission authority to an Account security context;
+- be unavailable for new Account-role, role-permission, or Event-permission configuration;
+- be excluded from ordinary role, permission, and role-permission catalog reads; and
+- remain persisted only to preserve identity, references, and history until an explicit developer-controlled cleanup action is performed.
+
+An active custom Role linked to a stale system Permission shall not grant that Permission. An Account assigned a stale system Role shall receive no authority from that Role. An active persisted link omitted from the accepted bundle of a system Role shall not grant the omitted Permission through that system Role.
+
+An existing Event reference to a Permission that becomes stale shall remain persisted for referential integrity, but no caller shall satisfy the restriction through that stale Permission. The Event shall remain fail-closed until an explicit developer-controlled action replaces or clears the reference under an accepted Event lifecycle requirement.
+
+If a stale registry entry or link later reappears in the accepted registry or bundle, repeatable seeding shall reuse the unique preserved system-managed identity, restore it when soft-deleted, synchronize its metadata, and make it authoritative again. A custom/system-managed collision shall never be resolved by converting the custom record.
+
+Removal, conversion, or permanent cleanup of preserved registry data shall require an explicit developer-controlled maintenance action.
 
 Because GAM is pre-production, registry changes shall be applied directly to the current schema setup, development fixtures, test fixtures, and local database setup. No versioned production migration, compatibility alias, fallback, dual-read path, or dual-write path shall be introduced solely to preserve unreleased behavior.
 
-The repeatable seed shall seed only the current code-defined registry and its bundles. The current source tree and current database setup shall contain no removed registry codes or references.
+The repeatable seed shall seed only the current accepted registry and its bundles. The current source tree, schema setup, development fixtures, test fixtures, and newly initialized databases shall contain only current registry codes and references. Existing preserved stale rows are permitted only under the fail-closed behavior above.
 
 Rationale:
 Automatic security-data deletion during repeatable seeding could invalidate Event references, Account assignments, or administrative recovery paths.
 
 Valid examples:
-- Removing a permission from the registry stops future seeding of that permission and its links; any cleanup is an explicit developer-controlled pre-production maintenance action.
+- Removing a permission from the registry immediately stops it from granting authority while preserving its row for explicit cleanup or later reappearance.
+- Reintroducing a previously removed system permission reuses its preserved UUID and synchronizes its accepted metadata.
 - Replacing an event-view permission updates the current code, schema setup, development fixtures, and test fixtures directly.
 
 Invalid examples:
 - Application startup silently deletes a permission because its enum value was removed.
 - A repeatable seed removes a role-permission link solely because the registry mapping changed.
+- A stale permission continues to authorize an endpoint because its database row or custom-role link remains active.
 - A compatibility alias or fallback preserves an unreleased permission code.
 
 ---
@@ -178,9 +212,9 @@ Invalid examples:
 
 The system shall expose `GET /roles/{roleId}` for an authenticated caller with the `ROLE_GET` permission.
 
-The endpoint shall read any active system or custom Role and return its role record.
+The endpoint shall read any current active system Role or active custom Role and return its role record.
 
-Missing and soft-deleted Roles shall not be returned through this endpoint.
+Missing, soft-deleted, and stale system Roles shall not be returned through this endpoint.
 
 Rationale:
 Authorization administration needs to inspect both seeded roles and custom roles without exposing deleted configuration through ordinary API reads.
@@ -192,6 +226,7 @@ Valid examples:
 Invalid examples:
 - A caller without `ROLE_GET` reads a role because the caller has another permission.
 - The endpoint returns a soft-deleted role.
+- The endpoint returns a stale system Role that is absent from the accepted registry.
 
 ---
 
@@ -199,9 +234,9 @@ Invalid examples:
 
 The system shall expose `GET /permissions/{permissionId}` for an authenticated caller with the `PERMISSION_GET` permission.
 
-The endpoint shall return any active Permission record, including its stable code and display metadata. System permission definitions remain owned by the code-defined RBAC registry. Custom permission creation and editing are not supported by this Requirement Specification. Removed permission definitions are handled directly in the current pre-production setup according to `REQ-RBAC-005`.
+The endpoint shall return any current active system Permission record, including its stable code and display metadata. System permission definitions remain owned by the accepted RBAC registry and implemented by the code-defined registry. Custom permission creation and editing are not supported by this Requirement Specification. Removed permission definitions follow the fail-closed lifecycle in `REQ-RBAC-005`.
 
-Missing and soft-deleted permissions shall not be returned through this endpoint.
+Missing, soft-deleted, and stale permissions shall not be returned through this endpoint.
 
 Rationale:
 Clients need to resolve permission metadata for authorization administration and Event configuration. System permission definitions remain owned by the code registry, while this catalog read does not add permission creation or editing capabilities.
@@ -213,6 +248,7 @@ Valid examples:
 Invalid examples:
 - A caller without `PERMISSION_GET` reads a permission because the caller has `ROLE_GET` only.
 - The endpoint exposes a soft-deleted permission as an active catalog entry.
+- The endpoint exposes a stale Permission because its preserved database row remains active.
 
 ---
 
@@ -236,7 +272,7 @@ The endpoint shall accept an active system or custom Role and return its active 
 }
 ```
 
-The response shall exclude soft-deleted role-permission links and soft-deleted permissions. An active Role with no active permission links shall return an empty `permissions` list.
+The response shall exclude soft-deleted or stale role-permission links and soft-deleted or stale permissions. An active Role with no current authoritative permission links shall return an empty `permissions` list.
 
 Rationale:
 The nested route exposes both the role relationship and permission records, so both catalog-read permissions are required.
@@ -259,7 +295,7 @@ The system shall return:
 
 - `401 Unauthorized` when the caller is unauthenticated;
 - `403 Forbidden` when the caller is authenticated but lacks the required catalog permission or permissions; and
-- `404 Not Found` when the requested Role, Permission, or parent Role is missing or soft-deleted.
+- `404 Not Found` when the requested Role, Permission, or parent Role is missing, soft-deleted, or stale.
 
 The API shall not expose soft-deleted catalog records through ordinary HTTP reads.
 
@@ -310,7 +346,7 @@ Event visibility shall follow these rules:
 - a non-null `requiredPermissionId` means the caller must hold the exact permission identified by that relationship; and
 - the role name of the caller shall not substitute for the required permission.
 
-`EVENT_GET_VISITOR` is not required. Event references shall use only permissions in the current code-defined registry.
+`EVENT_GET_VISITOR` is not required. An Event shall reference only `EVENT_GET_MEMBER` or `EVENT_GET_COORD`; no other current or future registry permission is an allowed Event audience permission unless this requirement is explicitly updated.
 
 The Event creation and editing Requirement Specification shall define request validation and lifecycle behavior for the nullable `requiredPermissionId` field.
 
@@ -325,6 +361,7 @@ Valid examples:
 Invalid examples:
 - Every restricted Event requires one global `EVENT_GET` permission.
 - An Event references a Role identifier instead of a Permission identifier.
+- An Event references `ACCOUNT_ROLE_MANAGE` or another non-audience permission.
 - A caller with `EVENT_GET_MEMBER` views an Event requiring `EVENT_GET_COORD`.
 
 ## Acceptance scenarios
@@ -342,7 +379,44 @@ Scenario: Repeatable seeding is idempotent
   When the repeatable RBAC seed runs again without registry changes
   Then no duplicate role, permission, or active role-permission link is created
 
-Scenario: Coordinator receives cumulative event-view permissions
+Scenario: Future permission does not automatically expand COORD authority
+  Given a new system permission has been accepted into the permission registry
+  And REQ-RBAC-003 has not added that permission to the COORD allowlist
+  When the repeatable RBAC seed runs
+  Then SUDO receives the new permission
+  And COORD does not receive the new permission
+
+Scenario: Stale registry data is fail-closed
+  Given a persisted system Permission or system-role bundle link is absent from the accepted registry
+  When an Account authenticates or an authorized caller reads the ordinary RBAC catalog
+  Then the stale data grants no permission authority
+  And the stale data is absent from the ordinary catalog response
+
+Scenario: Event with a stale permission reference remains restricted
+  Given an existing Event references a Permission that is now stale
+  When any caller attempts to view the Event through that stale permission
+  Then the stale Permission does not authorize the caller
+  And the persisted Event reference is not removed automatically
+
+Scenario: Reappearing system permission preserves identity
+  Given one preserved system-managed Permission matches a permission reintroduced to the accepted registry
+  When the repeatable RBAC seed runs
+  Then the Permission keeps its preserved UUID
+  And its accepted metadata and authority are restored
+
+Scenario: Soft-deleted system registry match is restored
+  Given one soft-deleted system-managed Permission matches a current accepted registry code
+  When the repeatable RBAC seed runs
+  Then the matching Permission is restored with its existing UUID
+  And no second Permission is created for that code
+
+Scenario: Custom registry-key collision fails synchronization
+  Given a custom Role or Permission uses a stable key owned by the accepted system registry
+  When the repeatable RBAC seed runs
+  Then synchronization fails without converting the custom record
+  And no partial catalog mutation commits
+
+Scenario: Account with COORD receives cumulative event-view permissions
   Given an Account has the baseline COORD role
   When the Account attempts to read Events
   Then the Account can read an Event requiring EVENT_GET_MEMBER
@@ -358,6 +432,11 @@ Scenario: Public Event has no required permission
   Given an Event has a null requiredPermissionId
   When an anonymous caller reads the Event
   Then the Event is visible to the caller
+
+Scenario: Event rejects a non-audience permission
+  Given ACCOUNT_ROLE_MANAGE is an active system Permission
+  When an Event command supplies ACCOUNT_ROLE_MANAGE as requiredPermissionId
+  Then the command is rejected as invalid
 
 Scenario: Authorized caller reads an active custom Role
   Given an active custom Role exists
@@ -378,8 +457,8 @@ Scenario: Nested catalog read requires both permissions
   When the caller requests GET /roles/{roleId}/permissions
   Then the system returns the active permission records in a top-level permissions list
 
-Scenario: Missing or soft-deleted catalog data is not visible
-  Given the requested Role, Permission, or parent Role is missing or soft-deleted
+Scenario: Missing, soft-deleted, or stale catalog data is not visible
+  Given the requested Role, Permission, or parent Role is missing, soft-deleted, or stale
   When an authorized caller requests the corresponding catalog endpoint
   Then the system returns 404 Not Found
 ```
@@ -388,18 +467,26 @@ Scenario: Missing or soft-deleted catalog data is not visible
 
 ```mermaid
 flowchart LR
-    Registry["System role and permission registry"] --> Seed["Idempotent repeatable seed"]
-    Seed --> Roles[("Active roles")]
-    Seed --> Permissions[("Active permissions")]
-    Seed --> Links[("Active role-permission links")]
+    Registry["Accepted system registry and bundles"] --> Seed["Idempotent repeatable seed"]
+    Seed --> Match{"Unique matching system-managed identity?"}
+    Match -- "None" --> Create["Create current registry data"]
+    Match -- "Active" --> Sync["Preserve UUID and synchronize metadata"]
+    Match -- "Soft-deleted" --> Restore["Restore UUID and synchronize metadata"]
+    Match -- "Custom or multiple matches" --> SeedFailure["Fail without partial commit"]
+    Create --> Catalog[("Persisted RBAC catalog")]
+    Sync --> Catalog
+    Restore --> Catalog
+    Catalog --> Current{"Present in accepted registry or bundle?"}
+    Current -- "Yes" --> Authoritative["Visible and authoritative"]
+    Current -- "No" --> Stale["Preserved, hidden, and non-authoritative"]
 
     Request["Catalog read request"] --> Auth{"Required catalog permissions present?"}
     Auth -- "No" --> Forbidden["403 Forbidden"]
-    Auth -- "Yes" --> Visible{"Active target exists?"}
+    Auth -- "Yes" --> Visible{"Current active target exists?"}
     Visible -- "No" --> NotFound["404 Not Found"]
     Visible -- "Yes" --> Response["Role or permission response"]
 
-    Permissions --> Event["Event.requiredPermissionId"]
+    Authoritative --> Event["Event.requiredPermissionId"]
     Event --> EventAccess{"Null or exact permission authority?"}
     EventAccess -- "Null" --> Public["Public Event"]
     EventAccess -- "Exact match" --> EventVisible["Event visible"]
@@ -408,8 +495,7 @@ flowchart LR
 
 ## Open questions
 
-* Which additional system permissions, if any, are needed before this Draft becomes Accepted?
-* Should future custom roles be allowed to receive the audience-tier permissions in any combination, or should administrative workflows enforce a tier ordering?
+* None.
 
 ## Out of scope
 
@@ -417,13 +503,14 @@ flowchart LR
 * Permission creation, editing, disabling, deletion, or restoration.
 * Collection, search, or pagination endpoints for roles or permissions.
 * Event creation, editing, cancellation, and request validation beyond the permission-reference contract in `REQ-RBAC-011`.
+* Tier-ordering rules for future custom-role administration workflows.
 * Reading soft-deleted records through HTTP.
 * Row audit metadata and activity-log reads.
 * Backward-compatibility migrations, aliases, and fallback paths for removed registry entries.
 
 ## Related ADRs
 
-* None at this time. The permission-based authorization architecture and system-managed record policy are covered by the project software guidelines.
+* [ADR-0003: Keep stale RBAC registry data fail-closed](../../decisions/0003-keep-stale-rbac-registry-data-fail-closed.md)
 
 ## Related videos
 

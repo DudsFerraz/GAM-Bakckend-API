@@ -16,9 +16,10 @@ Roles remain permission bundles; authorization decisions must use permissions ra
 ## Ubiquitous Language
 
 - `active Account`: An Account that is not soft-deleted and is visible through ordinary application reads.
-- `active Role`: A Role that is not soft-deleted and is visible through ordinary application reads.
+- `active Role`: A Role that is not soft-deleted and is visible through ordinary application reads; a system-managed Role must also be current rather than stale under `REQ-RBAC-005`.
 - `active Account-role assignment`: A non-deleted association between an active Account and an active Role.
 - `Account-role collection`: The active roles assigned to one Account, returned as a top-level `roles` list.
+- `Account-role assignment resource`: One active Account-to-Role association identified by its own stable assignment UUID.
 - `drop`: The user-facing action that removes an active Account-role assignment while preserving the historical assignment through the technical soft-delete mechanism.
 - `active SUDO assignment`: An active Account-role assignment whose Role is `SUDO`.
 - `SUDO maintenance operation`: A developer-controlled assignment or removal of an active SUDO assignment through the dedicated maintenance workflow.
@@ -33,12 +34,13 @@ The system shall expose these routes:
 | Method | Route | Required permission | Purpose |
 | --- | --- | --- | --- |
 | `GET` | `/accounts/{accountId}/roles` | `ACCOUNT_GET` | List the Account's active roles. |
+| `GET` | `/accounts/{accountId}/role-assignments/{assignmentId}` | `ACCOUNT_GET` | Read one active Account-role assignment. |
 | `POST` | `/accounts/{accountId}/roles` | `ACCOUNT_ROLE_MANAGE` | Add one role to the Account. |
 | `PATCH` | `/accounts/{accountId}/roles/{roleId}/drop` | `ACCOUNT_ROLE_MANAGE` | Drop one role from the Account. |
 
-All three routes shall require authentication. An unauthenticated request shall return `401 Unauthorized`. An authenticated caller without the required permission shall return `403 Forbidden`.
+All four routes shall require authentication. An unauthenticated request shall return `401 Unauthorized`. An authenticated caller without the required permission shall return `403 Forbidden`.
 
-The self-view exception for direct Account lookup shall not grant access to the Account-role collection or Account-role mutations.
+The self-view exception for direct Account lookup shall not grant access to Account-role collection reads, assignment lookup, or Account-role mutations.
 
 Rationale:
 Account-role changes are security-sensitive mutations and must be separated from ordinary Account reads. The explicit drop action keeps the user-facing contract distinct from the internal soft-delete operation.
@@ -100,21 +102,33 @@ Invalid examples:
 
 The system shall require an active Account and an active Role. A missing or soft-deleted Account shall return `404 Not Found` for the Account resource. A missing or soft-deleted Role shall return `404 Not Found` for the Role resource.
 
-The system shall reject adding `SUDO` through this API with `403 Forbidden`. SUDO assignment is developer-controlled maintenance behavior; see REQ-ACCOUNT-ROLE-009 through REQ-ACCOUNT-ROLE-013.
+The system shall reject adding `SUDO` through this API with `403 Forbidden`. SUDO assignment is developer-controlled maintenance behavior; see `REQ-ACCOUNT-ROLE-009` through `REQ-ACCOUNT-ROLE-013` and `REQ-ACCOUNT-ROLE-015`.
 
 The system shall reject an existing active Account-role assignment with `409 Conflict` and shall not create a second active assignment or activity-log record.
 
+The database shall enforce the one-active-assignment invariant with a Flyway-managed partial unique index on `(account_id, role_id)` for rows whose `deleted_at` is null. The add workflow shall translate a uniqueness conflict caused by a concurrent add into `409 Conflict`. The failed transaction shall create neither a second active assignment nor an activity-log record.
+
 If an earlier assignment for the same Account and Role was dropped, a later add shall create a new active assignment identity rather than restore or reuse the historical assignment.
 
-On success, the system shall return `201 Created`, identify the created nested assignment through the `Location` response header, and return the created assignment in this shape:
+On success, the system shall return `201 Created`. The `Location` response header shall be `/accounts/{accountId}/role-assignments/{assignmentId}`, where `assignmentId` is the UUID of the newly created assignment. That URI shall be immediately retrievable according to `REQ-ACCOUNT-ROLE-014`.
+
+The response shall include the assignment UUID and return the Account using the full Account response contract from `REQ-ACCOUNT-006`. The Account's `roles` list shall contain all current active roles, including the role just added:
 
 ```json
 {
+  "id": "<assignment UUID>",
   "account": {
     "id": "<account UUID>",
     "email": "account@example.com",
     "displayName": "Account",
-    "roles": []
+    "roles": [
+      {
+        "id": "<role UUID>",
+        "name": "COORD",
+        "description": "Coordinator access to GAM operational administration",
+        "systemManaged": true
+      }
+    ]
   },
   "role": {
     "id": "<role UUID>",
@@ -131,13 +145,14 @@ Rationale:
 An Account can hold at most one active assignment for a given Role. Re-adding after a drop must preserve the historical fact that the earlier assignment ended.
 
 Valid examples:
-- A Coordinator adds an active custom Role to an Account that does not currently have it.
+- An Account with `ACCOUNT_ROLE_MANAGE` adds an active custom Role to an Account that does not currently have it.
 - A previously dropped `MEMBER` assignment is added again as a new active assignment.
 
 Invalid examples:
 - Adding a Role to a missing Account.
 - Adding a missing Role.
 - Adding a Role that is already actively assigned.
+- Two concurrent adds both create an active assignment for the same Account and Role.
 - Adding `SUDO` through the HTTP API.
 
 ---
@@ -154,7 +169,7 @@ Invalid examples:
 
 The system shall require an active Account-role assignment for the requested Account and Role. If the Account, Role, or active assignment is missing or soft-deleted, the API shall return `404 Not Found` and shall not mutate data.
 
-The system shall reject dropping `SUDO` through this API with `403 Forbidden`. SUDO removal is developer-controlled maintenance behavior; see REQ-ACCOUNT-ROLE-009 through REQ-ACCOUNT-ROLE-013.
+The system shall reject dropping `SUDO` through this API with `403 Forbidden`. SUDO removal is developer-controlled maintenance behavior; see `REQ-ACCOUNT-ROLE-009` through `REQ-ACCOUNT-ROLE-013` and `REQ-ACCOUNT-ROLE-015`.
 
 On success, the system shall soft-delete the active assignment, return `204 No Content`, and make the assignment absent from subsequent Account-role lists. The historical assignment shall remain available only to developer-controlled maintenance workflows.
 
@@ -235,21 +250,21 @@ All Account-role mutation workflows shall enforce these protections transactiona
 
 - HTTP callers shall not add or drop `SUDO`.
 - Developer-controlled SUDO maintenance shall not drop the last active Account-role assignment for `SUDO`.
-- A Coordinator shall not drop the `COORD` role from their own Account when no other active Account has the `COORD` role.
-- An Account with an active `SUDO` assignment is exempt from the self-Coordinator protection and may remove the final active `COORD` assignment, including from its own Account.
+- An Account with an active `COORD` assignment shall not drop `COORD` from its own Account when no other active Account has an active `COORD` assignment.
+- An Account with an active `SUDO` assignment is exempt from the self-`COORD` protection and may remove the final active `COORD` assignment, including from its own Account.
 
 Violations shall return or raise a forbidden-operation outcome and shall not mutate the assignment.
 
 Rationale:
-The system must preserve a developer recovery path and avoid removing the last active Coordinator capability through self-administration.
+The system must preserve a developer recovery path and avoid removing the last active `COORD` capability through self-administration.
 
 Valid examples:
 - Developer maintenance removes one SUDO assignment while another active SUDO Account remains.
-- A Coordinator drops their own COORD role while another active Account still has COORD.
+- An Account with an active `COORD` assignment drops its own `COORD` assignment while another active Account still has an active `COORD` assignment.
 
 Invalid examples:
 - Developer maintenance drops the last active SUDO assignment.
-- A Coordinator drops their own COORD role when they are the only active COORD Account.
+- An Account drops its own `COORD` assignment when it is the only active Account with an active `COORD` assignment.
 
 The SUDO protection in this Requirement Specification applies to explicit SUDO role assignment and removal only. Account deactivation, disabling, deletion, and restoration policies are outside this feature.
 
@@ -269,7 +284,7 @@ Valid examples:
 - A Developer invokes the dedicated maintenance workflow with `remove-sudo`.
 
 Invalid examples:
-- A Coordinator assigns SUDO through the Account-role HTTP API.
+- An Account with `ACCOUNT_ROLE_MANAGE` assigns SUDO through the Account-role HTTP API.
 - An ordinary application workflow invokes SUDO assignment or removal.
 - A maintenance invocation uses an unsupported action name.
 
@@ -355,6 +370,94 @@ Invalid examples:
 - Maintenance removes the last active SUDO assignment.
 - Two concurrent removals both succeed when only two active SUDO assignments existed.
 
+---
+
+### REQ-ACCOUNT-ROLE-014: Direct Account-role assignment lookup
+
+`GET /accounts/{accountId}/role-assignments/{assignmentId}` shall return the active Account-role assignment identified by `assignmentId` only when it belongs to the Account identified by `accountId`.
+
+The Account, assignment, and Role shall all be active. A missing or soft-deleted Account, assignment, or Role, or an assignment that belongs to a different Account, shall return `404 Not Found`.
+
+The response shall use the same assignment shape as a successful add. It shall include the assignment `id`, the Account record with its complete current active `roles` list, and the assigned Role record. It shall not expose the audit reason, row audit metadata, credentials, tokens, or sessions.
+
+The lookup shall not mutate or audit the assignment. A successful `POST /accounts/{accountId}/roles` shall set `Location` to this route for the newly created assignment.
+
+Rationale:
+The creation response needs a canonical, retrievable URI for the assignment identity without exposing dropped assignment history through ordinary HTTP reads.
+
+Valid examples:
+- Immediately following the `Location` header from a successful add returns the created active assignment.
+- Looking up an active assignment returns the Account's complete current role list, including the assigned Role.
+
+Invalid examples:
+- Looking up a dropped assignment returns its historical record.
+- An assignment is returned under an `accountId` that does not own it.
+
+---
+
+### REQ-ACCOUNT-ROLE-015: Observable SUDO maintenance CLI contract
+
+The SUDO maintenance workflow shall be a one-shot command invoked with the `maintenance` profile and the `sudo` maintenance job. Supported invocations follow these concrete command shapes:
+
+```text
+mvn spring-boot:run -Dspring-boot.run.profiles=maintenance -Dspring-boot.run.arguments="--maintenance.job=sudo --maintenance.action=assign-sudo --maintenance.account-email=dev@example.com --maintenance.reason=developer-recovery-access"
+mvn spring-boot:run -Dspring-boot.run.profiles=maintenance -Dspring-boot.run.arguments="--maintenance.job=sudo --maintenance.action=remove-sudo --maintenance.account-id=123e4567-e89b-12d3-a456-426614174000 --maintenance.reason=developer-access-revoked"
+```
+
+The SUDO job shall accept only these single-valued maintenance options:
+
+| Option | Contract |
+| --- | --- |
+| `--maintenance.job` | Required exactly once with the value `sudo`. |
+| `--maintenance.action` | Required exactly once with `assign-sudo` or `remove-sudo`. |
+| `--maintenance.account-id` | Optional alternative Account selector; when present, the value shall be one syntactically valid UUID. |
+| `--maintenance.account-email` | Optional alternative Account selector; when present, the value shall be one syntactically valid `GamEmail`. |
+| `--maintenance.reason` | Required exactly once and validated according to `REQ-ACCOUNT-ROLE-005`. |
+
+Exactly one of `--maintenance.account-id` and `--maintenance.account-email` shall be supplied. A missing value, blank value, repeated option, unsupported action, unsupported `maintenance.*` option, malformed UUID, malformed email, both selectors, or neither selector is an invalid command.
+
+The process shall use these exit codes:
+
+| Exit code | Outcome |
+| --- | --- |
+| `0` | The requested mutation and its activity event committed successfully. |
+| `1` | An unexpected application or infrastructure failure occurred. |
+| `2` | The command shape, option, selector, action, or reason is invalid. |
+| `3` | The selected active Account or requested active SUDO assignment was not found. |
+| `4` | `assign-sudo` conflicts with an existing active SUDO assignment. |
+| `5` | The operation is forbidden, including removal of the last active SUDO assignment. |
+
+For an expected outcome, the maintenance job shall emit one terminal result line and shall not emit an expected-failure stack trace:
+
+- success to standard output as `SUDO_MAINTENANCE_OK action=<action> accountId=<account UUID>`; or
+- failure to standard error as `SUDO_MAINTENANCE_ERROR category=<INVALID_COMMAND|NOT_FOUND|CONFLICT|FORBIDDEN> message="<concise explanation>"`.
+
+The success line and exit code `0` shall be emitted only after the mutation and activity event commit. Expected failures shall not mutate or audit an assignment. Unexpected failures may emit diagnostic logging and shall exit with code `1`.
+
+When an invocation contains more than one defect, validation and outcome precedence shall be:
+
+1. required maintenance profile/job, supported action, supported options, and single-value option cardinality;
+2. exactly one Account selector and valid selector syntax;
+3. normalized audit-reason validation;
+4. active Account resolution; and
+5. action-specific state: duplicate assignment, missing assignment, and last-SUDO protection.
+
+No later lookup or mutation shall run after an earlier-precedence failure.
+
+Rationale:
+Developer recovery operations need stable automation behavior. Flags, output, exit codes, and precedence must be observable without interpreting framework exceptions or application startup logs.
+
+Valid examples:
+- A successful `assign-sudo` exits `0` and prints the normalized Account UUID in the success line.
+- A malformed Account UUID exits `2` before reason validation or Account lookup.
+- Removing SUDO from an Account without an active SUDO assignment exits `3`.
+- Removing the last active SUDO assignment exits `5`.
+
+Invalid examples:
+- A duplicate assignment and an invalid reason produce different outcomes depending on repository timing.
+- An expected conflict prints a Java stack trace and exits with an unspecified nonzero value.
+- Supplying the same selector option twice silently uses the first value.
+
 ## Acceptance scenarios
 
 ```gherkin
@@ -377,8 +480,18 @@ Scenario: Authorized caller adds an ordinary role
   And the caller has the ACCOUNT_ROLE_MANAGE permission
   When the caller posts the Role identifier and a valid reason
   Then the system returns 201 Created
+  And the response contains the assignment UUID
+  And the Account roles contain the newly assigned Role
+  And Location is /accounts/{accountId}/role-assignments/{assignmentId}
   And the response contains the created Account-role assignment
   And one ACCOUNT_ROLE_ADDED activity event is recorded
+
+Scenario: Authorized caller follows the assignment Location
+  Given an active Account-role assignment was created
+  And the caller has the ACCOUNT_GET permission
+  When the caller requests the Location returned by the add operation
+  Then the system returns the active assignment by its assignment UUID
+  And the assignment belongs to the Account in the route
 
 Scenario: Duplicate active assignment returns conflict
   Given an Account already has an active assignment for the Role
@@ -387,6 +500,15 @@ Scenario: Duplicate active assignment returns conflict
   Then the system returns 409 Conflict
   And no second active assignment is created
   And no Account-role activity event is recorded
+
+Scenario: Concurrent adds preserve one active assignment
+  Given an Account has no active assignment for an active Role
+  And two authorized callers concurrently add that Role to the Account
+  When both transactions attempt to commit
+  Then exactly one request returns 201 Created
+  And the other request returns 409 Conflict
+  And exactly one active assignment exists for the Account and Role
+  And exactly one ACCOUNT_ROLE_ADDED activity event is recorded
 
 Scenario: Missing Account or Role returns not found during add
   Given the caller has the ACCOUNT_ROLE_MANAGE permission
@@ -431,7 +553,29 @@ Scenario: SUDO management requires the maintenance workflow
 Scenario: Maintenance requires exactly one Account selector
   Given a Developer invokes a SUDO maintenance action
   When the invocation supplies both an Account UUID and an Account email, or supplies neither
-  Then the system rejects the invocation before mutation
+  Then the command exits with code 2
+  And the system rejects the invocation before mutation
+
+Scenario: Malformed selector wins before reason and lookup failures
+  Given a Developer invokes a SUDO maintenance action
+  And the Account UUID is malformed
+  And the reason is invalid
+  When the command is validated
+  Then the command exits with code 2 for the malformed selector
+  And no Account lookup or mutation occurs
+
+Scenario: Successful SUDO maintenance has an observable outcome
+  Given a valid SUDO maintenance command is permitted to mutate the selected Account
+  When the mutation and activity event commit
+  Then the command prints SUDO_MAINTENANCE_OK with the action and Account UUID
+  And the process exits with code 0
+
+Scenario: Expected SUDO maintenance failure has a stable error outcome
+  Given a valid assign-sudo command targets an Account that already has active SUDO
+  When the command runs
+  Then standard error contains SUDO_MAINTENANCE_ERROR with category CONFLICT
+  And the process exits with code 4
+  And no expected-failure stack trace is emitted
 
 Scenario: Duplicate SUDO assignment is rejected
   Given an active Account already has an active SUDO assignment
@@ -459,11 +603,10 @@ Scenario: Concurrent SUDO removals preserve one active SUDO assignment
   Then at most one removal succeeds
   And at least one SUDO assignment remains active
 
-Scenario: Coordinator cannot remove the only COORD capability from self
-  Given the caller is a Coordinator
-  And the caller's Account has the COORD role
-  And no other active Account has the COORD role
-  When the caller drops COORD from their own Account
+Scenario: Account cannot remove the only active COORD assignment from self
+  Given the caller's Account has an active COORD assignment
+  And no other active Account has an active COORD assignment
+  When the caller drops COORD from the caller's own Account
   Then the system rejects the operation with a forbidden-operation outcome
   And the COORD assignment remains active
 
@@ -484,11 +627,14 @@ flowchart TD
     Auth -- No --> Unauthorized[401 Unauthorized]
     Auth -- Yes --> Permission{Required permission present?}
     Permission -- No --> Forbidden[403 Forbidden]
-    Permission -- Yes --> Operation{List, add, or drop?}
+    Permission -- Yes --> Operation{List, lookup, add, or drop?}
 
     Operation -- List --> Account{Active Account exists?}
     Account -- No --> NotFound[404 Not Found]
     Account -- Yes --> Roles[Return active roles]
+    Operation -- Lookup --> LookupAssignment{Active assignment belongs to active Account?}
+    LookupAssignment -- No --> NotFound
+    LookupAssignment -- Yes --> AssignmentResponse[Return assignment and current Account roles]
 
     Operation -- Add --> ReasonAdd{Reason valid?}
     Operation -- Drop --> ReasonDrop{Reason valid?}
@@ -502,7 +648,9 @@ flowchart TD
     Duplicate -- Yes --> Conflict[409 Conflict]
     Duplicate -- No --> AddSafety{Lockout violation?}
     AddSafety -- Yes --> Forbidden
-    AddSafety -- No --> Add[Create assignment and audit]
+    AddSafety -- No --> UniqueInsert{Unique active pair persists?}
+    UniqueInsert -- No --> Conflict
+    UniqueInsert -- Yes --> Add[Create assignment and audit]
 
     ReasonDrop -- Yes --> Assignment{Active assignment exists?}
     Assignment -- No --> NotFound
@@ -518,7 +666,9 @@ flowchart TD
     Action -- No --> InvalidCommand[Reject invalid command]
     Action -- Yes --> Selector{Exactly one Account selector?}
     Selector -- No --> InvalidCommand
-    Selector -- Yes --> MaintenanceReason{Reason valid?}
+    Selector -- Yes --> SelectorSyntax{Selector syntax valid?}
+    SelectorSyntax -- No --> InvalidCommand
+    SelectorSyntax -- Yes --> MaintenanceReason{Reason valid?}
     MaintenanceReason -- No --> BadReason[Reject invalid reason]
     MaintenanceReason -- Yes --> Target{Active Account resolves?}
     Target -- No --> MaintenanceNotFound[Reject missing Account]
@@ -535,8 +685,6 @@ flowchart TD
 
 ## Open questions
 
-* What display label and description should the RBAC catalog use for `ACCOUNT_ROLE_MANAGE`?
-* Should a future API expose direct `GET /accounts/{accountId}/roles/{roleId}` lookup, or is collection listing sufficient?
 * Should the Account-role collection define a stable ordering for its roles?
 
 ## Out of scope
@@ -547,7 +695,7 @@ flowchart TD
 * Reading activity logs or developer-only soft-deleted assignments through HTTP.
 * Account registration, authentication, deactivation, restoration, or deletion.
 * Account search, role search, pagination, and filtering.
-* A direct Account-role lookup endpoint beyond the required list, add, and drop routes.
+* Reading dropped or otherwise historical Account-role assignments through HTTP.
 * Backward-compatibility aliases or migration paths for unreleased permission names.
 
 ## Related ADRs

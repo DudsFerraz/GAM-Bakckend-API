@@ -33,7 +33,7 @@ Authorization is enforced exclusively through permissions, never through roles.
 The API handles unauthorized access dynamically based on the sensitivity of the resource's existence.
 
 * **Use `404 Not Found`:** When revealing the mere existence of a resource is sensitive (e.g., fetching a specific `Member` or `Event` that the user has no visibility over).
-* **Use `403 Forbidden`:** When the user knows the resource or action exists, but lacks the permission to perform the requested operation (e.g., a Coordinator attempting to edit a system-managed role, or a user attempting to activate a member without the `MEMBER_ACTIVATE` permission).
+* **Use `403 Forbidden`:** When the user knows the resource or action exists, but lacks the permission to perform the requested operation (e.g., an Account attempting to edit a system-managed role without the required permission, or a user attempting to activate a member without the `MEMBER_ACTIVATION` permission).
 
 ## 3. Roles and Permissions Model
 
@@ -48,18 +48,24 @@ When `systemManaged = true`, the record is part of the application's immutable s
 
 ### 3.2. System Roles
 
-The application defines four baseline system-managed roles. Their definitions and permission bundles are owned entirely by the codebase.
+The application defines four baseline system-managed roles. Their definitions and permission bundles are contracted by the Accepted RBAC Catalog Requirement Specification and implemented by the codebase registry.
 
 | Role | Definition |
 | --- | --- |
 | `SUDO` | Developer role. Automatically receives every system permission that exists. |
-| `COORD` | Coordinator role. Reuses the GAM domain term for system authorization. |
+| `COORD` | System role that reuses the GAM domain term and receives only the explicit permission allowlist accepted in the RBAC Catalog Requirement Specification. |
 | `MEMBER` | Volunteer worker role. |
 | `VISITOR` | Public/unauthenticated viewer role. |
 
-### 3.3. System Permissions (Source of Truth)
+A newly accepted system permission is added automatically only to `SUDO`. It shall not expand `COORD`, `MEMBER`, or `VISITOR` authority unless the corresponding accepted allowlist is deliberately updated.
 
-System permissions are defined in the codebase (e.g., `PermissionEnum`) which serves as the ultimate source of truth. Seed logic synchronizes the database with the code registry.
+### 3.3. System Permissions
+
+The Accepted [RBAC Catalog Requirement Specification](../requirements/rbac/rbac-catalog.md) is the behavior and metadata contract for system permissions and baseline role bundles. The codebase registry (for example, `PermissionEnum`) implements that contract and is the operational input used by seed logic to synchronize the database.
+
+If the accepted specification and code registry disagree, the accepted specification wins under the project source-of-truth policy and the implementation must be corrected. Registry changes and requirement changes shall be made together.
+
+Persisted registry data that is absent from the accepted contract is stale and fail-closed: it grants no authority and is excluded from ordinary catalog reads. The lifecycle and synchronization strategy are defined by `REQ-RBAC-004`, `REQ-RBAC-005`, and [ADR-0003](../decisions/0003-keep-stale-rbac-registry-data-fail-closed.md).
 
 A permission definition consists of:
 
@@ -69,32 +75,34 @@ A permission definition consists of:
 
 ### 3.4. Custom Roles and Permissions
 
-* **Custom Roles:** Are allowed (`systemManaged = false`). Coordinators can create custom roles, assign them system permissions, and edit or delete them (subject to RBAC and soft-delete policies).
+* **Custom Roles:** Are allowed (`systemManaged = false`). Authorized Accounts can create custom roles, assign them current system permissions, and edit or delete them (subject to RBAC and soft-delete policies).
 * **Custom Permissions:** Are **strictly forbidden**. The application does not support admin-created custom permissions at this stage.
 
 ## 4. Assignment Rules and Lockout Prevention
 
 ### 4.1. Account-Role Assignment
 
-* Coordinators can assign and remove ordinary roles (system or custom) to accounts based on their granted permissions.
-* **`SUDO` Exception:** Coordinators cannot assign or remove the `SUDO` role via the HTTP API. `SUDO` management is strictly developer-controlled and must be executed via the command-line `maintenance` Spring profile.
+* Accounts with `ACCOUNT_ROLE_MANAGE` can assign and remove ordinary roles (system or custom) to Accounts, subject to the Account-role requirements.
+* **`SUDO` Exception:** Ordinary HTTP callers cannot assign or remove the `SUDO` role. `SUDO` management is strictly developer-controlled and must be executed via the command-line `maintenance` Spring profile.
 
 ```bash
 # Example: Assigning SUDO via developer maintenance CLI
 mvn spring-boot:run -Dspring-boot.run.profiles=maintenance -Dspring-boot.run.arguments="--maintenance.job=sudo --maintenance.action=assign-sudo --maintenance.account-email=dev@example.com --maintenance.reason=developer-recovery-access"
 ```
 
+The supported flags, selector rules, output, validation precedence, and process exit codes are defined by `REQ-ACCOUNT-ROLE-015` in the [Account Role Management Requirement Specification](../requirements/rbac/account-role-management.md).
+
 ### 4.2. Lockout Prevention (`RbacSafetyPolicy`)
 
 The application enforces strict invariants to prevent accidental or malicious system lockouts. These checks are executed in the application layer (inside `RbacSafetyPolicy`) within the same transaction as the mutation.
 
-**The current hard invariant for explicit SUDO role removal:** At least one active account must possess the `SUDO` role after every committed SUDO role removal.
+**The current hard invariant for explicit SUDO role removal:** At least one active Account must possess the `SUDO` role after every committed SUDO role removal.
 
 The system will block and throw a `ForbiddenOperationException` for the following actions:
 
 1. Removing the last active `SUDO` account role.
-2. A Coordinator attempting to remove their own last coordination capability when no other active Coordinator exists in the system.
+2. An Account with an active `COORD` assignment attempting to remove that assignment from its own Account when no other active Account has an active `COORD` assignment.
 
-An Account with an active `SUDO` assignment is exempt from the self-Coordinator protection and may remove the final active `COORD` assignment.
+An Account with an active `SUDO` assignment is exempt from the self-`COORD` protection and may remove the final active `COORD` assignment.
 
 Account deactivation, disabling, deletion, and restoration while an Account has SUDO are outside the current Account-role requirements. They require a separate accepted Requirement Specification before any protection rule is inferred or implemented.
