@@ -13,6 +13,8 @@ Roles remain permission bundles; authorization decisions must use permissions ra
 
 `SUDO` is a developer-controlled unrestricted-access role. Its assignment and removal require a separate maintenance workflow because ordinary Account-role administration must not be able to remove the application's developer recovery path.
 
+`MEMBER` and `VISITOR` are lifecycle-owned roles. Member registration, membership-solicitation approval, reactivation, and deactivation synchronize them from Member state. Generic Account-role administration must not assign or remove them independently.
+
 ## Ubiquitous Language
 
 - `active Account`: An Account that is not soft-deleted and is visible through ordinary application reads.
@@ -35,8 +37,8 @@ The system shall expose these routes:
 | --- | --- | --- | --- |
 | `GET` | `/accounts/{accountId}/roles` | `ACCOUNT_GET` | List the Account's active roles. |
 | `GET` | `/accounts/{accountId}/role-assignments/{assignmentId}` | `ACCOUNT_GET` | Read one active Account-role assignment. |
-| `POST` | `/accounts/{accountId}/roles` | `ACCOUNT_ROLE_MANAGE` | Add one role to the Account. |
-| `PATCH` | `/accounts/{accountId}/roles/{roleId}/drop` | `ACCOUNT_ROLE_MANAGE` | Drop one role from the Account. |
+| `POST` | `/accounts/{accountId}/roles` | `ACCOUNT_ROLE_MANAGE` | Add one administratively managed role to the Account. |
+| `PATCH` | `/accounts/{accountId}/roles/{roleId}/drop` | `ACCOUNT_ROLE_MANAGE` | Drop one administratively managed role from the Account. |
 
 All four routes shall require authentication. An unauthenticated request shall return `401 Unauthorized`. An authenticated caller without the required permission shall return `403 Forbidden`.
 
@@ -47,7 +49,7 @@ Account-role changes are security-sensitive mutations and must be separated from
 
 Valid examples:
 - A caller with `ACCOUNT_GET` lists an Account's active roles.
-- A caller with `ACCOUNT_ROLE_MANAGE` adds or drops an ordinary role.
+- A caller with `ACCOUNT_ROLE_MANAGE` adds or drops a custom Role or the `COORD` Role when other rules permit it.
 
 Invalid examples:
 - A caller with only self-view access lists another Account's roles.
@@ -104,13 +106,15 @@ The system shall require an active Account and an active Role. A missing or soft
 
 The system shall reject adding `SUDO` through this API with `403 Forbidden`. SUDO assignment is developer-controlled maintenance behavior; see `REQ-ACCOUNT-ROLE-009` through `REQ-ACCOUNT-ROLE-013` and `REQ-ACCOUNT-ROLE-015`.
 
+The system shall reject adding the lifecycle-owned `MEMBER` or `VISITOR` Roles through this API with `403 Forbidden`. Those assignments shall be created only by the Member lifecycle workflows defined in the Member Records and Lifecycle and Membership Solicitations Requirement Specifications.
+
 The system shall reject an existing active Account-role assignment with `409 Conflict` and shall not create a second active assignment or activity-log record.
 
 The database shall enforce the one-active-assignment invariant with a Flyway-managed partial unique index on `(account_id, role_id)` for rows whose `deleted_at` is null. The add workflow shall translate a uniqueness conflict caused by a concurrent add into `409 Conflict`. The failed transaction shall create neither a second active assignment nor an activity-log record.
 
 If an earlier assignment for the same Account and Role was dropped, a later add shall create a new active assignment identity rather than restore or reuse the historical assignment.
 
-On success, the system shall return `201 Created`. The `Location` response header shall be `/accounts/{accountId}/role-assignments/{assignmentId}`, where `assignmentId` is the UUID of the newly created assignment. That URI shall be immediately retrievable according to `REQ-ACCOUNT-ROLE-014`.
+On success, the system shall return `201 Created`. The `Location` response header shall be `/api/accounts/{accountId}/role-assignments/{assignmentId}`, where `assignmentId` is the UUID of the newly created assignment. That URI shall be immediately retrievable according to `REQ-ACCOUNT-ROLE-014`.
 
 The response shall include the assignment UUID and return the Account using the full Account response contract from `REQ-ACCOUNT-006`. The Account's `roles` list shall contain all current active roles, including the role just added:
 
@@ -146,7 +150,7 @@ An Account can hold at most one active assignment for a given Role. Re-adding af
 
 Valid examples:
 - An Account with `ACCOUNT_ROLE_MANAGE` adds an active custom Role to an Account that does not currently have it.
-- A previously dropped `MEMBER` assignment is added again as a new active assignment.
+- A previously dropped `COORD` assignment is added again as a new active assignment when lockout rules permit it.
 
 Invalid examples:
 - Adding a Role to a missing Account.
@@ -154,6 +158,7 @@ Invalid examples:
 - Adding a Role that is already actively assigned.
 - Two concurrent adds both create an active assignment for the same Account and Role.
 - Adding `SUDO` through the HTTP API.
+- Adding `MEMBER` or `VISITOR` through the Account-role HTTP API.
 
 ---
 
@@ -171,6 +176,8 @@ The system shall require an active Account-role assignment for the requested Acc
 
 The system shall reject dropping `SUDO` through this API with `403 Forbidden`. SUDO removal is developer-controlled maintenance behavior; see `REQ-ACCOUNT-ROLE-009` through `REQ-ACCOUNT-ROLE-013` and `REQ-ACCOUNT-ROLE-015`.
 
+The system shall reject dropping the lifecycle-owned `MEMBER` or `VISITOR` Roles through this API with `403 Forbidden`. Those assignments shall be removed only by Member lifecycle workflows.
+
 On success, the system shall soft-delete the active assignment, return `204 No Content`, and make the assignment absent from subsequent Account-role lists. The historical assignment shall remain available only to developer-controlled maintenance workflows.
 
 Rationale:
@@ -184,6 +191,7 @@ Invalid examples:
 - Dropping a pair that has no active assignment.
 - Dropping a soft-deleted assignment through the HTTP API.
 - Dropping `SUDO` through the HTTP API.
+- Dropping `MEMBER` or `VISITOR` through the Account-role HTTP API.
 
 ---
 
@@ -222,7 +230,7 @@ The API shall use these outcomes:
 | Missing or soft-deleted Account, Role, or active Account-role assignment | `404 Not Found` |
 | Active Account-role assignment already exists during add | `409 Conflict` |
 | Invalid reason or other command validation failure | `400 Bad Request` |
-| SUDO API mutation or lockout-prevention violation | `403 Forbidden` |
+| SUDO or lifecycle-owned Role API mutation, or lockout-prevention violation | `403 Forbidden` |
 
 Failed requests shall not create, drop, restore, or audit an Account-role assignment.
 
@@ -237,7 +245,7 @@ A successful direct Account-role add shall emit exactly one `ACCOUNT_ROLE_ADDED`
 
 Each event shall capture the actor, Account-role assignment identifier, Account identifier, Role identifier, Role name, trimmed reason, and request metadata according to the activity-audit policy. The business mutation and activity-log row shall commit together.
 
-Failed or forbidden operations shall not emit Account-role activity events. A higher-level workflow such as Member activation or deactivation shall emit its own high-level activity event and shall not emit unrelated duplicate Account-role events for the same workflow.
+Failed or forbidden operations shall not emit Account-role activity events. A higher-level workflow such as direct Member registration, membership-solicitation approval, Member reactivation, or Member deactivation shall emit its own high-level activity event and shall not emit unrelated duplicate Account-role events for the same workflow.
 
 Rationale:
 The audit log records security intent rather than every repository write. One high-level event per direct security action keeps the history meaningful and consistent.
@@ -249,6 +257,7 @@ The audit log records security intent rather than every repository write. One hi
 All Account-role mutation workflows shall enforce these protections transactionally:
 
 - HTTP callers shall not add or drop `SUDO`.
+- HTTP Account-role callers shall not add or drop the lifecycle-owned `MEMBER` or `VISITOR` Roles.
 - Developer-controlled SUDO maintenance shall not drop the last active Account-role assignment for `SUDO`.
 - An Account with an active `COORD` assignment shall not drop `COORD` from its own Account when no other active Account has an active `COORD` assignment.
 - An Account with an active `SUDO` assignment is exempt from the self-`COORD` protection and may remove the final active `COORD` assignment, including from its own Account.
@@ -482,9 +491,16 @@ Scenario: Authorized caller adds an ordinary role
   Then the system returns 201 Created
   And the response contains the assignment UUID
   And the Account roles contain the newly assigned Role
-  And Location is /accounts/{accountId}/role-assignments/{assignmentId}
+  And Location is /api/accounts/{accountId}/role-assignments/{assignmentId}
   And the response contains the created Account-role assignment
   And one ACCOUNT_ROLE_ADDED activity event is recorded
+
+Scenario: Account-role API cannot manage lifecycle-owned roles
+  Given the caller has ACCOUNT_ROLE_MANAGE
+  When the caller tries to add or drop MEMBER or VISITOR through the Account-role API
+  Then the system returns 403 Forbidden
+  And no assignment is mutated
+  And no Account-role activity event is recorded
 
 Scenario: Authorized caller follows the assignment Location
   Given an active Account-role assignment was created
@@ -644,7 +660,9 @@ flowchart TD
     AddTargets -- No --> NotFound
     AddTargets -- Yes --> HttpSudoAdd{SUDO role?}
     HttpSudoAdd -- Yes --> Forbidden
-    HttpSudoAdd -- No --> Duplicate{Active assignment exists?}
+    HttpSudoAdd -- No --> LifecycleAdd{MEMBER or VISITOR?}
+    LifecycleAdd -- Yes --> Forbidden
+    LifecycleAdd -- No --> Duplicate{Active assignment exists?}
     Duplicate -- Yes --> Conflict[409 Conflict]
     Duplicate -- No --> AddSafety{Lockout violation?}
     AddSafety -- Yes --> Forbidden
@@ -656,7 +674,9 @@ flowchart TD
     Assignment -- No --> NotFound
     Assignment -- Yes --> HttpSudoDrop{SUDO role?}
     HttpSudoDrop -- Yes --> Forbidden
-    HttpSudoDrop -- No --> DropSafety{Lockout violation?}
+    HttpSudoDrop -- No --> LifecycleDrop{MEMBER or VISITOR?}
+    LifecycleDrop -- Yes --> Forbidden
+    LifecycleDrop -- No --> DropSafety{Lockout violation?}
     DropSafety -- Yes --> Forbidden
     DropSafety -- No --> Drop[Soft-delete assignment and audit]
 
@@ -694,6 +714,7 @@ flowchart TD
 * Role-permission assignment and removal.
 * Reading activity logs or developer-only soft-deleted assignments through HTTP.
 * Account registration, authentication, deactivation, restoration, or deletion.
+* Member registration, membership-solicitation decisions, reactivation, and deactivation beyond the prohibition on manually mutating their lifecycle-owned roles.
 * Account search, role search, pagination, and filtering.
 * Reading dropped or otherwise historical Account-role assignments through HTTP.
 * Backward-compatibility aliases or migration paths for unreleased permission names.
@@ -701,11 +722,14 @@ flowchart TD
 ## Related ADRs
 
 * [ADR-0002: Serialize last-SUDO removal decisions](../../decisions/0002-serialize-last-sudo-removal.md)
+* [ADR-0004: Make Member lifecycle own MEMBER and VISITOR roles](../../decisions/0004-member-lifecycle-owns-member-and-visitor-roles.md)
 
 ## Related requirements
 
 * [RBAC Catalog](rbac-catalog.md)
 * [Account Records](../accounts/account-records.md)
+* [Member Records and Lifecycle](../members/member-records-and-lifecycle.md)
+* [Membership Solicitations](../members/membership-solicitations.md)
 
 ## Related videos
 
