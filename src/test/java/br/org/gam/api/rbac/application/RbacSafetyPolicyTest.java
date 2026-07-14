@@ -18,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -48,6 +50,16 @@ class RbacSafetyPolicyTest {
                     .hasMessage("SUDO role assignment is developer-controlled.");
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"MEMBER", "VISITOR"})
+        @DisplayName("REQ-ACCOUNT-ROLE-003 and REQ-ACCOUNT-ROLE-008 - admin assigns lifecycle-owned Role -> forbidden")
+        void adminAssignsLifecycleOwnedRoleShouldBeForbidden(String roleName) {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+
+            assertThatThrownBy(() -> policy.assertCanAssignRoleThroughAdmin(role(roleName, true)))
+                    .isInstanceOf(ForbiddenOperationException.class);
+        }
+
         @Test
         @DisplayName("EP - admin removes SUDO -> forbidden")
         void adminRemovesSudoShouldBeForbidden() {
@@ -57,6 +69,17 @@ class RbacSafetyPolicyTest {
             assertThatThrownBy(() -> policy.assertCanRemoveRoleThroughAdmin(sudoAccountRole))
                     .isInstanceOf(ForbiddenOperationException.class)
                     .hasMessage("SUDO role removal is developer-controlled.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"MEMBER", "VISITOR"})
+        @DisplayName("REQ-ACCOUNT-ROLE-004 and REQ-ACCOUNT-ROLE-008 - admin removes lifecycle-owned Role -> forbidden")
+        void adminRemovesLifecycleOwnedRoleShouldBeForbidden(String roleName) {
+            RbacSafetyPolicy policy = new RbacSafetyPolicy(accountRoleRepo);
+            AccountRoleEntity lifecycleAccountRole = accountRole(roleName, UUID.randomUUID());
+
+            assertThatThrownBy(() -> policy.assertCanRemoveRoleThroughAdmin(lifecycleAccountRole))
+                    .isInstanceOf(ForbiddenOperationException.class);
         }
 
         @Test

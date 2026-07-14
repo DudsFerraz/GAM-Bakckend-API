@@ -8,6 +8,7 @@ import br.org.gam.api.rbac.accountRole.application.useCases.AddAccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRole;
 import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoles;
+import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoleAssignment;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -24,44 +25,54 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("/accounts/{accountId}/roles")
+@RequestMapping("/accounts/{accountId}")
 public class AccountRoleController {
     private final GetAccountRoles getAccountRoles;
     private final AddAccountRole addAccountRole;
     private final DropAccountRole dropAccountRole;
+    private final GetAccountRoleAssignment getAccountRoleAssignment;
 
     public AccountRoleController(GetAccountRoles getAccountRoles, AddAccountRole addAccountRole,
-                                 DropAccountRole dropAccountRole) {
+                                 DropAccountRole dropAccountRole,
+                                 GetAccountRoleAssignment getAccountRoleAssignment) {
         this.getAccountRoles = getAccountRoles;
         this.addAccountRole = addAccountRole;
         this.dropAccountRole = dropAccountRole;
+        this.getAccountRoleAssignment = getAccountRoleAssignment;
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
-    @GetMapping
+    @GetMapping("/roles")
     public ResponseEntity<AccountRolesRDTO> getRoles(@PathVariable UUID accountId) {
         return ResponseEntity.ok(getAccountRoles.get(accountId));
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_ROLE_MANAGE + "')")
-    @PostMapping
+    @PostMapping("/roles")
     public ResponseEntity<AccountRoleRDTO> addRole(@PathVariable UUID accountId,
                                                    @RequestBody @Valid AddAccountRoleDTO request) {
         AccountRoleRDTO response = addAccountRole.byDTO(
                 new AccountRoleDTO(accountId, request.roleId(), request.reason())
         );
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{assignmentId}")
-                .buildAndExpand(response.assignmentId())
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/accounts/{accountId}/role-assignments/{assignmentId}")
+                .buildAndExpand(accountId, response.assignmentId())
                 .toUri();
         return ResponseEntity.created(location).body(response);
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_ROLE_MANAGE + "')")
-    @PatchMapping("/{roleId}/drop")
+    @PatchMapping("/roles/{roleId}/drop")
     public ResponseEntity<Void> dropRole(@PathVariable UUID accountId, @PathVariable UUID roleId,
                                          @RequestBody @Valid DropAccountRoleDTO request) {
         dropAccountRole.byDTO(new AccountRoleDTO(accountId, roleId, request.reason()));
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
+    @GetMapping("/role-assignments/{assignmentId}")
+    public ResponseEntity<AccountRoleRDTO> getAssignment(@PathVariable UUID accountId,
+                                                          @PathVariable UUID assignmentId) {
+        return ResponseEntity.ok(getAccountRoleAssignment.get(accountId, assignmentId));
     }
 }

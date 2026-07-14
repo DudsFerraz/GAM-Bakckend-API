@@ -43,23 +43,23 @@ class ActivityLogEventListenerTest {
                 ActivityAction.MEMBER_ACTIVATED,
                 memberId,
                 accountId,
-                "PENDENT",
+                "INACTIVE",
                 "ACTIVE",
                 "MEMBER",
                 "VISITOR",
-                null
+                "Returning to weekly activities"
         ));
 
         verify(activityLogger).log(
                 ActivityAction.MEMBER_ACTIVATED,
                 ActivityTargetType.MEMBER,
                 memberId,
-                null,
-                "Member status changed from PENDENT to ACTIVE",
+                "Returning to weekly activities",
+                "Member status changed from INACTIVE to ACTIVE",
                 Map.of(
                         "memberId", memberId,
                         "accountId", accountId,
-                        "previousStatus", "PENDENT",
+                        "previousStatus", "INACTIVE",
                         "newStatus", "ACTIVE",
                         "roleAdded", "MEMBER",
                         "roleRemoved", "VISITOR"

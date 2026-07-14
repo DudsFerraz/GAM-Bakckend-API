@@ -1,4 +1,4 @@
-CREATE TYPE member_status_enum AS ENUM ('PENDENT', 'ACTIVE', 'INACTIVE');
+CREATE TYPE member_status_enum AS ENUM ('ACTIVE', 'INACTIVE');
 
 CREATE TABLE members(
     id UUID PRIMARY KEY,
@@ -6,7 +6,7 @@ CREATE TABLE members(
     first_name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
     birth_date DATE NOT NULL,
-    phone_number VARCHAR(30),
+    phone_number VARCHAR(30) NOT NULL,
     status member_status_enum NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL,
@@ -22,6 +22,5 @@ CREATE TABLE members(
     CONSTRAINT fk_member_deleted_by FOREIGN KEY(deleted_by) REFERENCES accounts(id)
 );
 
-CREATE UNIQUE INDEX idx_members_account_id_not_deleted
-    ON members (account_id)
-    WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_members_account_id
+    ON members (account_id);

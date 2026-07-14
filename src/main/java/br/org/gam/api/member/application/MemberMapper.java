@@ -28,7 +28,8 @@ public interface MemberMapper {
 
     RegisterMemberRDTO entityToRegisterMemberRDTO(MemberEntity memberEntity);
 
-    @Mapping(target = "name", source = "memberEntity.name", qualifiedByName = "nameToString")
+    @Mapping(target = "firstName", source = "memberEntity.name.firstName")
+    @Mapping(target = "surname", source = "memberEntity.name.surname")
     @Mapping(target = "id", source = "memberEntity.id")
     MemberRDTO entityToRDTO(MemberEntity memberEntity);
 

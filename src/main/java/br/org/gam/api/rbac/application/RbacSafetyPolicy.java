@@ -28,11 +28,17 @@ public class RbacSafetyPolicy {
         if (isSudo(role)) {
             throw ForbiddenOperationException.reason("SUDO role assignment is developer-controlled.");
         }
+        if (isLifecycleOwned(role)) {
+            throw ForbiddenOperationException.reason("MEMBER and VISITOR roles are managed by the Member lifecycle.");
+        }
     }
 
     public void assertCanRemoveRoleThroughAdmin(AccountRoleEntity accountRole) {
         if (isSudo(accountRole.getRole())) {
             throw ForbiddenOperationException.reason("SUDO role removal is developer-controlled.");
+        }
+        if (isLifecycleOwned(accountRole.getRole())) {
+            throw ForbiddenOperationException.reason("MEMBER and VISITOR roles are managed by the Member lifecycle.");
         }
 
         assertCanRemoveOnlyCoordCapabilityFromSelf(accountRole);
@@ -88,6 +94,11 @@ public class RbacSafetyPolicy {
 
     private boolean isSudo(RoleEntity role) {
         return role != null && SystemRole.SUDO.getCode().equals(role.getName());
+    }
+
+    private boolean isLifecycleOwned(RoleEntity role) {
+        return role != null && (SystemRole.MEMBER.getCode().equals(role.getName())
+                || SystemRole.VISITOR.getCode().equals(role.getName()));
     }
 
     private void assertCanRemoveOnlyCoordCapabilityFromSelf(AccountRoleEntity accountRole) {

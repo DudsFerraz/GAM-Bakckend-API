@@ -11,6 +11,11 @@ public record RegisterMemberDTO(
         @NotNull @NotBlank String firstName,
         @NotNull @NotBlank String surname,
         @NotNull LocalDate birthDate,
-        @NotNull GamPhoneNumber phoneNumber
+        @NotNull GamPhoneNumber phoneNumber,
+        String reason
 ) {
+    public RegisterMemberDTO(UUID accountId, String firstName, String surname, LocalDate birthDate,
+                             GamPhoneNumber phoneNumber) {
+        this(accountId, firstName, surname, birthDate, phoneNumber, null);
+    }
 }

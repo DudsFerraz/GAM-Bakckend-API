@@ -2,14 +2,15 @@ package br.org.gam.api.member.application.useCases;
 
 import br.org.gam.api.member.application.MemberMapper;
 import br.org.gam.api.member.application.MemberDomainLoader;
+import br.org.gam.api.member.application.MemberRoleProjection;
 import br.org.gam.api.member.domain.Member;
+import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.member.persistence.MemberRepository;
-import br.org.gam.api.rbac.accountRole.application.useCases.AddAccountRole;
-import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRole;
 import br.org.gam.api.rbac.role.domain.SystemRole;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
-import br.org.gam.api.shared.exception.InvalidCommandException;
+import br.org.gam.api.shared.exception.ConflictException;
+import br.org.gam.api.shared.validation.RequiredReason;
 import jakarta.transaction.Transactional;
 import java.util.function.Consumer;
 import java.util.UUID;
@@ -21,24 +22,24 @@ public class Activation {
     private final MemberRepository memberRepo;
     private final MemberDomainLoader getMemberInstance;
     private final MemberMapper memberMapper;
-    private final AddAccountRole addAccountRole;
-    private final DropAccountRole dropAccountRole;
+    private final MemberRoleProjection memberRoleProjection;
     private final ActivityEvents activityEvents;
 
     public Activation(MemberRepository memberRepo, MemberDomainLoader getMemberInstance, MemberMapper memberMapper,
-                      AddAccountRole addAccountRole, DropAccountRole dropAccountRole, ActivityEvents activityEvents) {
+                      MemberRoleProjection memberRoleProjection, ActivityEvents activityEvents) {
         this.memberRepo = memberRepo;
         this.getMemberInstance = getMemberInstance;
         this.memberMapper = memberMapper;
-        this.addAccountRole = addAccountRole;
-        this.dropAccountRole = dropAccountRole;
+        this.memberRoleProjection = memberRoleProjection;
         this.activityEvents = activityEvents;
     }
 
     @Transactional
-    public void activate(UUID memberId) {
+    public void activate(UUID memberId, String reason) {
+        String auditReason = RequiredReason.normalize(reason, "Member activation requires an audit reason.");
         MemberStatusChange change = changeStatus(
-                memberId,
+                  memberId,
+                MemberStatus.INACTIVE,
                 Member::activate,
                 SystemRole.MEMBER.getCode(),
                 SystemRole.VISITOR.getCode()
@@ -49,15 +50,17 @@ public class Activation {
                 change.previousStatus(),
                 change.newStatus(),
                 change.roleAdded(),
-                change.roleRemoved()
+                change.roleRemoved(),
+                auditReason
         );
     }
 
     @Transactional
     public void deactivate(UUID memberId, String reason) {
-        String auditReason = requiredAuditReason(reason);
+        String auditReason = RequiredReason.normalize(reason, "Member deactivation requires an audit reason.");
         MemberStatusChange change = changeStatus(
-                memberId,
+                  memberId,
+                MemberStatus.ACTIVE,
                 Member::deactivate,
                 SystemRole.VISITOR.getCode(),
                 SystemRole.MEMBER.getCode()
@@ -74,16 +77,24 @@ public class Activation {
     }
 
 
-    private MemberStatusChange changeStatus(UUID memberId, Consumer<Member> memberConsumer, String roleToAdd,
+    private MemberStatusChange changeStatus(UUID memberId,
+                                            MemberStatus requiredStatus,
+                                            Consumer<Member> memberConsumer, String roleToAdd,
                                             String roleToRemove) {
         Member member = getMemberInstance.requiredById(memberId);
+        if (member.getStatus() != requiredStatus) {
+            throw ConflictException.resource("Member", memberId, "Member is already in the requested status.");
+        }
         String previousStatus = member.getStatus().name();
         memberConsumer.accept(member);
 
         UUID accountId = member.getAccount().getId();
 
-        addAccountRole.byRoleName(roleToAdd, accountId, false);
-        dropAccountRole.byRoleName(roleToRemove, accountId, false);
+        if (member.getStatus() == MemberStatus.ACTIVE) {
+            memberRoleProjection.synchronizeActive(accountId);
+        } else {
+            memberRoleProjection.synchronizeInactive(accountId);
+        }
 
         MemberEntity memberEntity = memberMapper.domainToEntity(member);
         memberRepo.save(memberEntity);
@@ -106,13 +117,6 @@ public class Activation {
             String roleAdded,
             String roleRemoved
     ) {
-    }
-
-    private String requiredAuditReason(String reason) {
-        if (reason == null || reason.isBlank()) {
-            throw InvalidCommandException.reason("Member deactivation requires an audit reason.");
-        }
-        return reason.trim();
     }
 
 }

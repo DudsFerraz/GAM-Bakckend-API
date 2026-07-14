@@ -163,24 +163,11 @@ class AddAccountRoleTest {
         }
 
         @Test
-        @DisplayName("REQ-ACCOUNT-ROLE-007 - non-direct workflow add -> no Account-role audit event")
-        void nonDirectWorkflowAddShouldNotPublishAccountRoleAuditEvent() {
-            AccountEntity account = account();
-            RoleEntity role = role();
-            AccountRoleDTO dto = new AccountRoleDTO(account.getId(), role.getId(), null);
-            AccountRoleEntity savedEntity = new AccountRoleEntity();
-            savedEntity.setId(UUID.randomUUID());
-            AccountRoleRDTO expectedResponse = response(role.getId());
-
-            when(getAccountInstance.requiredById(account.getId())).thenReturn(account);
-            when(getRoleInstance.requiredById(role.getId())).thenReturn(role);
-            when(accountRoleRepo.existsByAccount_IdAndRole_Id(account.getId(), role.getId())).thenReturn(false);
-            when(accountRoleRepo.save(anyAccountRoleEntity())).thenReturn(savedEntity);
-            when(accountRoleMapper.entityToRDTO(savedEntity)).thenReturn(expectedResponse);
-
-            addAccountRole.byDTO(dto, false);
-
-            verifyNoInteractions(activityEvents);
+        @DisplayName("REQ-ACCOUNT-ROLE-007 and ADR-0004 - generic add exposes no audit or safety bypass")
+        void genericAddShouldNotExposeAuditOrSafetyBypass() {
+            assertThat(Stream.of(AddAccountRole.class.getDeclaredMethods()))
+                    .noneMatch(method -> Stream.of(method.getParameterTypes())
+                            .anyMatch(type -> type == boolean.class || type == Boolean.class));
         }
 
         @Test

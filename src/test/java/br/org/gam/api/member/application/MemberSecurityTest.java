@@ -62,10 +62,10 @@ class MemberSecurityTest {
         }
 
         @Test
-        @DisplayName("non active member with authority -> visible")
+        @DisplayName("REQ-MEMBER-008 - inactive Member with MEMBER_GET_NON_ACTIVE -> visible")
         void nonActiveMemberWithAuthorityShouldBeVisible() {
             MemberSecurity memberSecurity = new MemberSecurity(getMemberInstance, securityUtils);
-            MemberEntity member = member(MemberStatus.PENDENT, UUID.randomUUID());
+            MemberEntity member = member(MemberStatus.INACTIVE, UUID.randomUUID());
 
             when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of(PermissionEnum.MEMBER_GET_NON_ACTIVE.getCode()));
 
@@ -73,7 +73,7 @@ class MemberSecurityTest {
         }
 
         @Test
-        @DisplayName("non active member without authority -> hidden")
+        @DisplayName("REQ-MEMBER-008 - inactive Member without MEMBER_GET_NON_ACTIVE -> hidden")
         void nonActiveMemberWithoutAuthorityShouldBeHidden() {
             MemberSecurity memberSecurity = new MemberSecurity(getMemberInstance, securityUtils);
             MemberEntity member = member(MemberStatus.INACTIVE, UUID.randomUUID());

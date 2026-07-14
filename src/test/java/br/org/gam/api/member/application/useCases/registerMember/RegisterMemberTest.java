@@ -54,7 +54,7 @@ class RegisterMemberTest {
     class Functional {
 
         @Test
-        @DisplayName("EP - account without member -> member is registered")
+        @DisplayName("REQ-MEMBER-001 through REQ-MEMBER-004 - eligible Account without Member -> active Member is registered")
         void accountWithoutMemberShouldRegisterMember() {
             UUID accountId = UUID.randomUUID();
             Account account = Account.register(GamEmail.of("member@example.com"), "encoded-password", "Member Account");
@@ -85,7 +85,7 @@ class RegisterMemberTest {
             assertThat(registeredMember.getName().surname()).isEqualTo("Silva");
             assertThat(registeredMember.getBirthDate()).isEqualTo(dto.birthDate());
             assertThat(registeredMember.getPhoneNumber()).isSameAs(phoneNumber);
-            assertThat(registeredMember.getStatus()).isEqualTo(MemberStatus.PENDENT);
+            assertThat(registeredMember.getStatus()).isEqualTo(MemberStatus.ACTIVE);
             verify(memberRepo).save(mappedEntity);
         }
 
@@ -93,7 +93,8 @@ class RegisterMemberTest {
         @DisplayName("EP - account already linked to member -> conflict error")
         void accountAlreadyLinkedToMemberShouldReturnConflictError() {
             UUID accountId = UUID.randomUUID();
-            RegisterMemberDTO dto = new RegisterMemberDTO(accountId, "Ana", "Silva", LocalDate.now(), phoneNumber());
+            RegisterMemberDTO dto = new RegisterMemberDTO(
+                    accountId, "Ana", "Silva", LocalDate.now().minusYears(20), phoneNumber());
 
             when(memberRepo.existsByAccountId(accountId)).thenReturn(true);
 

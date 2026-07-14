@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +46,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IntegrationTest
 @PersistenceTest
@@ -101,11 +101,6 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         specificationPermissionIds.clear();
     }
 
-    @Nested
-    @PersistenceTest
-    @DisplayName("Persistence")
-    class Persistence {
-
         @Test
         @DisplayName("account filter converter and specification builder -> dynamic query matches persisted row")
         void accountFilterConverterAndSpecificationBuilderShouldQueryPersistedRows() {
@@ -146,7 +141,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         @DisplayName("member filter converter and specification builder -> enum filter matches persisted row")
         void memberFilterConverterAndSpecificationBuilderShouldQueryEnumRows() {
             MemberEntity active = saveMemberWithAccount(MemberStatus.ACTIVE);
-            saveMemberWithAccount(MemberStatus.PENDENT);
+            saveMemberWithAccount(MemberStatus.INACTIVE);
 
             Specification<MemberEntity> specification = memberSearchFilterConverter.convert(new SearchDTO(
                     List.of(new SpecificationFilterDTO("status", "ACTIVE", ComparationMethods.EQUALS))
@@ -196,6 +191,35 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         }
 
         @Test
+        @DisplayName("REQ-MEMBER-002 - missing Member phone number -> persistence constraint violation")
+        void missingMemberPhoneNumberShouldViolatePersistenceConstraint() {
+            AccountEntity account = inTransaction(() ->
+                    accountRepository.saveAndFlush(account(uniqueEmail(), "Missing phone target")));
+            MemberEntity invalidMember = member(account, MemberStatus.ACTIVE, "+5511912345678");
+            invalidMember.setPhoneNumber(null);
+
+            assertThatThrownBy(() -> inTransaction(() -> memberRepository.saveAndFlush(invalidMember)))
+                    .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        }
+
+        @Test
+        @DisplayName("REQ-MEMBER-001 - soft-deleted lifetime Member -> Account linkage remains unique")
+        void softDeletedMemberShouldContinueReservingAccountLinkage() {
+            AccountEntity account = inTransaction(() ->
+                    accountRepository.saveAndFlush(account(uniqueEmail(), "Lifetime linkage target")));
+            MemberEntity original = inTransaction(() ->
+                    memberRepository.saveAndFlush(member(account, MemberStatus.ACTIVE, "+5511912345678")));
+            inTransaction(() -> {
+                memberRepository.delete(memberRepository.findById(original.getId()).orElseThrow());
+                return null;
+            });
+            MemberEntity duplicate = member(account, MemberStatus.ACTIVE, "+5511987654321");
+
+            assertThatThrownBy(() -> inTransaction(() -> memberRepository.saveAndFlush(duplicate)))
+                    .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        }
+
+        @Test
         @DisplayName("event security specification -> public and authorized events visible")
         void eventSecuritySpecificationShouldHideAndShowRecordsByRequiredPermission() {
             PermissionEntity permission = inTransaction(() -> permissionRepository.saveAndFlush(permission("EVENT_PRIVATE_" + UUID.randomUUID())));
@@ -223,7 +247,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         @DisplayName("member security specification -> non active records hidden unless authority exists")
         void memberSecuritySpecificationShouldHideNonActiveMembersWithoutAuthority() {
             MemberEntity active = saveMemberWithAccount(MemberStatus.ACTIVE);
-            MemberEntity pendent = saveMemberWithAccount(MemberStatus.PENDENT);
+            MemberEntity inactive = saveMemberWithAccount(MemberStatus.INACTIVE);
 
             List<MemberEntity> defaultResults = inTransaction(() ->
                     memberRepository.findAll(MemberSecuritySpecification.canGetMember(Set.of())));
@@ -233,10 +257,10 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
             assertThat(defaultResults)
                     .extracting(MemberEntity::getId)
                     .contains(active.getId())
-                    .doesNotContain(pendent.getId());
+                    .doesNotContain(inactive.getId());
             assertThat(privilegedResults)
                     .extracting(MemberEntity::getId)
-                    .contains(active.getId(), pendent.getId());
+                    .contains(active.getId(), inactive.getId());
         }
 
         @Test
@@ -256,7 +280,6 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
                     .containsExactly(target.getId())
                     .doesNotContain(other.getId());
         }
-    }
 
     private MemberEntity saveMemberWithAccount(MemberStatus status) {
         AccountEntity account = inTransaction(() -> accountRepository.saveAndFlush(account(uniqueEmail(), "Member " + status)));

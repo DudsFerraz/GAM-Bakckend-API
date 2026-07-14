@@ -5,6 +5,9 @@ import br.org.gam.api.shared.activitylog.events.AccountRoleRemovedActivity;
 import br.org.gam.api.shared.activitylog.events.DeveloperMaintenanceActivity;
 import br.org.gam.api.shared.activitylog.events.EventCreatedActivity;
 import br.org.gam.api.shared.activitylog.events.MemberStatusChangedActivity;
+import br.org.gam.api.shared.activitylog.events.MemberRegisteredActivity;
+import br.org.gam.api.shared.activitylog.events.MembershipSolicitationActivity;
+import java.util.HashMap;
 import br.org.gam.api.shared.activitylog.events.MissaCreatedActivity;
 import br.org.gam.api.shared.activitylog.events.OratorioCreatedActivity;
 import br.org.gam.api.shared.activitylog.events.PresenceRegisteredActivity;
@@ -23,20 +26,62 @@ public class ActivityLogEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(MemberStatusChangedActivity activity) {
+        Map<String, Object> metadata = new HashMap<>(Map.of(
+                "memberId", activity.memberId(),
+                "accountId", activity.accountId(),
+                "previousStatus", activity.previousStatus(),
+                "newStatus", activity.newStatus(),
+                "roleAdded", activity.roleAdded(),
+                "roleRemoved", activity.roleRemoved()
+        ));
+        if (activity.roleAddedId() != null) metadata.put("roleAddedId", activity.roleAddedId());
+        if (activity.roleRemovedId() != null) metadata.put("roleRemovedId", activity.roleRemovedId());
         activityLogger.log(
                 activity.action(),
                 ActivityTargetType.MEMBER,
                 activity.memberId(),
                 activity.reason(),
                 "Member status changed from " + activity.previousStatus() + " to " + activity.newStatus(),
+                metadata
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handle(MemberRegisteredActivity activity) {
+        activityLogger.log(
+                ActivityAction.MEMBER_REGISTERED,
+                ActivityTargetType.MEMBER,
+                activity.memberId(),
+                activity.reason(),
+                "Member registered for account " + activity.accountId(),
                 Map.of(
                         "memberId", activity.memberId(),
                         "accountId", activity.accountId(),
-                        "previousStatus", activity.previousStatus(),
-                        "newStatus", activity.newStatus(),
-                        "roleAdded", activity.roleAdded(),
-                        "roleRemoved", activity.roleRemoved()
+                        "newStatus", "ACTIVE",
+                        "roleAddedId", activity.roleAddedId(),
+                        "roleRemovedId", activity.roleRemovedId()
                 )
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handle(MembershipSolicitationActivity activity) {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("solicitationId", activity.solicitationId());
+        metadata.put("applicantAccountId", activity.applicantAccountId());
+        metadata.put("newStatus", activity.newStatus());
+        if (activity.previousStatus() != null) metadata.put("previousStatus", activity.previousStatus());
+        if (activity.memberId() != null) metadata.put("memberId", activity.memberId());
+        if (activity.roleAddedId() != null) metadata.put("roleAddedId", activity.roleAddedId());
+        if (activity.roleRemovedId() != null) metadata.put("roleRemovedId", activity.roleRemovedId());
+
+        activityLogger.log(
+                activity.action(),
+                ActivityTargetType.MEMBERSHIP_SOLICITATION,
+                activity.solicitationId(),
+                activity.reason(),
+                "Membership solicitation status is " + activity.newStatus(),
+                metadata
         );
     }
 

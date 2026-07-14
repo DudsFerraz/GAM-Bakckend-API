@@ -100,7 +100,7 @@ class SpecificationFactoryStructuralTest {
             CriteriaBuilder builder = mock(CriteriaBuilder.class);
             Path<Object> path = mock(Path.class);
             Predicate predicate = mock(Predicate.class);
-            List<String> values = List.of("ACTIVE", "PENDENT");
+            List<String> values = List.of("ACTIVE", "INACTIVE");
 
             when(root.get("status")).thenReturn(path);
             when(path.in(values)).thenReturn(predicate);

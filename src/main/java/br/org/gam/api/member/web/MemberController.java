@@ -7,6 +7,7 @@ import br.org.gam.api.member.application.useCases.GetMember;
 import br.org.gam.api.member.application.useCases.registerMember.RegisterMember;
 import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberDTO;
 import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberRDTO;
+import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberWorkflow;
 import br.org.gam.api.member.application.useCases.SearchMembers;
 import br.org.gam.api.presence.application.PresenceRDTO;
 import br.org.gam.api.presence.application.useCases.GetPresence;
@@ -26,13 +27,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/members")
 public class MemberController {
 
-    private final RegisterMember registerMember;
+    private final RegisterMemberWorkflow registerMember;
     private final GetMember getMember;
     private final SearchMembers searchMembers;
     private final Activation activation;
     private final GetPresence getPresence;
 
-    public MemberController(RegisterMember registerMember, GetMember getMember, SearchMembers searchMembers,
+    public MemberController(RegisterMemberWorkflow registerMember, GetMember getMember, SearchMembers searchMembers,
                             Activation activation, GetPresence getPresence
     ) {
 
@@ -43,10 +44,11 @@ public class MemberController {
         this.getPresence = getPresence;
     }
 
+    @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_MANAGE + "')")
     @PostMapping
-    public ResponseEntity<RegisterMemberRDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
+    public ResponseEntity<MemberRDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
 
-        RegisterMemberRDTO responseDTO = registerMember.register(dto);
+        MemberRDTO responseDTO = registerMember.register(dto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -75,10 +77,10 @@ public class MemberController {
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
     @PatchMapping("/{id}/activate")
-    public ResponseEntity<Void> activate(@PathVariable UUID id) {
+    public ResponseEntity<Void> activate(@PathVariable UUID id, @RequestBody @Valid DeactivateMemberDTO dto) {
 
-        activation.activate(id);
-        return ResponseEntity.ok().build();
+        activation.activate(id, dto.reason());
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
@@ -86,7 +88,7 @@ public class MemberController {
     public ResponseEntity<Void> deactivate(@PathVariable UUID id, @RequestBody @Valid DeactivateMemberDTO dto) {
 
         activation.deactivate(id, dto.reason());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("@memberSecurity.canGetMemberPresences(#memberId)")

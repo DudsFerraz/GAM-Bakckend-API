@@ -35,6 +35,8 @@ public interface AccountMapper {
     @Mapping(target = "roles", source = "accountRoles", qualifiedByName = "accountRolesToAccountRolesRDTO")
     AccountRDTO entityToRDTO(AccountEntity accountEntity);
 
+    AccountSummaryRDTO entityToSummaryRDTO(AccountEntity accountEntity);
+
     @Mapping(source = "role", target = ".")
     RoleRDTO accountRoleToRoleRDTO(AccountRoleEntity accountRoleEntity);
 

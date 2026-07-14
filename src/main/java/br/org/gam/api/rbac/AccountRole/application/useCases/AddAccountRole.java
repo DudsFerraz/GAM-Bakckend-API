@@ -16,6 +16,8 @@ import br.org.gam.api.shared.exception.InvalidCommandException;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,12 +42,7 @@ public class AddAccountRole {
 
     @Transactional
     public AccountRoleRDTO byDTO(AccountRoleDTO dto) {
-        return byDTO(dto, true);
-    }
-
-    @Transactional
-    public AccountRoleRDTO byDTO(AccountRoleDTO dto, boolean audit) {
-        String reason = audit ? requiredAuditReason(dto.reason()) : null;
+        String reason = requiredAuditReason(dto.reason());
 
         AccountEntity account = getAccountInstance.requiredById(dto.accountId());
         RoleEntity role = getRoleInstance.requiredById(dto.roleId());
@@ -65,16 +62,20 @@ public class AddAccountRole {
         newAccountRoleEntity.setRole(role);
 
         AccountRoleEntity savedAccountRoleEntity = accountRoleRepo.save(newAccountRoleEntity);
-
-        if (audit) {
-            activityEvents.accountRoleAdded(
-                    savedAccountRoleEntity.getId(),
-                    account.getId(),
-                    role.getId(),
-                    role.getName(),
-                    reason
-            );
+        Set<AccountRoleEntity> accountRoles = account.getAccountRoles();
+        if (accountRoles == null) {
+            accountRoles = new HashSet<>();
+            account.setAccountRoles(accountRoles);
         }
+        accountRoles.add(savedAccountRoleEntity);
+
+        activityEvents.accountRoleAdded(
+                savedAccountRoleEntity.getId(),
+                account.getId(),
+                role.getId(),
+                role.getName(),
+                reason
+        );
 
         return accountRoleMapper.entityToRDTO(savedAccountRoleEntity);
     }
@@ -83,14 +84,7 @@ public class AddAccountRole {
     public AccountRoleRDTO byRoleName(String roleName, UUID accountId, String reason) {
         UUID roleId = getRoleInstance.requiredByName(roleName).getId();
 
-        return byDTO(new AccountRoleDTO(accountId, roleId, reason), true);
-    }
-
-    @Transactional
-    public AccountRoleRDTO byRoleName(String roleName, UUID accountId, boolean audit) {
-        UUID roleId = getRoleInstance.requiredByName(roleName).getId();
-
-        return byDTO(new AccountRoleDTO(accountId, roleId, null), audit);
+        return byDTO(new AccountRoleDTO(accountId, roleId, reason));
     }
 
     private String requiredAuditReason(String reason) {

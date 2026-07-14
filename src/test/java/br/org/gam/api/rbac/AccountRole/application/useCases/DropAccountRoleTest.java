@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -133,24 +134,11 @@ class DropAccountRoleTest {
         }
 
         @Test
-        @DisplayName("REQ-ACCOUNT-ROLE-007 - non-direct workflow drop -> no Account-role audit event")
-        void nonDirectWorkflowDropShouldNotPublishAccountRoleAuditEvent() {
-            UUID accountId = UUID.randomUUID();
-            UUID roleId = UUID.randomUUID();
-            AccountRoleDTO dto = new AccountRoleDTO(accountId, roleId, null);
-            AccountRoleEntity entity = new AccountRoleEntity();
-            entity.setId(UUID.randomUUID());
-            RoleEntity role = new RoleEntity();
-            role.setId(roleId);
-            role.setName("ADMIN");
-            entity.setRole(role);
-
-            when(getAccountRoleInstance.requiredByDTO(dto)).thenReturn(entity);
-
-            dropAccountRole.byDTO(dto, false);
-
-            verify(accountRoleRepo).delete(entity);
-            verifyNoInteractions(activityEvents);
+        @DisplayName("REQ-ACCOUNT-ROLE-007 and ADR-0004 - generic drop exposes no audit or safety bypass")
+        void genericDropShouldNotExposeAuditOrSafetyBypass() {
+            assertThat(Stream.of(DropAccountRole.class.getDeclaredMethods()))
+                    .noneMatch(method -> Stream.of(method.getParameterTypes())
+                            .anyMatch(type -> type == boolean.class || type == Boolean.class));
         }
 
         @Test

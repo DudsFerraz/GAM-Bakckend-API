@@ -32,41 +32,27 @@ public class DropAccountRole {
 
     @Transactional
     public void byDTO(AccountRoleDTO dto) {
-        byDTO(dto, true);
-    }
-
-    @Transactional
-    public void byDTO(AccountRoleDTO dto, boolean audit) {
-        String reason = audit ? requiredAuditReason(dto.reason()) : null;
+        String reason = requiredAuditReason(dto.reason());
         AccountRoleEntity accountRoleEntity = getAccountRoleInstance.requiredByDTO(dto);
         rbacSafetyPolicy.assertCanRemoveRoleThroughAdmin(accountRoleEntity);
 
         accountRoleRepo.delete(accountRoleEntity);
 
-        if (audit) {
-            String roleName = accountRoleEntity.getRole() == null ? null : accountRoleEntity.getRole().getName();
-            activityEvents.accountRoleRemoved(
-                    accountRoleEntity.getId(),
-                    dto.accountId(),
-                    dto.roleId(),
-                    roleName,
-                    reason
-            );
-        }
+        String roleName = accountRoleEntity.getRole() == null ? null : accountRoleEntity.getRole().getName();
+        activityEvents.accountRoleRemoved(
+                accountRoleEntity.getId(),
+                dto.accountId(),
+                dto.roleId(),
+                roleName,
+                reason
+        );
     }
 
     @Transactional
     public void byRoleName(String roleName, UUID accountId, String reason) {
         UUID roleId = getRoleInstance.requiredByName(roleName).getId();
 
-        byDTO(new AccountRoleDTO(accountId, roleId, reason), true);
-    }
-
-    @Transactional
-    public void byRoleName(String roleName, UUID accountId, boolean audit) {
-        UUID roleId = getRoleInstance.requiredByName(roleName).getId();
-
-        byDTO(new AccountRoleDTO(accountId, roleId, null), audit);
+        byDTO(new AccountRoleDTO(accountId, roleId, reason));
     }
 
     private String requiredAuditReason(String reason) {

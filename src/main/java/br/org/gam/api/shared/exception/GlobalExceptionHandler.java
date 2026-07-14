@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -78,10 +79,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorDTO> dataIntegrityViolationHandler(DataIntegrityViolationException e) {
         log.warn("Data integrity violation detected.", e);
-        if (isActiveAccountRoleDuplicate(e)) {
+        if (isConcurrentUniquenessConflict(e)) {
             return buildApplicationErrorResponse(
                     HttpStatus.CONFLICT,
-                    ConflictException.reason("Account role already exists.")
+                    ConflictException.reason("The request conflicts with an existing or concurrent resource.")
             );
         }
 
@@ -171,6 +172,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildApplicationErrorResponse(HttpStatus.CONFLICT, e);
     }
 
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ApiErrorDTO> optimisticLockingHandler(ObjectOptimisticLockingFailureException ignored) {
+        return buildApplicationErrorResponse(
+                HttpStatus.CONFLICT,
+                ConflictException.reason("The resource was changed by a concurrent request.")
+        );
+    }
+
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<ApiErrorDTO> forbiddenOperationHandler(ForbiddenOperationException e) {
         return buildApplicationErrorResponse(HttpStatus.FORBIDDEN, e);
@@ -245,17 +254,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ApiErrorDTO(status, code, message));
     }
 
-    private boolean isActiveAccountRoleDuplicate(DataIntegrityViolationException exception) {
+    private boolean isConcurrentUniquenessConflict(DataIntegrityViolationException exception) {
         Throwable current = exception;
         while (current != null) {
             if (current instanceof org.hibernate.exception.ConstraintViolationException constraintViolation
-                    && "idx_account_role_not_deleted".equals(constraintViolation.getConstraintName())) {
+                    && isConcurrentUniquenessConstraint(constraintViolation.getConstraintName())) {
                 return true;
             }
             current = current.getCause();
         }
 
         return exception.getMessage() != null
-                && exception.getMessage().contains("idx_account_role_not_deleted");
+                && (exception.getMessage().contains("idx_account_role_not_deleted")
+                || exception.getMessage().contains("idx_members_account_id")
+                || exception.getMessage().contains("idx_membership_solicitations_one_pending"));
+    }
+
+    private boolean isConcurrentUniquenessConstraint(String constraintName) {
+        return "idx_account_role_not_deleted".equals(constraintName)
+                || "idx_members_account_id".equals(constraintName)
+                || "idx_membership_solicitations_one_pending".equals(constraintName);
     }
 }

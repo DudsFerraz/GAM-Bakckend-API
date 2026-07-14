@@ -27,8 +27,8 @@ class MemberTest {
     class Functional {
 
         @Test
-        @DisplayName("EP - valid registration data -> pendent member with generated identity")
-        void validRegistrationDataShouldCreatePendentMemberWithGeneratedIdentity() {
+        @DisplayName("REQ-MEMBER-001 through REQ-MEMBER-004 - valid registration data -> active Member with generated identity")
+        void validRegistrationDataShouldCreateActiveMemberWithGeneratedIdentity() {
             Account account = account();
             GamName name = new GamName("Ana", "Silva");
             LocalDate birthDate = LocalDate.now().minusYears(20);
@@ -42,15 +42,33 @@ class MemberTest {
             assertThat(member.getName()).isEqualTo(name);
             assertThat(member.getBirthDate()).isEqualTo(birthDate);
             assertThat(member.getPhoneNumber()).isEqualTo(phoneNumber);
-            assertThat(member.getStatus()).isEqualTo(MemberStatus.PENDENT);
+            assertThat(member.getStatus()).isEqualTo(MemberStatus.ACTIVE);
         }
 
         @Test
-        @DisplayName("BVA - birth date today -> accepted")
-        void birthDateTodayShouldBeAccepted() {
-            Member member = Member.register(account(), new GamName("Ana", "Silva"), LocalDate.now(), phoneNumber());
+        @DisplayName("REQ-MEMBER-002 - BVA - seventeenth birthday -> accepted")
+        void seventeenthBirthdayShouldBeAccepted() {
+            Member member = Member.register(
+                    account(),
+                    new GamName("Ana", "Silva"),
+                    LocalDate.now().minusYears(17),
+                    phoneNumber()
+            );
 
-            assertThat(member.getAge()).isZero();
+            assertThat(member.getAge()).isEqualTo(17);
+        }
+
+        @Test
+        @DisplayName("REQ-MEMBER-002 - BVA - one day before seventeenth birthday -> validation error")
+        void oneDayBeforeSeventeenthBirthdayShouldReturnValidationError() {
+            LocalDate underageBirthDate = LocalDate.now().minusYears(17).plusDays(1);
+
+            assertThatThrownBy(() -> Member.register(
+                    account(),
+                    new GamName("Ana", "Silva"),
+                    underageBirthDate,
+                    phoneNumber()
+            )).isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -100,9 +118,11 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("EP - activate pendent member -> active member")
-        void activatePendentMemberShouldSetActiveStatus() {
-            Member member = Member.register(account(), new GamName("Ana", "Silva"), LocalDate.now(), phoneNumber());
+        @DisplayName("REQ-MEMBER-004 - inactive Member activates -> active Member")
+        void activateInactiveMemberShouldSetActiveStatus() {
+            Member member = Member.register(
+                    account(), new GamName("Ana", "Silva"), LocalDate.now().minusYears(20), phoneNumber());
+            member.deactivate();
 
             member.activate();
 
@@ -110,9 +130,11 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("EP - deactivate member -> inactive member")
-        void deactivateMemberShouldSetInactiveStatus() {
-            Member member = Member.register(account(), new GamName("Ana", "Silva"), LocalDate.now(), phoneNumber());
+        @DisplayName("REQ-MEMBER-004 - active Member deactivates -> inactive Member")
+        void deactivateActiveMemberShouldSetInactiveStatus() {
+            Member member = Member.register(
+                    account(), new GamName("Ana", "Silva"), LocalDate.now().minusYears(20), phoneNumber());
+            member.activate();
 
             member.deactivate();
 

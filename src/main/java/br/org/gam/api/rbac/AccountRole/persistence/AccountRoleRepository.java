@@ -28,6 +28,20 @@ public interface AccountRoleRepository extends BaseRepository<AccountRoleEntity,
     @Query("""
             select accountRole
             from AccountRoleEntity accountRole
+            join fetch accountRole.account account
+            join fetch accountRole.role role
+            where accountRole.id = :assignmentId
+              and account.id = :accountId
+              and accountRole.deletedAt is null
+              and account.deletedAt is null
+              and role.deletedAt is null
+            """)
+    Optional<AccountRoleEntity> findActiveAssignment(@Param("accountId") UUID accountId,
+                                                      @Param("assignmentId") UUID assignmentId);
+
+    @Query("""
+            select accountRole
+            from AccountRoleEntity accountRole
             join accountRole.account account
             join accountRole.role role
             where account.id = :accountId

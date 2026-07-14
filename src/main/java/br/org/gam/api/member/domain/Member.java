@@ -37,13 +37,22 @@ public class Member {
         Objects.requireNonNull(name, "Name cannot be null.");
         Objects.requireNonNull(birthDate, "Birth date cannot be null.");
         Objects.requireNonNull(phoneNumber, "Phone number cannot be null.");
-        if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Birth date cannot be in the future.");
+        validateEligibility(birthDate, LocalDate.now());
 
-        MemberStatus status = MemberStatus.PENDENT;
+        MemberStatus status = MemberStatus.ACTIVE;
 
         UUID id = UUIDGenerator.generateUUIDV7();
 
         return new Member(id, account, name, birthDate, phoneNumber, status);
+    }
+
+    public static void validateEligibility(LocalDate birthDate, LocalDate today) {
+        Objects.requireNonNull(birthDate, "Birth date cannot be null.");
+        Objects.requireNonNull(today, "Eligibility date cannot be null.");
+        if (birthDate.isAfter(today)) throw new IllegalArgumentException("Birth date cannot be in the future.");
+        if (birthDate.isAfter(today.minusYears(17))) {
+            throw new IllegalArgumentException("Member must be at least 17 years old.");
+        }
     }
 
     public void activate(){

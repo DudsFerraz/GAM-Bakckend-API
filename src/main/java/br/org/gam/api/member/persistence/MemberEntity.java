@@ -37,7 +37,7 @@ public class MemberEntity extends FullAuditableEntity {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private GamPhoneNumber phoneNumber;
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

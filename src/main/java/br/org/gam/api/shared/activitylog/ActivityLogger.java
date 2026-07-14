@@ -1,5 +1,6 @@
 package br.org.gam.api.shared.activitylog;
 
+import br.org.gam.api.shared.persistence.UUIDGenerator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +34,8 @@ public class ActivityLogger {
         activity.setMetadata(metadata == null ? Map.of() : metadata);
 
         currentRequest().ifPresent(request -> {
-            activity.setRequestId(blankToNull(request.getHeader(REQUEST_ID_HEADER)));
+            String requestId = blankToNull(request.getHeader(REQUEST_ID_HEADER));
+            activity.setRequestId(requestId == null ? UUIDGenerator.generateUUIDV7().toString() : requestId);
             activity.setIpAddress(blankToNull(request.getRemoteAddr()));
             activity.setUserAgent(blankToNull(request.getHeader("User-Agent")));
         });

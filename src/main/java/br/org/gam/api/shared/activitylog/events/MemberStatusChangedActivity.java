@@ -11,6 +11,13 @@ public record MemberStatusChangedActivity(
         String newStatus,
         String roleAdded,
         String roleRemoved,
+        UUID roleAddedId,
+        UUID roleRemovedId,
         String reason
 ) {
+    public MemberStatusChangedActivity(ActivityAction action, UUID memberId, UUID accountId,
+                                       String previousStatus, String newStatus, String roleAdded,
+                                       String roleRemoved, String reason) {
+        this(action, memberId, accountId, previousStatus, newStatus, roleAdded, roleRemoved, null, null, reason);
+    }
 }

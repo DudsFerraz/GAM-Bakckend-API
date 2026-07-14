@@ -21,6 +21,11 @@ public class AccountEntityLoader {
                 .orElseThrow(() -> NotFoundException.resource("Account", id));
     }
 
+    public AccountEntity requiredByIdForUpdate(UUID id) {
+        return accountRepo.findByIdForUpdate(id)
+                .orElseThrow(() -> NotFoundException.resource("Account", id));
+    }
+
     public AccountEntity requiredByEmail(GamEmail email) {
         return accountRepo.findByEmail(email)
                 .orElseThrow(() -> NotFoundException.resource("Account", email));
