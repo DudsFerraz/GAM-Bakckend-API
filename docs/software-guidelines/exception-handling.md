@@ -46,8 +46,8 @@ throw NotFoundException.resource("Event", eventId);
 
 ```java
 throw ConflictException.resource(
-        "Presence", 
-        "%s:%s".formatted(memberId, eventId), 
+        "Presence",
+        "%s:%s".formatted(memberId, eventId),
         "Presence already registered for this member and event"
 );
 ```
@@ -81,6 +81,16 @@ throw InvalidCommandException.resource(
 The `GlobalExceptionHandler` catches the `ApplicationException` hierarchy and translates it into a stable `ApiErrorDTO` response.
 
 Errors must include stable, machine-readable `details` populated from the structured exception data.
+
+The fields have these responsibilities:
+
+* `timestamp`: UTC occurrence time for diagnostics.
+* `status`: Numeric HTTP status repeated in the body.
+* `code`: Stable machine-readable discriminator used by clients.
+* `message`: Human-readable explanation that clients must not parse for behavior.
+* `details`: Structured error-specific context such as resource identifiers or invalid fields.
+
+Do not add a redundant `error` field containing the generic HTTP reason phrase.
 
 **Target JSON Shape:**
 

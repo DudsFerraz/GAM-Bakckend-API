@@ -89,9 +89,9 @@ Negative consequences:
 
 - [`docs/diagrams/initial-production-topology.md`](../diagrams/initial-production-topology.md)
 
-## Related ideas
+## Related decisions
 
-- [`docs/ideas/openapi.md`](../ideas/openapi.md) — non-authoritative planning material pending future official OpenAPI documentation.
+- [ADR-0008: Generate and Govern OpenAPI from Backend Code](0008-generate-and-govern-openapi-from-backend-code.md)
 
 ## Related videos
 

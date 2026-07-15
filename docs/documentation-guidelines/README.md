@@ -57,7 +57,7 @@ docs/
     backend-overview.md
 
   api/
-    openapi.md
+    README.md
 
   testing/
     traceability/

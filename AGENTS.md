@@ -16,13 +16,14 @@ Before changing code or tests, read only the guideline files relevant to the wor
 | Requirements or Requirement Specifications | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/requirements.md` |
 | ADRs or architecture decision records | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/adrs.md` |
 | Mermaid diagrams | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/diagrams.md` |
-| Swagger/OpenAPI docs | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/openapi.md` |
+| Swagger/OpenAPI documentation structure or prose | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/openapi.md` |
 | Video documentation | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/videos.md` |
 | LLM agent documentation instructions | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/llm-agents.md` |
 | Agent implementation workflow | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/agent-workflow.md` |
 | Source-of-truth priority or documentation conflicts | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/source-of-truth.md` |
 | Package placement, layer boundaries, or feature/module structure | `docs/software-guidelines/package-organization.md` |
-| Controllers, routes, request/response shapes, HTTP status codes, or endpoint authorization | `docs/software-guidelines/controllers-and-http-api.md` |
+| Controllers, routes, request/response shapes, HTTP status codes, or endpoint authorization | `docs/software-guidelines/controllers-and-http-api.md`, `docs/software-guidelines/openapi-documentation.md` |
+| OpenAPI annotations, configuration, generation, schemas, examples, or contract changes | `docs/documentation-guidelines/openapi.md`, `docs/software-guidelines/openapi-documentation.md` |
 | Application services, use cases, loaders, DTOs, or RDTOs | `docs/software-guidelines/application-layer.md` |
 | Domain models, value objects, aggregates, entities, or rich vs. simplified model decisions | `docs/software-guidelines/domain-models-and-jpa-entities.md` |
 | JPA repositories, persistence behavior, soft delete, restore behavior, or deleted-row visibility | `docs/software-guidelines/persistence-and-soft-delete.md` |

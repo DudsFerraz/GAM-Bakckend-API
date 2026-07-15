@@ -293,7 +293,6 @@ Scenario: Publish independently and deploy deliberately
 * What official domain will GAM control and assign to `GAM_PUBLIC_ORIGIN`?
 * Which proxy product and packaging model will implement the accepted proxy responsibilities?
 * Which frontend build tool and development-server port will be used?
-* Which exact OpenAPI generation, breaking-change detection, and TypeScript generation tools will be accepted when `docs/ideas/openapi.md` is promoted into official documentation?
 
 ## Out of scope
 
@@ -303,7 +302,7 @@ Scenario: Publish independently and deploy deliberately
 * Server-side rendering, a production Node.js frontend server, or a backend-for-frontend.
 * Selecting Caddy, Nginx, or another proxy product.
 * Selecting the official domain.
-* Defining the complete future OpenAPI documentation and toolchain policy.
+* Defining the complete OpenAPI documentation and toolchain policy, which is governed separately by [OpenAPI and Frontend API Documentation](openapi-and-frontend-api-documentation.md).
 
 ## Related ADRs
 
@@ -315,10 +314,12 @@ Scenario: Publish independently and deploy deliberately
 
 * [Browser Session and Frontend Integration](../authentication/browser-session-and-frontend-integration.md)
 * [Production Operations](production-operations.md)
+* [OpenAPI and Frontend API Documentation](openapi-and-frontend-api-documentation.md)
 
-## Related ideas
+## Related documentation
 
-* [`docs/ideas/openapi.md`](../../ideas/openapi.md) — non-authoritative planning material. Replace this reference with the future official OpenAPI documentation when that material is reviewed and accepted.
+* [OpenAPI documentation guideline](../../documentation-guidelines/openapi.md)
+* [Frontend API Guide](../../api/README.md)
 
 ## Related videos
 
