@@ -13,10 +13,11 @@ import br.org.gam.api.presence.application.PresenceRDTO;
 import br.org.gam.api.presence.application.useCases.GetPresence;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
+import br.org.gam.api.shared.web.PagedResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,7 @@ public class MemberController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_MANAGE + "')")
+    @Operation(operationId = "createMember")
     @PostMapping
     public ResponseEntity<MemberRDTO> registerMember(@RequestBody @Valid RegisterMemberDTO dto) {
 
@@ -59,6 +61,7 @@ public class MemberController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_GET + "')")
+    @Operation(operationId = "getMember")
     @GetMapping("/{id}")
     public ResponseEntity<MemberRDTO> getMemberById(@PathVariable UUID id) {
         MemberRDTO dto = getMember.byId(id);
@@ -66,16 +69,16 @@ public class MemberController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_SEARCH + "')")
+    @Operation(operationId = "searchMembers")
     @PostMapping("/search")
-    public ResponseEntity<Page<MemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
-                                                          Pageable pageable) {
+    public ResponseEntity<PagedResponse<MemberRDTO>> searchMembers(@RequestBody @Valid SearchDTO searchDTO,
+                                                                     Pageable pageable) {
 
-        return ResponseEntity.ok(
-                searchMembers.search(searchDTO, pageable)
-        );
+        return ResponseEntity.ok(PagedResponse.from(searchMembers.search(searchDTO, pageable)));
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
+    @Operation(operationId = "activateMember")
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Void> activate(@PathVariable UUID id, @RequestBody @Valid DeactivateMemberDTO dto) {
 
@@ -84,6 +87,7 @@ public class MemberController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_ACTIVATION + "')")
+    @Operation(operationId = "deactivateMember")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<Void> deactivate(@PathVariable UUID id, @RequestBody @Valid DeactivateMemberDTO dto) {
 
@@ -92,12 +96,11 @@ public class MemberController {
     }
 
     @PreAuthorize("@memberSecurity.canGetMemberPresences(#memberId)")
+    @Operation(operationId = "getMemberPresences")
     @GetMapping("/{memberId}/presences")
-    public ResponseEntity<Page<PresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
-                                                                 Pageable pageable) {
+    public ResponseEntity<PagedResponse<PresenceRDTO>> getMemberPresences(@PathVariable UUID memberId,
+                                                                            Pageable pageable) {
 
-        return ResponseEntity.ok(
-                getPresence.allByMember(memberId, pageable)
-        );
+        return ResponseEntity.ok(PagedResponse.from(getPresence.allByMember(memberId, pageable)));
     }
 }

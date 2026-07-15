@@ -1,0 +1,28 @@
+extends:
+  - spectral:oas
+
+rules:
+  gam-operation-operation-id:
+    given: $.paths[*][*]
+    then:
+      field: operationId
+      function: truthy
+    severity: error
+  gam-operation-summary:
+    given: $.paths[*][*]
+    then:
+      field: summary
+      function: truthy
+    severity: error
+  gam-operation-description:
+    given: $.paths[*][*]
+    then:
+      field: description
+      function: truthy
+    severity: error
+  gam-operation-tags:
+    given: $.paths[*][*]
+    then:
+      field: tags
+      function: truthy
+    severity: error

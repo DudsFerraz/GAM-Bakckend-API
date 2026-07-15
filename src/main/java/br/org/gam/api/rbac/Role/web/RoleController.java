@@ -6,6 +6,7 @@ import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.rbac.role.application.RoleEntityLoader;
 import br.org.gam.api.rbac.role.application.RoleRDTO;
 import br.org.gam.api.rbac.role.application.useCases.GetRole;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +29,7 @@ public class RoleController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ROLE_GET + "')")
+    @Operation(operationId = "getRole")
     @GetMapping("/{roleId}")
     public ResponseEntity<RoleRDTO> getById(@PathVariable UUID roleId) {
         return ResponseEntity.ok(getRole.byId(roleId));
@@ -35,6 +37,7 @@ public class RoleController {
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ROLE_GET + "') and hasAuthority('"
             + PermissionEnum.Code.PERMISSION_GET + "')")
+    @Operation(operationId = "getRolePermissions")
     @GetMapping("/{roleId}/permissions")
     public ResponseEntity<GetRolePermissionsRDTO> getPermissionsById(@PathVariable UUID roleId){
         roleEntityLoader.requiredById(roleId);

@@ -101,6 +101,11 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .requireCsrfProtectionMatcher(this::requiresCsrfProof))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/docs", "/api/docs/**",
+                                "/api/openapi.json", "/api/openapi.json/**", "/api/openapi.json.yaml",
+                                "/api/swagger-ui/**", "/swagger-ui/**", "/webjars/**"
+                        ).permitAll()
                         .requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/*").permitAll()
                         .anyRequest().authenticated()

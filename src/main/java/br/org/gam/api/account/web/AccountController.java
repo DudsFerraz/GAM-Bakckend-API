@@ -5,9 +5,10 @@ import br.org.gam.api.account.application.useCases.GetAccount;
 import br.org.gam.api.account.application.useCases.SearchAccounts;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
+import br.org.gam.api.shared.web.PagedResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ public class AccountController {
     }
 
     @PreAuthorize("@accountSecurity.canGetAccount(#id)")
+    @Operation(operationId = "getAccount")
     @GetMapping("/{id}")
     public ResponseEntity<AccountRDTO> getAccountById(@PathVariable UUID id) {
         AccountRDTO dto = getAccount.byId(id);
@@ -34,12 +36,11 @@ public class AccountController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_SEARCH + "')")
+    @Operation(operationId = "searchAccounts")
     @PostMapping("/search")
-    public ResponseEntity<Page<AccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
-                                                            Pageable pageable) {
+    public ResponseEntity<PagedResponse<AccountRDTO>> searchAccounts(@RequestBody @Valid SearchDTO searchDTO,
+                                                                       Pageable pageable) {
 
-        return ResponseEntity.ok(
-                searchAccountsService.search(searchDTO, pageable)
-        );
+        return ResponseEntity.ok(PagedResponse.from(searchAccountsService.search(searchDTO, pageable)));
     }
 }

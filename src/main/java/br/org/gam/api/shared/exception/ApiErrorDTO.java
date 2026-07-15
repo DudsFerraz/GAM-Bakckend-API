@@ -1,6 +1,6 @@
 package br.org.gam.api.shared.exception;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 public record ApiErrorDTO(
         String timestamp,
         int status,
-        String error,
         String code,
         String message,
         Map<String, Object> details
@@ -23,9 +22,8 @@ public record ApiErrorDTO(
 
     public ApiErrorDTO(HttpStatus status, String code, String message, Map<String, Object> details) {
         this(
-                OffsetDateTime.now().toString(),
+                Instant.now().toString(),
                 status.value(),
-                status.getReasonPhrase(),
                 code,
                 message,
                 details == null ? Map.of() : Map.copyOf(details)

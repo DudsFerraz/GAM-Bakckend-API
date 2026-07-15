@@ -10,6 +10,7 @@ import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoles;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoleAssignment;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
@@ -42,12 +43,14 @@ public class AccountRoleController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
+    @Operation(operationId = "getAccountRoles")
     @GetMapping("/roles")
     public ResponseEntity<AccountRolesRDTO> getRoles(@PathVariable UUID accountId) {
         return ResponseEntity.ok(getAccountRoles.get(accountId));
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_ROLE_MANAGE + "')")
+    @Operation(operationId = "assignAccountRole")
     @PostMapping("/roles")
     public ResponseEntity<AccountRoleRDTO> addRole(@PathVariable UUID accountId,
                                                    @RequestBody @Valid AddAccountRoleDTO request) {
@@ -62,6 +65,7 @@ public class AccountRoleController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_ROLE_MANAGE + "')")
+    @Operation(operationId = "dropAccountRole")
     @PatchMapping("/roles/{roleId}/drop")
     public ResponseEntity<Void> dropRole(@PathVariable UUID accountId, @PathVariable UUID roleId,
                                          @RequestBody @Valid DropAccountRoleDTO request) {
@@ -70,6 +74,7 @@ public class AccountRoleController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_GET + "')")
+    @Operation(operationId = "getAccountRoleAssignment")
     @GetMapping("/role-assignments/{assignmentId}")
     public ResponseEntity<AccountRoleRDTO> getAssignment(@PathVariable UUID accountId,
                                                           @PathVariable UUID assignmentId) {

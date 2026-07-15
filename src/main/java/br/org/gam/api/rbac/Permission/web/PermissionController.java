@@ -3,6 +3,7 @@ package br.org.gam.api.rbac.permission.web;
 import br.org.gam.api.rbac.permission.application.PermissionRDTO;
 import br.org.gam.api.rbac.permission.application.useCases.GetPermission;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +23,7 @@ public class PermissionController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.PERMISSION_GET + "')")
+    @Operation(operationId = "getPermission")
     @GetMapping("/{permissionId}")
     public ResponseEntity<PermissionRDTO> getById(@PathVariable UUID permissionId) {
         return ResponseEntity.ok(getPermission.byId(permissionId));

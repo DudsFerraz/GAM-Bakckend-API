@@ -1,0 +1,73 @@
+name: OpenAPI governance
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+    tags: ['*']
+
+jobs:
+  govern-openapi:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: gam_db
+          POSTGRES_USER: usuario_teste
+          POSTGRES_PASSWORD: senha_teste
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate OpenAPI contract
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
+          SPRING_DATASOURCE_USERNAME: usuario_teste
+          SPRING_DATASOURCE_PASSWORD: senha_teste
+          JWT_SECRET_KEY: 7be123441ce4c2c04a9e2e27d802ce81be1708eeac649b747e93907b558c2d38009c09
+          APP_VERSION: ${{ github.ref_name }}
+        run: ./mvnw -Popenapi verify
+      - name: Lint contract with Spectral
+        run: npx --yes @stoplight/spectral-cli lint target/openapi/openapi.yaml --ruleset .spectral.yaml
+      - name: Fetch required compatibility baseline
+        run: |
+          if [ -z "${{ vars.OPENAPI_BASELINE_URL }}" ]; then
+            echo "OPENAPI_BASELINE_URL must reference the previous released OpenAPI contract." >&2
+            exit 1
+          fi
+          curl --fail --location "${{ vars.OPENAPI_BASELINE_URL }}" --output target/openapi/previous-openapi.yaml
+      - name: Compare contract with oasdiff
+        run: |
+          docker run --rm -v "$PWD:/work" tufin/oasdiff:latest breaking /work/target/openapi/previous-openapi.yaml /work/target/openapi/openapi.yaml
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi.yaml
+          path: target/openapi/openapi.yaml
+
+  publish-openapi-release-artifact:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: govern-openapi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: openapi.yaml
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: openapi.yaml

@@ -115,7 +115,7 @@ DO $$
         IF v_member_daniel_id IS NULL THEN
             v_member_daniel_id := uuidv7();
             INSERT INTO members (id, account_id, first_name, surname, birth_date, phone_number, status, created_at, updated_at, created_by)
-            VALUES (v_member_daniel_id, v_acc_daniel_id, 'Daniel', 'Gomes', '2002-07-30', '+5519988776655', 'PENDENT', v_now, v_now, v_acc_giulia_id);
+            VALUES (v_member_daniel_id, v_acc_daniel_id, 'Daniel', 'Gomes', '2002-07-30', '+5519988776655', 'INACTIVE', v_now, v_now, v_acc_giulia_id);
         END IF;
 
         -- 5. CRIAÇÃO DE EVENTS

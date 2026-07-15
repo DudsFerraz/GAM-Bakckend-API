@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -44,6 +45,7 @@ public class AuthController {
         this.refreshTokenService = refreshTokenService;
     }
 
+    @Operation(operationId = "registerAccount")
     @PostMapping("/register")
     public ResponseEntity<RegisterAccountRDTO> createAccount(@Valid @RequestBody RegisterAccountDTO dto) {
         RegisterAccountRDTO responseDTO = registerAccountService.register(dto);
@@ -56,6 +58,7 @@ public class AuthController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
+    @Operation(operationId = "login", security = {})
     @PostMapping("/login")
     public ResponseEntity<LoginAccountRDTO> login(@RequestBody @Valid LoginAccountDTO dto, HttpServletResponse response) {
 
@@ -68,6 +71,7 @@ public class AuthController {
         );
     }
 
+    @Operation(operationId = "refreshAccessToken", security = {})
     @PostMapping("/refresh")
     public ResponseEntity<LoginAccountRDTO> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
@@ -85,6 +89,7 @@ public class AuthController {
         );
     }
 
+    @Operation(operationId = "logout", security = {})
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshTokenStr = getRefreshTokenFromCookies(request);

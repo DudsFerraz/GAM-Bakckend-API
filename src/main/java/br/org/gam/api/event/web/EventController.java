@@ -10,10 +10,11 @@ import br.org.gam.api.presence.application.PresenceRDTO;
 import br.org.gam.api.presence.application.useCases.GetPresence;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
+import br.org.gam.api.shared.web.PagedResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,6 +41,7 @@ public class EventController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_CREATE + "')")
+    @Operation(operationId = "createEvent")
     @PostMapping
     public ResponseEntity<CreateEventRDTO> createEvent(@RequestBody @Valid CreateEventDTO dto){
 
@@ -53,6 +55,7 @@ public class EventController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
+    @Operation(operationId = "getEvent")
     @GetMapping("/{id}")
     public ResponseEntity<EventRDTO> getEventById(@PathVariable UUID id){
 
@@ -61,22 +64,20 @@ public class EventController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_SEARCH + "')")
+    @Operation(operationId = "searchEvents")
     @PostMapping("/search")
-    public ResponseEntity<Page<EventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
-                                                        Pageable pageable){
+    public ResponseEntity<PagedResponse<EventRDTO>> searchEvents(@RequestBody @Valid SearchDTO searchDTO,
+                                                                  Pageable pageable){
 
-        return ResponseEntity.ok(
-                searchEvent.search(searchDTO, pageable)
-        );
+        return ResponseEntity.ok(PagedResponse.from(searchEvent.search(searchDTO, pageable)));
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.EVENT_GET_PRESENCES + "')")
+    @Operation(operationId = "getEventPresences")
     @GetMapping("/{eventId}/presences")
-    public ResponseEntity<Page<PresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
-                                                                Pageable pageable){
+    public ResponseEntity<PagedResponse<PresenceRDTO>> getEventPresences(@PathVariable UUID eventId,
+                                                                           Pageable pageable){
 
-        return ResponseEntity.ok(
-                getPresence.allByEvent(eventId, pageable)
-        );
+        return ResponseEntity.ok(PagedResponse.from(getPresence.allByEvent(eventId, pageable)));
     }
 }

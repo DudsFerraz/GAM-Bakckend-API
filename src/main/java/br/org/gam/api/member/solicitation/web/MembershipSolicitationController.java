@@ -9,10 +9,11 @@ import br.org.gam.api.member.solicitation.application.useCases.SubmitMembershipS
 import br.org.gam.api.member.solicitation.application.useCases.SubmitMembershipSolicitationDTO;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
+import br.org.gam.api.shared.web.PagedResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +44,7 @@ public class MembershipSolicitationController {
         this.review = review;
     }
 
+    @Operation(operationId = "submitMembershipSolicitation")
     @PostMapping
     public ResponseEntity<MembershipSolicitationRDTO> submit(
             @RequestBody @Valid SubmitMembershipSolicitationDTO dto) {
@@ -54,18 +56,21 @@ public class MembershipSolicitationController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @Operation(operationId = "getMembershipSolicitation")
     @GetMapping("/{id}")
     public ResponseEntity<MembershipSolicitationRDTO> get(@PathVariable UUID id) {
         return ResponseEntity.ok(get.byId(id));
     }
 
+    @Operation(operationId = "searchMembershipSolicitations")
     @PostMapping("/search")
-    public ResponseEntity<Page<MembershipSolicitationRDTO>> search(
+    public ResponseEntity<PagedResponse<MembershipSolicitationRDTO>> search(
             @RequestBody @Valid SearchDTO searchDTO, Pageable pageable) {
-        return ResponseEntity.ok(search.search(searchDTO, pageable));
+        return ResponseEntity.ok(PagedResponse.from(search.search(searchDTO, pageable)));
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_MANAGE + "')")
+    @Operation(operationId = "approveMembershipSolicitation")
     @PatchMapping("/{id}/approve")
     public ResponseEntity<MembershipSolicitationRDTO> approve(
             @PathVariable UUID id, @RequestBody @Valid ReviewMembershipSolicitationDTO dto) {
@@ -73,6 +78,7 @@ public class MembershipSolicitationController {
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_MANAGE + "')")
+    @Operation(operationId = "rejectMembershipSolicitation")
     @PatchMapping("/{id}/reject")
     public ResponseEntity<MembershipSolicitationRDTO> reject(
             @PathVariable UUID id, @RequestBody @Valid ReviewMembershipSolicitationDTO dto) {

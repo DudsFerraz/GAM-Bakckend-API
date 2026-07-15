@@ -57,6 +57,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.9</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
@@ -300,6 +306,61 @@
 			</properties>
 			<build>
 				<defaultGoal>spring-boot:run</defaultGoal>
+			</build>
+		</profile>
+
+		<profile>
+			<id>openapi</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+							<arguments>
+								<argument>--server.port=8085</argument>
+								<argument>--spring.docker.compose.enabled=false</argument>
+							</arguments>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-openapi-application</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop-openapi-application</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springdoc</groupId>
+						<artifactId>springdoc-openapi-maven-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>export-openapi-contract</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<apiDocsUrl>http://localhost:8085/api/openapi.json.yaml</apiDocsUrl>
+							<outputDir>${project.build.directory}/openapi</outputDir>
+							<outputFileName>openapi.yaml</outputFileName>
+							<failOnError>true</failOnError>
+						</configuration>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>
