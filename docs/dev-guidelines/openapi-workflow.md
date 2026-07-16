@@ -1,156 +1,98 @@
-# OpenAPI Developer Workflow
+# OpenAPI Workflow
 
-This guide explains when and how a developer should browse, generate, review, and consume GAM's OpenAPI documentation.
+OpenAPI is the externally visible HTTP contract. It describes paths, inputs, outputs, status codes, validation constraints, authentication, errors, and examples. Requirements and ADRs define intended behavior and architecture. Do not infer business rules from a controller or generated schema.
 
-> **Implementation status:** The accepted OpenAPI requirements and ADR define the target workflow. The routes and generation profile become executable after the corresponding production and build tooling is implemented; this document is not evidence that the tooling already exists.
+## 1. View the live contract
 
-This is a practical guide. Normative rules live in the [OpenAPI requirements](../requirements/platform/openapi-and-frontend-api-documentation.md), [OpenAPI documentation guideline](../documentation-guidelines/openapi.md), and [OpenAPI software guideline](../software-guidelines/openapi-documentation.md).
+From the repository root, start the development backend:
 
-## When to use this workflow
+```powershell
+.\mvnw.cmd -Pdev
+```
 
-Use the workflow when you:
+Then open Swagger UI:
 
-- create or modify a controller endpoint;
-- change a request or response DTO;
-- change validation, nullability, formats, enums, status codes, errors, security, pagination, or sorting;
-- need to learn how an existing endpoint works;
-- need a local contract for frontend development;
-- need to review whether a pull request changes the API; or
-- prepare a backend release contract.
+```text
+http://localhost:8080/api/docs
+```
 
-## 1. Read the owning documentation
+The raw live contract is:
 
-Before changing an endpoint:
+```text
+http://localhost:8080/api/openapi.json
+```
 
-1. Read its Requirement Specification.
-2. Read related ADRs when the change affects architecture or compatibility.
-3. Read `docs/software-guidelines/controllers-and-http-api.md`.
-4. Read `docs/software-guidelines/openapi-documentation.md`.
-5. Resolve missing or contradictory behavior before editing annotations or code.
-
-Do not infer business rules from the current controller or generated schema.
-
-## 2. Run the backend for live documentation
-
-Follow [Start the Backend](running-the-system/start-the-backend.md) to run the development profile and its required services.
-
-Through the supported same-origin frontend development proxy, open:
+If using the frontend development proxy, use its origin instead:
 
 ```text
 http://<frontend-development-origin>/api/docs
-```
-
-The live JSON contract is available at:
-
-```text
 http://<frontend-development-origin>/api/openapi.json
 ```
 
-When accessing the backend port directly without the `/api`-adding proxy, use the backend-local paths documented by the implemented routing configuration. The public and frontend-facing paths remain `/api/docs` and `/api/openapi.json`.
+In Swagger UI, check the operation summary, security requirements, parameters, request-body requiredness, success response, and expected error responses.
 
-## 3. Consult an endpoint
+Use **Try it out** only with synthetic development data. Use bearer authorization only for access tokens. Never paste refresh tokens, CSRF tokens, credentials, or production data into Swagger UI.
 
-In Swagger UI:
+## 2. Generate the release-style contract
 
-1. Find the consumer-facing tag, such as `Members` or `Authentication`.
-2. Select the operation by summary or `operationId`.
-3. Read its purpose and security requirements.
-4. Inspect parameters and request-body requiredness.
-5. Inspect success and every expected error response.
-6. Compare examples with the relevant Requirement Specification when business behavior matters.
-
-If Swagger and an Accepted Requirement Specification conflict, stop and report the conflict. The requirement governs behavior until the contract is corrected.
-
-## 4. Execute a request in development
-
-Swagger UI request execution is for development only.
-
-1. Obtain CSRF proof through the documented authentication bootstrap when the operation requires it.
-2. Use Swagger's bearer authorization control only for an access token.
-3. Never paste a refresh token into Swagger. The browser manages the `refreshToken` cookie.
-4. Select **Try it out**.
-5. Enter only synthetic development data.
-6. Select **Execute** and inspect the request URL, status, headers, and body.
-
-Do not use Swagger UI to experiment with real production mutations. Production Swagger UI does not expose request execution.
-
-## 5. Generate and validate the contract locally
-
-The implementation shall provide this stable repository-owned entry point:
+Run:
 
 ```powershell
 .\mvnw.cmd -Popenapi verify
 ```
 
-The profile is responsible for orchestrating any required application lifecycle, exporting the contract, applying the repository-owned Spectral rules, and reporting contract changes. Developers should not replace it with an undocumented sequence of manual downloads.
+The generated contract is:
 
-The generated working artifact belongs under `target/` and must not be committed.
-
-After generation:
-
-1. Confirm the command succeeds.
-2. Inspect the generated `openapi.yaml` under the path reported by Maven.
-3. Review the Spectral output.
-4. Review the `oasdiff` output against the target contract.
-5. Open Swagger UI when descriptions, examples, tags, or security presentation changed.
-
-## 6. Interpret the contract diff
-
-Review every reported change, not only changes classified as breaking.
-
-Typical breaking changes include:
-
-- removing a path or operation;
-- renaming an `operationId`;
-- adding a required request property;
-- removing or narrowing a response property;
-- changing a field type or format;
-- removing an accepted enum value;
-- making authentication more restrictive; or
-- removing a documented response.
-
-During pre-production, an approved coordinated breaking change may proceed without compatibility code. Record Developer approval and the coordinated frontend update in the pull request. After production begins, follow the accepted compatibility requirement.
-
-## 7. Generate TypeScript types for local frontend work
-
-The frontend may generate types directly from the live development contract:
-
-```powershell
-npx openapi-typescript http://<frontend-development-origin>/api/openapi.json -o src/api/generated/gam-api.ts
+```text
+target/openapi/openapi.yaml
 ```
 
-Use the output path owned by the frontend repository. Do not manually edit generated types.
+This file is a generated working artifact. Do not commit or manually edit it.
 
-Local generation is for rapid development. A release or production frontend build must use the explicitly pinned `openapi.yaml` from the matching immutable backend GitHub Release.
+## 3. Review the generated contract
 
-## 8. Prepare a backend release
+Inspect the generated file when needed:
 
-The release workflow shall:
+```powershell
+Get-Content target/openapi/openapi.yaml
+```
 
-1. Generate the contract from the release candidate.
-2. Run Spectral.
-3. Compare the candidate with the selected previous contract through `oasdiff`.
-4. Require handling of every breaking change.
-5. Set OpenAPI `info.version` to the backend release version.
-6. Export `openapi.yaml`.
-7. Publish it as an asset of the matching immutable GitHub Release.
+Review all generated quality-check output, including:
 
-Do not publish from a developer's manually copied live contract.
+- Spectral linting results;
+- `oasdiff` comparison results; and
+- the rendered Swagger UI when descriptions, examples, tags, or security presentation changed.
 
-## Troubleshooting
+The repository CI performs the same OpenAPI governance checks. A failed check must be investigated; do not bypass it by editing generated output.
 
-### Swagger UI is missing an endpoint
+## 4. Identify breaking changes
 
-Check that the route is part of the public GAM application API, the controller is scanned, and it has not been incorrectly excluded. The initial rollout is incomplete until every frontend-facing endpoint is represented.
+Treat these as breaking changes unless deliberately approved:
 
-### Swagger shows the wrong security requirement
+- removed paths or operations;
+- renamed `operationId`s;
+- newly required request fields;
+- removed or narrowed response fields;
+- changed types or formats;
+- removed or changed enum values; or
+- stricter authentication requirements.
 
-Check the global bearer default and the operation-level public override. Authentication endpoints may still require CSRF proof or browser-managed cookies even when they do not require a bearer token.
+Review every reported diff, including changes not classified as breaking. If the generated contract conflicts with accepted behavior, stop and report the conflict before changing the contract.
 
-### Generated TypeScript is unexpectedly broad
+Do not publish a manually copied live contract. A release must publish the generated `openapi.yaml` produced from the matching backend release.
 
-Check requiredness, explicit nullability, schema types, response schemas, and whether a controller exposes a framework type instead of a GAM-owned DTO.
+## 5. Generate frontend types
 
-### The contract changed during a refactor
+For local frontend development, generate types from the live contract:
 
-Treat the generated diff as evidence. Determine whether the API really changed or generation leaked an internal rename. Preserve the stable public contract unless a deliberate requirement change authorizes the difference.
+```powershell
+npx openapi-typescript http://localhost:8080/api/openapi.json -o src/api/generated/gam-api.ts
+```
+
+When the frontend uses its development proxy, replace the URL with:
+
+```text
+http://<frontend-development-origin>/api/openapi.json
+```
+
+Use the frontend repository’s generated-output path. Do not edit generated types by hand.
