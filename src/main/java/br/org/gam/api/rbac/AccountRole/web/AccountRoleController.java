@@ -10,9 +10,9 @@ import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRoleDTO;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoles;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoleAssignment;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
+import br.org.gam.api.shared.web.PublicApiUri;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.net.URI;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/accounts/{accountId}")
@@ -57,11 +56,9 @@ public class AccountRoleController {
         AccountRoleRDTO response = addAccountRole.byDTO(
                 new AccountRoleDTO(accountId, request.roleId(), request.reason())
         );
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/accounts/{accountId}/role-assignments/{assignmentId}")
-                .buildAndExpand(accountId, response.assignmentId())
-                .toUri();
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(PublicApiUri.forResource(
+                "/accounts/" + accountId + "/role-assignments/" + response.assignmentId()
+        )).body(response);
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.ACCOUNT_ROLE_MANAGE + "')")

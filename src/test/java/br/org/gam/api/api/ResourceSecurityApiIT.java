@@ -95,16 +95,16 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     void validLocationRequestShouldReturnCreatedPayloadAndPersistRow() {
         AuthSession member = registerAndLogin("MEMBER");
 
-        ExtractableResponse<Response> response = authenticatedJsonRequest(member)
+        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(member))
                 .body(locationPayload("API Location"))
                 .post("/locations")
                 .then()
                 .statusCode(201)
-                .header("Location", containsString("/locations/"))
                 .body("id", notNullValue())
                 .extract();
 
         UUID locationId = UUID.fromString(response.path("id"));
+        assertPublicApiLocation(response, "/locations/" + locationId);
         trackLocation(locationId);
         assertThat(locationExists(locationId)).isTrue();
     }
@@ -116,16 +116,16 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
         UUID locationId = createLocation(coord, "API Event Location");
         UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
 
-        ExtractableResponse<Response> response = authenticatedJsonRequest(coord)
+        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(coord))
                 .body(eventPayload("API Event", locationId, requiredPermissionId))
                 .post("/events")
                 .then()
                 .statusCode(201)
-                .header("Location", containsString("/events/"))
                 .body("id", notNullValue())
                 .extract();
 
         UUID eventId = UUID.fromString(response.path("id"));
+        assertPublicApiLocation(response, "/events/" + eventId);
         trackEvent(eventId);
         assertThat(eventExists(eventId)).isTrue();
     }

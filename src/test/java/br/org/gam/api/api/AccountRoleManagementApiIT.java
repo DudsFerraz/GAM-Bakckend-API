@@ -229,21 +229,24 @@ class AccountRoleManagementApiIT extends BaseApiIntegrationTest {
         UUID roleId = roleId("COORD");
         String reason = "Grant coordinator access";
 
-        ExtractableResponse<Response> httpResponse = authenticatedJsonRequest(coordinator)
+        ExtractableResponse<Response> httpResponse = withUntrustedForwardingHeaders(authenticatedJsonRequest(coordinator))
                 .header("X-Request-Id", "account-role-add-request")
                 .header("User-Agent", "account-role-test")
                 .body(addPayload(roleId, " " + reason + " "))
                 .post("/accounts/{accountId}/roles", targetId)
                 .then()
                 .statusCode(201)
-                .header("Location", containsString("/accounts/" + targetId + "/role-assignments/"))
                 .extract();
         Map<String, Object> response = httpResponse.jsonPath().getMap("$");
 
         UUID assignmentId = activeAccountRoleId(targetId, roleId);
+        assertPublicApiLocation(
+                httpResponse,
+                "/accounts/" + targetId + "/role-assignments/" + assignmentId
+        );
         assertAccountRoleResponse(response, assignmentId, targetId, roleId, "COORD");
         assertThat(httpResponse.header("Location"))
-                .endsWith("/accounts/" + targetId + "/role-assignments/" + assignmentId);
+                .endsWith("/api/accounts/" + targetId + "/role-assignments/" + assignmentId);
         assertThat(accountRoleActivityCount(assignmentId, "ACCOUNT_ROLE_ADDED")).isEqualTo(1);
 
         Map<String, Object> activity = accountRoleActivity(assignmentId, "ACCOUNT_ROLE_ADDED");

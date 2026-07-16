@@ -81,7 +81,7 @@ class MembershipSolicitationsApiIT extends MemberApiTestSupport {
         AuthSession applicant = newSession("VISITOR");
         clearActivities();
 
-        ExtractableResponse<Response> response = authenticatedJsonRequest(applicant)
+        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(applicant))
                 .header("User-Agent", "membership-solicitation-functional-test")
                 .body(solicitationPayload(
                         LocalDate.now().minusYears(17),
@@ -90,10 +90,10 @@ class MembershipSolicitationsApiIT extends MemberApiTestSupport {
                 .post("/membership-solicitations")
                 .then()
                 .statusCode(201)
-                .header("Location", containsString("/membership-solicitations/"))
                 .extract();
 
         UUID solicitationId = UUID.fromString(response.path("id"));
+        assertPublicApiLocation(response, "/membership-solicitations/" + solicitationId);
         assertUuidV7(solicitationId);
         Map<String, Object> record = response.jsonPath().getMap("$");
         assertSolicitationRecord(record, solicitationId, applicant, "PENDING");

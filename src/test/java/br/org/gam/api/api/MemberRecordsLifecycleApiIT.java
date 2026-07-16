@@ -94,7 +94,7 @@ class MemberRecordsLifecycleApiIT extends MemberApiTestSupport {
         grantRole(targetId, "COORD");
         clearActivities();
 
-        ExtractableResponse<Response> response = authenticatedJsonRequest(coordinator)
+        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(coordinator))
                 .header("User-Agent", "member-lifecycle-functional-test")
                 .body(memberPayload(
                         targetId,
@@ -104,10 +104,10 @@ class MemberRecordsLifecycleApiIT extends MemberApiTestSupport {
                 .post("/members")
                 .then()
                 .statusCode(201)
-                .header("Location", containsString("/members/"))
                 .extract();
 
         UUID memberId = UUID.fromString(response.path("id"));
+        assertPublicApiLocation(response, "/members/" + memberId);
         assertUuidV7(memberId);
         assertMemberRecord(
                 response.jsonPath().getMap("$"),

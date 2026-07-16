@@ -10,9 +10,9 @@ import br.org.gam.api.member.solicitation.application.useCases.SubmitMembershipS
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
 import br.org.gam.api.shared.web.PagedResponse;
+import br.org.gam.api.shared.web.PublicApiUri;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/membership-solicitations")
@@ -49,11 +48,8 @@ public class MembershipSolicitationController {
     public ResponseEntity<MembershipSolicitationRDTO> submit(
             @RequestBody @Valid SubmitMembershipSolicitationDTO dto) {
         MembershipSolicitationRDTO response = submit.submit(dto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(response.id())
-                .toUri();
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created(PublicApiUri.forResource("/membership-solicitations/" + response.id()))
+                .body(response);
     }
 
     @Operation(operationId = "getMembershipSolicitation")

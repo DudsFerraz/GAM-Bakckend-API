@@ -14,15 +14,14 @@ import br.org.gam.api.presence.application.useCases.GetPresence;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.shared.specification.SearchDTO;
 import br.org.gam.api.shared.web.PagedResponse;
+import br.org.gam.api.shared.web.PublicApiUri;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/members")
@@ -52,12 +51,8 @@ public class MemberController {
 
         MemberRDTO responseDTO = registerMember.register(dto);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(responseDTO.id())
-                .toUri();
-
-        return ResponseEntity.created(location).body(responseDTO);
+        return ResponseEntity.created(PublicApiUri.forResource("/members/" + responseDTO.id()))
+                .body(responseDTO);
     }
 
     @PreAuthorize("hasAuthority('" + PermissionEnum.Code.MEMBER_GET + "')")
