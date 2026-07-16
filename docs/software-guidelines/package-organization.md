@@ -12,7 +12,7 @@ The codebase uses feature-oriented packages with internal layer folders. Each bu
 br.org.gam.api.account
 br.org.gam.api.member
 br.org.gam.api.event
-br.org.gam.api.location
+br.org.gam.api.gamLocation
 br.org.gam.api.oratoriano
 br.org.gam.api.presence
 br.org.gam.api.rbac

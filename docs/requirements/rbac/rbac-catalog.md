@@ -61,6 +61,7 @@ The RBAC catalog shall maintain a code-defined registry of system permissions. T
 | Members | `MEMBER_GET`, `MEMBER_SEARCH`, `MEMBER_ACTIVATION`, `MEMBER_GET_NON_ACTIVE`, `MEMBER_MANAGE` |
 | Accounts | `ACCOUNT_GET`, `ACCOUNT_SEARCH`, `ACCOUNT_ROLE_MANAGE` |
 | Events | `EVENT_CREATE`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, `EVENT_GET_MEMBER`, `EVENT_GET_COORD`, `EVENT_MANAGE` |
+| GamLocations | `GAM_LOCATION_GET`, `GAM_LOCATION_CREATE`, `GAM_LOCATION_MANAGE` |
 | Presences | `PRESENCES_SEARCH` |
 | RBAC catalog | `ROLE_GET`, `PERMISSION_GET` |
 
@@ -86,6 +87,9 @@ The accepted display metadata for every system permission is:
 | `EVENT_GET_MEMBER` | `View member events` | `Allows viewing events requiring member access` |
 | `EVENT_GET_COORD` | `View coordinator events` | `Allows viewing events requiring coordinator access` |
 | `EVENT_MANAGE` | `Manage events` | `Allows managing events` |
+| `GAM_LOCATION_GET` | `View GAM locations` | `Allows directly viewing active GamLocation records` |
+| `GAM_LOCATION_CREATE` | `Create GAM locations` | `Allows creating GamLocation records` |
+| `GAM_LOCATION_MANAGE` | `Manage GAM locations` | `Allows updating and removing GamLocation records` |
 | `PRESENCES_SEARCH` | `Search presences` | `Allows searching presences` |
 | `ROLE_GET` | `View roles` | `Allows reading role catalog entries` |
 | `PERMISSION_GET` | `View permissions` | `Allows reading permission catalog entries` |
@@ -112,8 +116,8 @@ The current baseline shall seed these active permission bundles:
 | Role | Permissions |
 | --- | --- |
 | `SUDO` | Every permission in the accepted system permission registry. |
-| `COORD` | `MEMBER_GET`, `MEMBER_SEARCH`, `MEMBER_ACTIVATION`, `MEMBER_GET_NON_ACTIVE`, `MEMBER_MANAGE`, `ACCOUNT_GET`, `ACCOUNT_SEARCH`, `ACCOUNT_ROLE_MANAGE`, `EVENT_CREATE`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, `EVENT_GET_MEMBER`, `EVENT_GET_COORD`, `EVENT_MANAGE`, `PRESENCES_SEARCH`, `ROLE_GET`, and `PERMISSION_GET`. |
-| `MEMBER` | `MEMBER_GET`, `ACCOUNT_GET`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, and `EVENT_GET_MEMBER`. |
+| `COORD` | `MEMBER_GET`, `MEMBER_SEARCH`, `MEMBER_ACTIVATION`, `MEMBER_GET_NON_ACTIVE`, `MEMBER_MANAGE`, `ACCOUNT_GET`, `ACCOUNT_SEARCH`, `ACCOUNT_ROLE_MANAGE`, `EVENT_CREATE`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, `EVENT_GET_MEMBER`, `EVENT_GET_COORD`, `EVENT_MANAGE`, `GAM_LOCATION_GET`, `GAM_LOCATION_CREATE`, `GAM_LOCATION_MANAGE`, `PRESENCES_SEARCH`, `ROLE_GET`, and `PERMISSION_GET`. |
+| `MEMBER` | `MEMBER_GET`, `ACCOUNT_GET`, `EVENT_SEARCH`, `EVENT_GET_PRESENCES`, `EVENT_GET_MEMBER`, and `GAM_LOCATION_GET`. |
 | `VISITOR` | No permissions. |
 
 `SUDO` shall receive a newly accepted system permission automatically. `COORD` shall receive only the permissions explicitly listed above; a future permission shall not be added to `COORD` unless this requirement is deliberately updated. `ACCOUNT_ROLE_MANAGE` is explicitly included in `COORD` and is not included in `MEMBER` or `VISITOR`.

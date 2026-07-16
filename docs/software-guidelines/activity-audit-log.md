@@ -89,7 +89,7 @@ The system focuses on high-value business and security events to prevent log blo
 The following domains emit activity events upon creation, modification, or removal/deactivation:
 
 * **Identity & People:** `Account`, `Member`, membership solicitation, `Oratoriano`.
-* **Operations:** `Event`, `Missa`, `Oratorio`, `Presence`, `Location`.
+* **Operations:** `Event`, `Missa`, `Oratorio`, `Presence`, `GamLocation`.
 * **Security:** `Role`, `Permission`, `AccountRole`, `RolePermission`.
 
 ### 4.2. Strictly Out-of-Scope (Do Not Audit)

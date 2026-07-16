@@ -98,7 +98,7 @@ Invalid examples:
 ### REQ-AUTH-005: Registration response
 Successful registration shall return `201 Created`, the new Account identifier, and an HTTP `Location` header pointing to the canonical public Account resource URI `/api/accounts/{accountId}`.
 
-The HTTP `Location` header is HTTP vocabulary and is not the GAM Location domain concept.
+The HTTP `Location` header is HTTP vocabulary and is not the **GamLocation** domain concept.
 
 Rationale:
 Account creation should identify the created resource without starting an authentication session.
@@ -440,7 +440,6 @@ sequenceDiagram
 * Should stored refresh-token secrets be hashed at rest instead of stored as raw UUID v4 values?
 * What exact generic HTTP status and error code should refresh-token failures use?
 * Should successful public Account registration emit a custom Account-created activity event, or is low-level row auditing enough for self-service registration?
-* Documentation follow-up: define the GAM Location domain concept in `docs/ubiquitous-language.md` separately from the HTTP `Location` header.
 
 ## Out of scope
 

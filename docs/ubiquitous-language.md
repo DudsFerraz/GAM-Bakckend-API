@@ -25,6 +25,7 @@ This document is not a Requirement Specification. It defines canonical terms, di
 | **surname**        | The family name component inside a **GamName**.                                                                                                                                              | None                 | lastName, last name              |
 | **GamEmail**       | The common primitive for a normalized email address used by GAM accounts and other email-bearing features.                                                                                   | None                 | Email, MyEmail                   |
 | **GamPhoneNumber** | The common primitive for a normalized, dialable phone number.                                                                                                                                | None                 | PhoneNumber, MyPhoneNumber       |
+| **GamLocation**    | An independently persisted, reusable physical place where GAM activities may occur and which multiple Events may reference.                                                                  | None                 | Location                         |
 | **UUID**           | The convention that persisted GAM resources use UUID values as public and internal identifiers.                                                                                              | id                   | Numeric ID, database sequence ID |
 | **lifecycle-owned Role** | The `MEMBER` or `VISITOR` system Role whose assignment is controlled exclusively by Member lifecycle workflows. | None | None |
 | **Proxy** | GAM's public HTTP entry point that terminates TLS, serves the static frontend, routes `/api` requests to the private backend, and preserves trustworthy public request information. | None | Caddy or Nginx when no product has been selected |
@@ -45,7 +46,8 @@ This document is not a Requirement Specification. It defines canonical terms, di
 - A **User** may have an **Account**, but product-facing User language must not be used for the **Developer** interacting with agents.
 - A **displayName** belongs to an **Account** and must not be treated as a **GamName**.
 - A **GamName** is composed of `firstName` and `surname`.
-- **UUID** is used to identify persisted resources such as Accounts, Members, Oratorianos, Events, Locations, Roles, and Permissions.
+- A **GamLocation** may be referenced by multiple Events and may exist without an Event reference.
+- **UUID** is used to identify persisted resources such as Accounts, Members, Oratorianos, Events, GamLocations, Roles, and Permissions.
 - The **Proxy** serves the frontend and API from the **Canonical Public Origin** while keeping backend and database application ports private.
 
 ## Usage rules

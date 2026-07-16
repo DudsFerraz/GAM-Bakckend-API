@@ -13,7 +13,7 @@ The application avoids boilerplate resource-specific exception classes (e.g., `A
 Do not create a new exception class for every entity. The exception class strictly represents the *category* of the error, which maps directly to an HTTP response status.
 
 * **Valid:** Throwing a shared `NotFoundException` or `ConflictException`.
-* **Forbidden:** Creating `LocationNotFoundException`, `PresenceConflictException`, or `AccountAlreadyHasRoleException`.
+* **Forbidden:** Creating `GamLocationNotFoundException`, `PresenceConflictException`, or `AccountAlreadyHasRoleException`.
 
 ### 2.2. Structured Data Over String Messages
 

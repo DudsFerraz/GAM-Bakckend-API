@@ -25,7 +25,7 @@ Valid examples:
 - An Account is identified by a UUID.
 - A Member is identified by a UUID.
 - An Event is identified by a UUID.
-- A Location is identified by a UUID.
+- A GamLocation is identified by a UUID.
 
 Invalid examples:
 - A new persisted resource uses an auto-incrementing integer as its public identifier.

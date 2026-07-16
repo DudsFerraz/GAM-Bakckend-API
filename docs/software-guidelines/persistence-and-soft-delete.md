@@ -69,13 +69,13 @@ Different entities follow different lifecycle rules regarding deletion.
 * If an event is real and part of history, it must be **cancelled**, not deleted.
 * A soft-delete action is only allowed if it falls within a strict, configurable correction window (e.g., 15 minutes after creation), the event has not started, and it has zero presences or operational data attached.
 
-### 4.3. RBAC & Configuration (`Role`, `Permission`, `Location`)
+### 4.3. RBAC & Configuration (`Role`, `Permission`, `GamLocation`)
 
 **Rule: Protect system data; allow removal of unused custom data.**
 
 * Seeded baseline roles and permissions contain a `systemManaged` marker and can **never** be deleted.
 * User-created roles and permissions can be soft-deleted only if no active assignments depend on them.
-* Locations can only be soft-deleted if they are not referenced by any historical events.
+* GamLocations can only be soft-deleted if they are not referenced by any Event, including historical or soft-deleted Events.
 
 ### 4.4. Security Artifacts (`RefreshToken`)
 

@@ -43,7 +43,7 @@ Whether a concept requires a rich domain model or a simplified entity depends on
 
 **Core Concept:** Use the JPA entity directly when the concept acts primarily as a data container, a configuration record, or a database join table. If the business logic is simple CRUD, or if rules can safely reside in an application service or database constraint without compromising domain integrity, the overhead of a separated domain class is unnecessary.
 
-**Example:** `Location` is treated as a simplified model. It is purely a structured data record without internal state transitions or complex lifecycle rules. Field validation and data trimming happen at the request or application layer. Because there is no internal domain behavior to protect, `LocationEntity` is used directly in persistence workflows, avoiding the unnecessary creation of a separated domain object and its associated mappers.
+**Example:** `GamLocation` is treated as a simplified model. It is primarily a structured configuration record whose validation, duplicate detection, and lifecycle coordination occur at the application and persistence boundaries. Because there is no internal state machine to protect, `GamLocationEntity` is used directly in persistence workflows, avoiding the unnecessary creation of a separate domain object and its associated mappers.
 
 ## 4. Mapper Usage
 
