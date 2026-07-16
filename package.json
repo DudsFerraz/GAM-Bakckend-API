@@ -1,0 +1,15 @@
+{
+  "name": "gam-api-openapi-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint:openapi": "spectral lint target/openapi/openapi.yaml --ruleset .spectral.yaml"
+  },
+  "devDependencies": {
+    "@stoplight/spectral-cli": "6.16.1"
+  },
+  "engines": {
+    "node": "22.x",
+    "npm": ">=10"
+  }
+}

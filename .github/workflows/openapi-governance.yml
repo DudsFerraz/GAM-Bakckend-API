@@ -5,6 +5,18 @@ on:
   push:
     branches: [main, master]
     tags: ['*']
+  workflow_dispatch:
+    inputs:
+      bootstrap_baseline:
+        description: Publish the first approved OpenAPI baseline without a prior compatibility comparison
+        type: boolean
+        required: true
+        default: false
+      baseline_tag:
+        description: Immutable release tag for the first baseline, using only letters, numbers, dots, underscores, and hyphens
+        type: string
+        required: false
+        default: ''
 
 jobs:
   govern-openapi:
@@ -32,6 +44,35 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Validate compatibility baseline mode
+        env:
+          BASELINE_URL: ${{ vars.OPENAPI_BASELINE_URL }}
+          BOOTSTRAP_BASELINE: ${{ inputs.bootstrap_baseline }}
+          BASELINE_TAG: ${{ inputs.baseline_tag }}
+        run: |
+          if [ "$BOOTSTRAP_BASELINE" = "true" ]; then
+            if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+              echo "Initial baseline bootstrap is allowed only through manual workflow dispatch." >&2
+              exit 1
+            fi
+            if [ "${{ github.ref }}" != "refs/heads/${{ github.event.repository.default_branch }}" ]; then
+              echo "Initial baseline bootstrap must run from the repository default branch." >&2
+              exit 1
+            fi
+            if [ -n "$BASELINE_URL" ]; then
+              echo "Initial baseline bootstrap is disabled after OPENAPI_BASELINE_URL is configured." >&2
+              exit 1
+            fi
+            if ! [[ "$BASELINE_TAG" =~ ^[A-Za-z0-9._-]+$ ]]; then
+              echo "baseline_tag must contain only letters, numbers, dots, underscores, and hyphens." >&2
+              exit 1
+            fi
+          elif [ -z "$BASELINE_URL" ]; then
+            echo "OPENAPI_BASELINE_URL must reference the previous released OpenAPI contract." >&2
+            exit 1
+          fi
       - name: Generate OpenAPI contract
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gam_db
@@ -40,16 +81,16 @@ jobs:
           JWT_SECRET_KEY: 7be123441ce4c2c04a9e2e27d802ce81be1708eeac649b747e93907b558c2d38009c09
           APP_VERSION: ${{ github.ref_name }}
         run: ./mvnw -Popenapi verify
-      - name: Lint contract with Spectral
-        run: npx --yes @stoplight/spectral-cli lint target/openapi/openapi.yaml --ruleset .spectral.yaml
+      - name: Install pinned OpenAPI governance tooling
+        run: npm ci
+      - name: Lint contract with pinned Spectral
+        run: npm run lint:openapi
       - name: Fetch required compatibility baseline
+        if: ${{ inputs.bootstrap_baseline != true }}
         run: |
-          if [ -z "${{ vars.OPENAPI_BASELINE_URL }}" ]; then
-            echo "OPENAPI_BASELINE_URL must reference the previous released OpenAPI contract." >&2
-            exit 1
-          fi
           curl --fail --location "${{ vars.OPENAPI_BASELINE_URL }}" --output target/openapi/previous-openapi.yaml
       - name: Compare contract with oasdiff
+        if: ${{ inputs.bootstrap_baseline != true }}
         run: |
           docker run --rm -v "$PWD:/work" tufin/oasdiff:latest breaking /work/target/openapi/previous-openapi.yaml /work/target/openapi/openapi.yaml
       - name: Upload OpenAPI artifact
@@ -57,6 +98,39 @@ jobs:
         with:
           name: openapi.yaml
           path: target/openapi/openapi.yaml
+
+  publish-initial-openapi-baseline:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_baseline }}
+    needs: govern-openapi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Reject an existing baseline tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASELINE_TAG: ${{ inputs.baseline_tag }}
+        run: |
+          if gh api "repos/${{ github.repository }}/git/ref/tags/$BASELINE_TAG" >/dev/null 2>&1; then
+            echo "Tag $BASELINE_TAG already exists; the initial baseline tag must be immutable." >&2
+            exit 1
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: openapi.yaml
+      - name: Publish immutable initial OpenAPI baseline
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.baseline_tag }}
+          name: OpenAPI baseline ${{ inputs.baseline_tag }}
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          fail_on_unmatched_files: true
+          files: openapi.yaml
+      - name: Report the required baseline variable
+        run: |
+          echo "Set the repository Actions variable OPENAPI_BASELINE_URL to:" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://github.com/${{ github.repository }}/releases/download/${{ inputs.baseline_tag }}/openapi.yaml" >> "$GITHUB_STEP_SUMMARY"
 
   publish-openapi-release-artifact:
     if: startsWith(github.ref, 'refs/tags/')

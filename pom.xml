@@ -320,7 +320,10 @@
 							<jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
 							<arguments>
 								<argument>--server.port=8085</argument>
-								<argument>--spring.docker.compose.enabled=false</argument>
+								<argument>--spring.docker.compose.enabled=true</argument>
+								<argument>--spring.docker.compose.lifecycle-management=start-and-stop</argument>
+								<argument>--spring.devtools.restart.enabled=false</argument>
+								<argument>--jwt.secret-key=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=</argument>
 								<argument>--GAM_PUBLIC_ORIGIN=https://localhost:8085</argument>
 							</arguments>
 						</configuration>
