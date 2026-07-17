@@ -188,7 +188,7 @@ OpenAPI changes are reviewed through:
 - `oasdiff` comparison against the target contract; and
 - review of the rendered Swagger UI when presentation or examples change.
 
-See the [OpenAPI software guideline](../software-guidelines/openapi-documentation.md) for mandatory endpoint-change rules and the [OpenAPI developer workflow](../dev-guidelines/openapi-workflow.md) for step-by-step usage.
+See the [OpenAPI software guideline](../software-guidelines/openapi-documentation.md) for mandatory endpoint-change rules, the [compatibility baseline lifecycle](../software-guidelines/openapi-documentation.md#7-compatibility-baseline-lifecycle) for agent-facing maintenance rules, and the [OpenAPI developer workflow](../dev-guidelines/openapi-workflow.md#5-maintain-the-compatibility-baseline) for the human step-by-step procedure.
 
 ## Related documentation
 

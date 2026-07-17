@@ -81,7 +81,68 @@ Review every reported diff, including changes not classified as breaking. If the
 
 Do not publish a manually copied live contract. A release must publish the generated `openapi.yaml` produced from the matching backend release.
 
-## 5. Generate frontend types
+## 5. Maintain the compatibility baseline
+
+`OPENAPI_BASELINE_URL` is the repository Actions variable that identifies the most recent accepted immutable release contract. OpenAPI Governance uses it as the `oasdiff` comparison target and fails closed when it is absent during an ordinary pull-request, branch, or release run.
+
+Use this lifecycle:
+
+| Situation | Required action |
+| --- | --- |
+| No accepted release contract exists | Bootstrap the initial baseline once |
+| A pull request or branch build runs | Do not change the baseline |
+| A release fails or is rejected | Do not change the baseline |
+| An accepted release passes governance and publishes `openapi.yaml` | Promote that release artifact as the new baseline |
+
+Never use a pull-request artifact, mutable branch URL, failed release, or unaccepted candidate as the compatibility baseline.
+
+### Bootstrap the initial baseline once
+
+Use this procedure only when the project has no prior release contract:
+
+1. Merge the OpenAPI governance workflow into the repository default branch. The first push may fail OpenAPI Governance because `OPENAPI_BASELINE_URL` does not exist yet; that is expected during bootstrap.
+2. Confirm under repository **Settings** -> **Secrets and variables** -> **Actions** -> **Variables** that `OPENAPI_BASELINE_URL` is absent.
+3. Open **Actions**, select **OpenAPI Governance**, and click **Run workflow**.
+4. Select the default branch, enable `bootstrap_baseline`, and enter a new immutable `baseline_tag`, such as `openapi-baseline-v1`. The tag may contain only letters, numbers, dots, underscores, and hyphens.
+5. Start the run and confirm that `govern-openapi` and `publish-initial-openapi-baseline` succeed.
+6. Confirm that the new GitHub Release contains `openapi.yaml`.
+7. Copy the asset URL reported in the workflow summary. It has this form:
+
+   ```text
+   https://github.com/OWNER/REPOSITORY/releases/download/openapi-baseline-v1/openapi.yaml
+   ```
+
+8. Return to repository **Settings** -> **Secrets and variables** -> **Actions** -> **Variables**, create `OPENAPI_BASELINE_URL` with that URL, and save it.
+9. Run OpenAPI Governance again with `bootstrap_baseline` disabled and `baseline_tag` empty. Confirm that baseline download and `oasdiff` succeed.
+
+Do not bootstrap again after the variable exists. Do not delete, move, or reuse the bootstrap tag or replace its release asset.
+
+### Advance the baseline after an accepted release
+
+Repeat this promotion after every accepted backend release, but only after its governance run succeeds:
+
+1. Publish the normal immutable backend release tag, such as `1.2.0`.
+2. Confirm that OpenAPI Governance compared the release candidate with the previously configured baseline and succeeded.
+3. Confirm that the matching GitHub Release contains its generated `openapi.yaml`.
+4. Construct or copy the immutable asset URL:
+
+   ```text
+   https://github.com/OWNER/REPOSITORY/releases/download/1.2.0/openapi.yaml
+   ```
+
+5. Open repository **Settings** -> **Secrets and variables** -> **Actions** -> **Variables**.
+6. Edit `OPENAPI_BASELINE_URL`, replace its value with the new release asset URL, and save it.
+7. Leave that value unchanged until a later accepted release becomes the next baseline.
+
+Do not update the variable before the release check finishes. Doing so could compare the candidate with itself and hide a breaking change.
+
+Advancing the baseline is required because `oasdiff` only knows the comparison contract it receives. If release 1 adds `/reports` but the baseline still predates that operation, a later accidental removal of `/reports` may not be detected.
+
+For a private repository, the governance workflow must authenticate same-repository release downloads. Use an authenticated mechanism such as `gh release download`; unauthenticated `curl` cannot be relied upon for a private release asset.
+
+See `REQ-OPENAPI-011` and the [OpenAPI software guideline](../software-guidelines/openapi-documentation.md#7-compatibility-baseline-lifecycle) for the governing rules.
+
+## 6. Generate frontend types
 
 For local frontend development, generate types from the live contract:
 

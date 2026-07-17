@@ -86,7 +86,47 @@ The live JSON contract, Swagger UI, CI contract, and release YAML must derive fr
 
 Do not make CI pass by weakening Spectral rules or excluding an endpoint without an accepted reason. Change a quality rule only when the project documentation standard itself changes.
 
-## 7. Review guidance
+## 7. Compatibility baseline lifecycle
+
+`OPENAPI_BASELINE_URL` identifies the most recent accepted immutable release contract. It is a repository Actions variable, not a secret, and ordinary governance runs fail closed when it is absent.
+
+### Establish the first baseline
+
+Use this bootstrap exactly once, when no earlier release contract exists:
+
+1. Merge the OpenAPI governance workflow into the default branch.
+2. Confirm that `OPENAPI_BASELINE_URL` is not configured and choose a new tag containing only letters, numbers, dots, underscores, and hyphens, such as `openapi-baseline-v1`.
+3. In GitHub, open **Actions**, select **OpenAPI Governance**, and choose **Run workflow**.
+4. Select the default branch, enable `bootstrap_baseline`, enter the new immutable `baseline_tag`, and start the run.
+5. Confirm that `govern-openapi` and `publish-initial-openapi-baseline` succeed and that the resulting GitHub Release contains `openapi.yaml`.
+6. Copy the URL reported in the workflow summary. It has this form:
+
+   ```text
+   https://github.com/OWNER/REPOSITORY/releases/download/openapi-baseline-v1/openapi.yaml
+   ```
+
+7. Open repository **Settings** -> **Secrets and variables** -> **Actions** -> **Variables**, create `OPENAPI_BASELINE_URL` with that URL, and save it.
+8. Run OpenAPI Governance again with `bootstrap_baseline` disabled. Confirm that baseline download and `oasdiff` both succeed.
+
+Do not rerun the bootstrap, reuse its tag, move the tag, replace its asset, or configure a mutable branch URL.
+
+### Promote an accepted release
+
+The compatibility baseline must advance after every accepted backend release:
+
+1. Publish the normal immutable backend release tag.
+2. Let OpenAPI Governance compare the release candidate with the currently configured baseline.
+3. Confirm that the release passes and publishes its matching `openapi.yaml` asset.
+4. Update `OPENAPI_BASELINE_URL` to that new release asset URL.
+5. Leave that URL unchanged until a later release passes and becomes the next accepted baseline.
+
+Never promote a pull-request artifact, failed release, mutable branch contract, or candidate before its compatibility result has been accepted. Do not update the variable before the release check, because that would compare the candidate with itself.
+
+Advancing the baseline is necessary because `oasdiff` can only detect removals relative to the contract it receives. If release 1 adds `/reports` but the variable still points to a contract from before `/reports` existed, a later accidental removal of `/reports` can be missed.
+
+For a private repository, the baseline fetch must authenticate without exposing a token to an arbitrary external URL. Prefer an authenticated same-repository release download, such as `gh release download`, rather than unauthenticated `curl` against a private release asset.
+
+## 8. Review guidance
 
 Reviewers must evaluate both the code diff and the generated contract diff.
 
@@ -105,5 +145,6 @@ Check especially for:
 
 - [OpenAPI documentation guideline](../documentation-guidelines/openapi.md)
 - [Controllers and HTTP API Guidelines](controllers-and-http-api.md)
-- [OpenAPI developer workflow](../dev-guidelines/openapi-workflow.md)
+- [Compatibility baseline lifecycle](#7-compatibility-baseline-lifecycle)
+- [OpenAPI developer workflow](../dev-guidelines/openapi-workflow.md#5-maintain-the-compatibility-baseline)
 - [OpenAPI and Frontend API Documentation requirements](../requirements/platform/openapi-and-frontend-api-documentation.md)

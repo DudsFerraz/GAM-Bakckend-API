@@ -146,5 +146,5 @@ Use synthetic local fixture data. Documentation must not contain shared static c
 - [Browser Session and Frontend Integration](../requirements/authentication/browser-session-and-frontend-integration.md)
 - [Web Delivery and Frontend Contract](../requirements/platform/web-delivery-and-frontend-contract.md)
 - [OpenAPI and Frontend API Documentation](../requirements/platform/openapi-and-frontend-api-documentation.md)
-- [OpenAPI Developer Workflow](../dev-guidelines/openapi-workflow.md)
+- [OpenAPI Developer Workflow](../dev-guidelines/openapi-workflow.md#5-maintain-the-compatibility-baseline)
 - [Frontend-Backend Integration](../dev-guidelines/front-back/front-back-integration.md)
