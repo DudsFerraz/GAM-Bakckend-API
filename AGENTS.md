@@ -20,8 +20,7 @@ Before changing code or tests, read only the guideline files relevant to the wor
 | Mermaid diagrams | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/diagrams.md` |
 | Swagger/OpenAPI documentation structure or prose | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/openapi.md` |
 | Video documentation | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/videos.md` |
-| LLM agent documentation instructions | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/llm-agents.md` |
-| Agent implementation workflow | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/agent-workflow.md` |
+| Agent-facing workflow, role boundaries, or handoffs | `docs/dev-guidelines/agent-workflow.md`, the relevant skill under `.agents/skills/` |
 | Source-of-truth priority or documentation conflicts | `docs/documentation-guidelines/README.md`, `docs/documentation-guidelines/source-of-truth.md` |
 | Package placement, layer boundaries, or feature/module structure | `docs/software-guidelines/package-organization.md` |
 | Controllers, routes, request/response shapes, HTTP status codes, or endpoint authorization | `docs/software-guidelines/controllers-and-http-api.md`, `docs/software-guidelines/openapi-documentation.md` |

@@ -1,6 +1,6 @@
 # Frontend–Backend Integration
 
-Use this guide when connecting the GAM frontend to the backend in a browser. For explanations of CSRF, tokens, refresh, and CORS, see [Frontend–Backend Concepts](frontend-backend-concepts.md).
+Use this guide when connecting the GAM frontend to the backend in a browser. For explanations of CSRF, tokens, refresh, and CORS, see [Frontend–Backend Concepts](front-back-concepts.md).
 
 ## Browser-facing model
 

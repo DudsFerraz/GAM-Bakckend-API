@@ -76,9 +76,9 @@ Read only the documentation guideline files relevant to the work:
 * Mermaid diagrams: `docs/documentation-guidelines/diagrams.md`
 * Swagger/OpenAPI documentation: `docs/documentation-guidelines/openapi.md`
 * Video documentation: `docs/documentation-guidelines/videos.md`
-* LLM agent instructions: `docs/documentation-guidelines/llm-agents.md`
-* Agent implementation workflow: `docs/documentation-guidelines/agent-workflow.md`
 * Source of truth priority: `docs/documentation-guidelines/source-of-truth.md`
+
+The human-readable agent workflow overview is maintained at `docs/dev-guidelines/agent-workflow.md`. Normative agent behavior is maintained by the relevant skills under `.agents/skills/` and by the repository agent instruction files.
 
 ---
 

@@ -34,6 +34,6 @@ Keep test design and implementation in separate chats. After implementation, ret
 
 ## Handoffs
 
-Include the feature, requirement files, changed files, test results, known risks, and the next role. Use [`agent-workflow.md`](../documentation-guidelines/agent-workflow.md) for the project workflow and `.agents/skills` for the applicable GAM skill.
+Include the feature, requirement files, changed files, test results, known risks, and the next role. Use [`agent-workflow.md`](agent-workflow.md) for the project workflow and `.agents/skills` for the applicable GAM skill.
 
 Do not ask an agent to guess missing business rules. Record the gap and resolve it in the owning requirement before proceeding.
