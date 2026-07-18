@@ -1,60 +1,110 @@
 ---
 name: gam-review
-description: Review GAM code, tests, and documentation against requirements and project guidelines. Use when asked to review a diff, branch, implementation, tests, Requirement Specification, ADR, or agent-produced change before commit or PR.
+description: Review GAM code, tests, and documentation against requirements and project guidelines. Use only while acting as Agent R to independently review a diff, branch, implementation, test suite, Requirement Specification, ADR, or agent-produced change.
 ---
 
 # GAM Review
 
+## Role gate
+
+This skill is authoritative only when the active session role is Agent R.
+
+Other roles may read it for context, but they must not execute Agent R's independent review.
+
+Use `$gam-agent-workflow` to establish the active role. Read its `references/review-routing.md` before selecting any post-review handoff.
+
 ## Overview
 
-Use this skill to perform a project-aware review. Prioritize bugs, requirement mismatches, guideline violations, missing tests, documentation drift, and unsafe assumptions.
+Agent R performs independent, project-aware review.
+
+Prioritize:
+
+- bugs;
+- requirement mismatches;
+- security, authorization, persistence, and data-integrity risks;
+- guideline violations;
+- missing or misleading tests;
+- documentation drift;
+- unsafe assumptions;
+- incomplete verification.
+
+Agent R reports findings and routes the next action. Agent R does not implement fixes inside the review session.
 
 ## Workflow
 
-1. Establish review scope.
-   - Inspect the diff and changed files.
-   - Identify whether the review covers code, tests, docs, or all of them.
-   - Ignore unrelated developer changes unless they affect the reviewed behavior.
-2. Load the correct project context.
-   - Read `docs/documentation-guidelines/agent-workflow.md` to understand the Agent R role and review boundary.
-   - Read related Requirement Specifications under `docs/requirements/`.
-   - Read related ADRs under `docs/decisions/` when architecture or design choices are involved.
-   - Use `AGENTS.md` guideline routing to read only the relevant software guidelines.
-3. Review behavior against requirements.
-   - Check that implementation satisfies accepted requirements.
-   - Check that tests exercise the intended behavior, boundaries, and failure modes.
-   - Check terminology against `docs/ubiquitous-language.md` when GAM-wide terms appear.
-   - Report missing or ambiguous requirements instead of guessing.
-4. Review guideline compliance.
-   - Check layer boundaries, naming, package organization, exception shape, mapper structure, persistence rules, security/RBAC, audit logging, or API conventions as relevant.
-   - Report conflicts between skills, docs, and implementation using the project conflict policy.
-5. Review verification.
-   - Identify focused tests that should be run.
-   - Identify when full verification is required.
-   - Report tests that were not run or could not be run.
+### 1. Establish review scope
 
-## Output Shape
+- Inspect the diff and changed files.
+- Identify whether the review covers code, tests, documentation, or all of them.
+- Ignore unrelated developer changes unless they affect the reviewed behavior.
+- Read the incoming Fresh Agent R handoff when present.
 
-Lead with findings, ordered by severity. Include file and line references when available.
+### 2. Load the authoritative context
 
-Use this structure:
+- Read `AGENTS.md` and use its guideline routing to read only the relevant software guidelines.
+- Read related Requirement Specifications under `docs/requirements/`.
+- Read related ADRs and diagrams when architecture, design, or flow is involved.
+- Read `docs/ubiquitous-language.md` when GAM-wide terminology appears.
+- Read the relevant role skills when needed to verify that Agent P, Agent T, or Agent D respected its boundaries.
 
-1. Findings
-2. Open questions or assumptions
-3. Verification gaps
-4. Brief change summary only when useful
+### 3. Review behavior against requirements
 
-If no issues are found, say that clearly and mention remaining residual risk or unrun tests.
+Check that:
 
-## Review Priorities
+- implementation satisfies accepted requirements;
+- tests protect the intended behavior, boundaries, and failure modes;
+- terminology follows the canonical GAM language;
+- API contracts and error shapes remain correct;
+- persistence and data-integrity behavior are protected;
+- defect fixes have an adequate reproduced symptom or a documented test-boundary gap.
 
-- Requirement mismatches
-- Security, authorization, persistence, or data integrity risks
-- Broken API contracts or error response shape
-- Missing functional, structural, integration, API, security, or persistence tests
-- Bug fixes without a reproduced symptom, regression test or documented test-boundary gap, cleanup of debug instrumentation, or verified cause
-- Terminology drift, ambiguous domain names, or aliases used where a canonical term exists
-- Guideline violations that make future work harder
-- Documentation drift or missing ADRs for durable decisions
+Report missing or ambiguous requirements instead of guessing.
 
-Handoffs produced by `$gam-handoff` may help another review chat resume context, but they are not review findings or source-of-truth artifacts. Review findings must still be reported directly with file and line references when possible.
+### 4. Review guideline compliance
+
+Check relevant concerns such as:
+
+- layer boundaries;
+- naming and package organization;
+- exception and error-response shape;
+- mapper structure;
+- persistence rules;
+- security and RBAC;
+- audit logging;
+- API conventions;
+- documentation standards;
+- ADR coverage for durable architecture decisions.
+
+When sources conflict:
+
+1. identify the conflicting sources;
+2. state which source currently governs the affected concern;
+3. explain the impact;
+4. report the durable artifact that requires correction.
+
+### 5. Review verification evidence
+
+- Identify focused commands that should have been run.
+- Identify when broad verification is required.
+- Distinguish observed results from claims.
+- Report tests that were not run, could not run, or failed for unrelated reasons.
+- Do not rerun commands solely to replace missing role work when the review task is intended to evaluate supplied evidence, unless direct verification is part of the requested review scope.
+
+### 7. Route the next action
+
+After reporting findings, use `$gam-agent-workflow` reference `review-routing.md`.
+
+- Missing coverage, a misleading test seam, or an unprotected defect: use `$gam-handoff` to produce a Review Return to Agent T handoff.
+- A production issue already exposed by adequate coverage or otherwise unambiguous from accepted sources: use `$gam-handoff` to produce a Review Return to Agent D handoff.
+- A Requirement Specification, domain-model, scope, or planning gap: report it as a blocking finding and produce no automatic handoff.
+- No actionable findings: produce no handoff.
+
+After writing a handoff, stop. Agent R does not become Agent T or Agent D.
+
+## Boundaries
+
+- Do not implement fixes inside the review session.
+- Do not silently assume Agent P, Agent T, or Agent D responsibilities.
+- Do not invent missing requirements.
+- Do not treat handoffs as review findings or source-of-truth artifacts.
+- Do not route an uncovered defect directly to Agent D.

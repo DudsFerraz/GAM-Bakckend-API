@@ -1,38 +1,104 @@
 ---
 name: gam-requirements
-description: Create and refine GAM Requirement Specifications from client or developer intent. Use when clarifying feature behavior, translating rough requirements into docs/requirements files, adding requirement IDs, examples, acceptance scenarios, ubiquitous language terms, open questions, or preparing requirements before tests or implementation.
+description: Create and refine GAM Requirement Specifications from client or developer intent. Use when translating resolved behavior into docs/requirements files, adding stable requirement IDs, examples, acceptance scenarios, local ubiquitous-language terms, scope boundaries, ADR links, or open questions.
 ---
 
 # GAM Requirements
 
 ## Overview
 
-Use this skill to turn rough intent into project-standard Requirement Specifications. Requirements define expected behavior and business rules; they must not contain test implementation details or merely describe the current code.
+This skill owns creating and updating GAM Requirement Specifications.
+
+Requirements define expected behavior and business rules. They must not contain test implementation details, prescribe incidental code structure, or merely describe current implementation.
+
+This is a supporting capability. It does not establish or change the active GAM workflow role.
 
 ## Workflow
 
-1. Read `docs/documentation-guidelines/README.md` and `docs/documentation-guidelines/requirements.md`.
-2. Locate related requirements under `docs/requirements/`, related ADRs under `docs/decisions/`, and related diagrams under `docs/diagrams/` when they exist.
-3. Clarify missing or ambiguous business rules before writing requirements.
-4. Use `$gam-domain-modeling` when terminology, domain boundaries, or ubiquitous language choices are unclear.
-5. When invoked after grilling, convert resolved answers into requirements, examples, acceptance scenarios, ubiquitous language terms, diagrams, or ADR links; convert unresolved answers into open questions.
-6. Write or update the Requirement Specification using the project template:
-   - Status
-   - Context
-   - Ubiquitous Language
-   - Functional requirements with stable `REQ-<AREA>-<NUMBER>` IDs
-   - Valid and invalid examples when applicable
-   - Acceptance scenarios
-   - Diagrams, open questions, out-of-scope boundaries, related ADRs, and related videos when relevant
-7. Preserve uncertainty as open questions instead of inventing business rules.
+### 1. Load the documentation standards and related artifacts
 
-## Quality Gates
+- Read `docs/documentation-guidelines/README.md`.
+- Read `docs/documentation-guidelines/requirements.md`.
+- Locate related Requirement Specifications under `docs/requirements/`.
+- Read related ADRs under `docs/decisions/`.
+- Read related diagrams under `docs/diagrams/`.
+- Read `docs/ubiquitous-language.md` when global terminology is involved.
 
-- Requirements must be clear, testable, and written before implementation or testing whenever possible.
-- Requirement Specification `Ubiquitous Language` sections must not repeat or redefine global terms, aliases, synonyms, translations, or legacy names from `docs/ubiquitous-language.md`; they should contain local terms only.
-- Synonyms, translations, and legacy names should be recorded as aliases to avoid when they compete with a canonical term.
-- Requirements must describe expected behavior and business rules, not test classes, test methods, or implementation details.
-- Requirements should capture explicit scope exclusions in `Out of scope` when they prevent scope creep or clarify deferred behavior.
+### 2. Preserve uncertainty
+
+Before writing a rule, determine whether it is:
+
+- explicitly resolved;
+- already documented;
+- constrained by an accepted ADR;
+- still an open question.
+
+Preserve unresolved behavior as an open question instead of inventing a business rule.
+
+Do not infer business truth from current implementation.
+
+### 3. Create or update the Requirement Specification
+
+Follow the project template and focused guideline.
+
+Use relevant sections such as:
+
+- Status
+- Context
+- Ubiquitous Language
+- Functional requirements with stable `REQ-<AREA>-<NUMBER>` IDs
+- Valid examples
+- Invalid examples
+- Acceptance scenarios
+- Diagrams
+- Open questions
+- Out of scope
+- Related ADRs
+- Related videos
+
+Include only sections relevant to the specification.
+
+### 5. Maintain stable requirement identity
+
+- Preserve an existing requirement ID when wording is clarified without changing its meaning.
+- Create a new requirement ID when the expected behavior changes materially.
+- Do not recycle removed or superseded IDs for different behavior.
+- Keep each requirement independently understandable and testable.
+
+### 6. Link related durable artifacts
+
+- Link ADRs when they constrain or explain architecture relevant to the requirement.
+- Link diagrams when they clarify behavior or domain flow.
+- Reference global ubiquitous-language terms instead of redefining them.
+- Use the Requirement Specification's `Ubiquitous Language` section only for feature-local terms.
+
+### 7. Validate readiness
+
+Before considering the Requirement Specification ready for downstream use, check that:
+
+- behavior is clear and testable;
+- scope boundaries are explicit;
+- examples do not contradict requirements;
+- acceptance scenarios reflect resolved behavior;
+- open questions are visible;
+- implementation and test details have not leaked into the specification;
+- status is accurate and has not been promoted without developer approval.
+
+## Quality gates
+
+- Requirements describe expected behavior and business rules.
+- Requirements do not name test classes, test methods, mocks, fixtures, or implementation algorithms.
+- Requirement Specification local terminology does not repeat or redefine global terms, aliases, synonyms, translations, or legacy names from `docs/ubiquitous-language.md`.
+- Synonyms, translations, and legacy names that compete with a canonical global term are recorded in the global ubiquitous language.
+- Explicit scope exclusions appear in `Out of scope` when they prevent scope creep or clarify deferred behavior.
+- Architectural consequences are linked to an ADR or identified as a pending decision.
+- Uncertainty remains visible as open questions.
+- Draft requirements are not marked Accepted without explicit developer approval.
+
+## Boundaries
+
+- Do not implement production code.
+- Do not write tests.
 - Do not infer business rules from existing implementation.
-- If a requirement changes meaning significantly, create a new requirement ID rather than reusing the old one.
-- If a decision has architecture consequences, ask whether an ADR should be created or updated.
+- Do not allow several skills to create competing edits to the same Requirement Specification.
+- Do not use a Requirement Specification as a substitute for an ADR when the concern is a durable architecture decision.

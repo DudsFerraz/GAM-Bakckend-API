@@ -1,136 +1,214 @@
 ---
 name: diagnosing-bugs
-description: Explicit diagnosis-mode loop for rare hard bugs and performance regressions. Use only when the developer explicitly asks to use $diagnosing-bugs, diagnosis mode, deep bug diagnosis, or this specific diagnostic workflow; do not use automatically for ordinary bug reports, failing tests, broken behavior, or implementation fixes.
+description: Explicit diagnosis-only loop for rare hard bugs, flaky failures, and performance regressions. Use only when the developer explicitly asks for $diagnosing-bugs, diagnosis mode, deep bug diagnosis, or this specific diagnostic workflow; do not use automatically for ordinary bug reports, failing tests, broken behavior, or implementation fixes.
 ---
 
 # Diagnosing Bugs
 
-A discipline for hard bugs. Skip phases only when explicitly justified.
+## Purpose and boundary
 
-In GAM, use this skill only when the developer explicitly requests diagnosis mode or `$diagnosing-bugs`. Ordinary bug reports and failing tests stay in the regular GAM planning, test design, implementation, and review workflow unless the developer opts into this separate workflow.
+This is an exceptional diagnosis-only workflow for difficult defects.
 
-When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
+Use it only when the developer explicitly requests diagnosis mode or `$diagnosing-bugs`.
+
+Ordinary bug reports and failing tests remain in the standard GAM workflow governed by `$gam-agent-workflow`.
+
+Diagnosis mode may:
+
+- build a reproduction loop;
+- reproduce and minimize the symptom;
+- generate and test hypotheses;
+- add temporary instrumentation;
+- establish the most strongly supported cause;
+- preserve useful diagnostic artifacts.
+
+Diagnosis mode must not:
+
+- write the durable regression test as Agent T;
+- implement the production fix as Agent D;
+- perform the final independent review as Agent R;
+- treat its diagnosis summary as project source of truth.
+
+When exploring the codebase, read `CONTEXT.md` if it exists and inspect relevant Requirement Specifications, ADRs, diagrams, and software guidelines.
+
+Skip phases only when the reason is explicit and evidence-based.
 
 ## Phase 1 — Build a feedback loop
 
-**This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
+This is the core of the skill.
 
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+A tight pass/fail signal for the reported symptom makes bisection, hypothesis testing, and instrumentation effective. Without one, reading code tends to produce ungrounded theories.
 
-### Ways to construct one — try them in roughly this order
+Spend disproportionate effort here. Be aggressive, creative, and persistent.
 
-1. **Failing test** at whatever seam reaches the bug — unit, integration, e2e.
-2. **Curl / HTTP script** against a running dev server.
-3. **CLI invocation** with a fixture input, diffing stdout against a known-good snapshot.
-4. **Headless browser script** (Playwright / Puppeteer) — drives the UI, asserts on DOM/console/network.
-5. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
-6. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.
-7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
-8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
-9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
+### Ways to construct the loop
 
-Build the right feedback loop, and the bug is 90% fixed.
+Try these in roughly this order:
+
+1. A failing test at the seam that reaches the symptom: unit, integration, API, or end-to-end.
+2. A curl or HTTP script against a running development server.
+3. A CLI invocation with a fixture input and a diff against a known-good output.
+4. A headless browser script that drives the UI and asserts on DOM, console, or network behavior.
+5. Replay of a captured request, payload, trace, or event log.
+6. A throwaway harness that starts the smallest useful subset of the system.
+7. A property or fuzz loop for intermittent incorrect output.
+8. A bisection harness suitable for `git bisect run`.
+9. A differential loop comparing old versus new versions or configurations.
+10. The human-in-the-loop script under `scripts/hitl-loop.template.sh` as a last resort.
+
+A test created here is a diagnostic loop, not automatically the project's durable regression test. Agent T later decides whether it uses the correct seam and should be adopted.
 
 ### Tighten the loop
 
-Treat the loop as a product. Once you have _a_ loop, **tighten** it:
+Treat the loop as a product:
 
-- Can I make it faster? (Cache setup, skip unrelated init, narrow the test scope.)
-- Can I make the signal sharper? (Assert on the specific symptom, not "didn't crash".)
-- Can I make it more deterministic? (Pin time, seed RNG, isolate filesystem, freeze network.)
+- Make it faster by caching setup, narrowing scope, or skipping unrelated initialization.
+- Make the signal sharper by asserting the exact symptom.
+- Make it deterministic by pinning time, seeding randomness, isolating the filesystem, or freezing external dependencies.
+- Make it agent-runnable without manual intervention whenever possible.
 
-A 30-second flaky loop is barely better than no loop; a 2-second deterministic one is tight — a debugging superpower.
+A slow or flaky loop is only a partial improvement. Continue tightening it.
 
-### Non-deterministic bugs
+### Non-deterministic defects
 
-The goal is not a clean repro but a **higher reproduction rate**. Loop the trigger 100×, parallelise, add stress, narrow timing windows, inject sleeps. A 50%-flake bug is debuggable; 1% is not — keep raising the rate until it's debuggable.
+The immediate goal is a high enough reproduction rate to distinguish hypotheses.
 
-### When you genuinely cannot build a loop
+Loop the trigger, run it in parallel, add stress, narrow timing windows, or inject controlled delays. Record the observed reproduction rate and keep improving it until the loop is useful.
 
-Stop and say so explicitly. List what you tried. Ask the developer for: (a) access to whatever environment reproduces it, (b) a captured artifact (HAR file, log dump, core dump, screen recording with timestamps), or (c) permission to add temporary production instrumentation. Do **not** proceed to hypothesise without a loop.
+### When no loop can be built
 
-### Completion criterion — a tight loop that goes red
+Stop and say so explicitly.
 
-Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** — a script path, a test invocation, a curl — that you have **already run at least once** (paste the invocation and its output), and that is:
+List what was attempted and request one or more of:
 
-- [ ] **Red-capable** — it drives the actual bug code path and asserts the reported exact symptom, so it can go red on this bug and green once fixed. Not "runs without erroring" — it must be able to _catch this specific bug_.
-- [ ] **Deterministic** — same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
-- [ ] **Fast** — seconds, not minutes.
-- [ ] **Agent-runnable** — you can run it unattended; a human in the loop only via `scripts/hitl-loop.template.sh`.
+- access to the environment that reproduces the issue;
+- a captured HAR file, log dump, trace, core dump, or screen recording with timestamps;
+- permission to add temporary production instrumentation.
 
-If you catch yourself reading code to build a theory before this command exists, **stop — jumping straight to a hypothesis is the exact failure this skill prevents.** No red-capable command, no Phase 2.
+Do not proceed to causal claims without a usable feedback loop.
 
-## Phase 2 — Reproduce + minimise
+### Completion criterion
 
-Run the loop. Watch it go red — the bug appears.
+Phase 1 is complete when one named command has already been run and is:
+
+- **Red-capable**: it drives the actual defect path and can detect the exact reported symptom.
+- **Deterministic enough**: it gives a stable verdict or a documented high reproduction rate.
+- **Fast enough**: it supports repeated hypothesis testing.
+- **Agent-runnable**: it runs unattended, except for the structured HITL fallback.
+
+Record the command and observed output.
+
+No red-capable command means no Phase 2.
+
+## Phase 2 — Reproduce and minimize
+
+Run the loop and confirm that it produces the reported failure mode rather than a nearby but different failure.
 
 Confirm:
 
-- [ ] The loop produces the reported failure mode, not a different failure that happens to be nearby. Wrong bug = wrong fix.
-- [ ] The failure is reproducible across multiple runs (or, for non-deterministic bugs, reproducible at a high enough rate to debug against).
-- [ ] You have captured the exact symptom (error message, wrong output, slow timing) so later phases can verify the fix actually addresses it.
+- the exact symptom;
+- repeated reproduction or a sufficiently high reproduction rate;
+- the relevant error, wrong output, timing, trace, or state difference.
 
-### Minimise
+Then minimize the scenario.
 
-Once it's red, shrink the repro to the **smallest scenario that still goes red**. Cut inputs, callers, config, data, and steps **one at a time**, re-running the loop after each cut — keep only what's load-bearing for the failure.
+Remove inputs, callers, configuration, data, dependencies, and steps one at a time. Re-run the loop after every reduction.
 
-Why bother: a minimal repro shrinks the hypothesis space in Phase 3 (fewer moving parts left to suspect) and becomes the clean regression test in Phase 5.
+Stop when every remaining element is load-bearing: removing any one of them makes the signal disappear or materially changes the failure.
 
-Done when **every remaining element is load-bearing** — removing any one of them makes the loop go green.
+The minimized loop should remain connected to the original symptom.
 
-Do not proceed until you have reproduced **and** minimised.
+## Phase 3 — Generate hypotheses
 
-## Phase 3 — Hypothesise
+Create three to five ranked hypotheses before testing them.
 
-Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+Each hypothesis must be falsifiable and include a prediction.
 
-Each hypothesis must be **falsifiable**: state the prediction it makes.
+Use this form:
 
-> Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
+> If `<cause>` is responsible, then `<controlled change or observation>` will make the symptom disappear, become stronger, or produce a specific differentiating result.
 
-If you cannot state the prediction, the hypothesis is a vibe — discard or sharpen it.
+Discard or sharpen hypotheses that do not make a testable prediction.
 
-**Show the ranked list to the developer before testing.** They often have domain knowledge that re-ranks instantly ("we just deployed a change to #3"), or know hypotheses they've already ruled out. Cheap checkpoint, big time saver. Don't block on it — proceed with your ranking if the developer is unavailable.
+Show the ranked list to the developer before testing when interaction is available. Domain knowledge may immediately re-rank or eliminate hypotheses.
 
-## Phase 4 — Instrument
+Do not block indefinitely waiting for feedback. Continue with the stated ranking when necessary.
 
-Each probe must map to a specific prediction from Phase 3. **Change one variable at a time.**
+## Phase 4 — Instrument and discriminate
 
-Tool preference:
+Each probe must map to a prediction from Phase 3.
 
-1. **Debugger / REPL inspection** if the env supports it. One breakpoint beats ten logs.
-2. **Targeted logs** at the boundaries that distinguish hypotheses.
-3. Never "log everything and grep".
+Change one variable at a time.
 
-**Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
+Prefer:
 
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+1. Debugger or REPL inspection.
+2. Targeted logs at boundaries that distinguish hypotheses.
+3. Focused traces, counters, or measurements.
 
-## Phase 5 — Fix + regression test
+Do not “log everything and grep.”
 
-Write the regression test **before the fix** — but only if there is a **correct seam** for it.
+Tag every temporary debug log with a unique prefix such as `[DEBUG-a4f2]` so cleanup is reliable.
 
-A correct seam is one where the test exercises the **real bug pattern** as it occurs at the call site. If the only available seam is too shallow (single-caller test when the bug needs multiple callers, unit test that can't replicate the chain that triggered the bug), a regression test there gives false confidence.
+### Performance regressions
 
-**If no correct seam exists, that itself is the finding.** Note it. The codebase architecture is preventing the bug from being locked down. Flag this for the next phase.
+For performance problems:
 
-If a correct seam exists:
+- establish a baseline first;
+- use a timing harness, profiler, query plan, allocation measurement, or equivalent evidence;
+- compare controlled states;
+- bisect when a bounded change range exists;
+- measure before drawing conclusions.
 
-1. Turn the minimised repro into a failing test at that seam.
-2. Watch it fail.
-3. Apply the fix.
-4. Watch it pass.
-5. Re-run the Phase 1 feedback loop against the original (un-minimised) scenario.
+## Phase 5 — Establish the diagnosis
 
-## Phase 6 — Cleanup + post-mortem
+Use the loop and discriminating probes to identify the explanation best supported by evidence.
 
-Required before declaring done:
+A diagnosis is complete only when it includes:
 
-- [ ] Original repro no longer reproduces (re-run the Phase 1 loop)
-- [ ] Regression test passes (or absence of seam is documented)
-- [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
-- [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
-- [ ] The hypothesis that turned out correct is stated in the commit / PR message — so the next debugger learns
+- the original reported symptom;
+- the named reproduction command;
+- the observed red signal or reproduction rate;
+- the minimized scenario;
+- the causal chain connecting the responsible behavior to the symptom;
+- the hypothesis that survived testing;
+- the important hypotheses that were falsified and the evidence that rejected them;
+- the affected files, boundaries, configuration, data, or environment;
+- the expected next step in the standard GAM workflow.
 
-**Then ask: what would have prevented this bug?** If the answer involves architectural change (no good test seam, tangled callers, hidden coupling) hand off to the `/improve-codebase-architecture` skill with the specifics. Make the recommendation **after** the fix is in, not before — you have more information now than when you started.
+Do not claim certainty beyond the evidence.
+
+When multiple causes remain plausible, state the remaining uncertainty and the next discriminating probe.
+
+### No fix in diagnosis mode
+
+Do not implement the production fix.
+
+Do not convert the diagnostic harness into durable regression coverage inside this workflow.
+
+If a candidate fix is useful to validate causality, prefer a reversible experimental change or controlled configuration toggle. Revert it after the probe and record the result.
+
+The production repository must not be left in a partially fixed state.
+
+## Phase 6 — Cleanup and return to the standard workflow
+
+Before declaring the diagnosis complete:
+
+- remove all temporary `[DEBUG-...]` instrumentation;
+- grep for the unique prefix and record that cleanup was verified;
+- revert experimental production changes;
+- delete disposable prototypes that provide no future diagnostic value;
+- preserve only useful reproduction artifacts, clearly marked and referenced;
+- record commands and observed outputs;
+- state explicitly that the defect has been diagnosed but not fixed.
+
+The diagnosis output is an ephemeral evidence packet, not a Requirement Specification, ADR, regression test, implementation, or review result.
+
+Return to the regular GAM workflow:
+
+- When accepted requirements already define the expected behavior, Agent T designs the durable regression coverage from the documented defect and diagnostic evidence.
+- Agent D implements the production fix only after Agent T establishes the correct failing signal.
+- Agent R reviews the final requirements, tests, implementation, and verification.
+- When diagnosis reveals missing or contradictory business behavior, report the planning gap so the developer can start a separate Agent P session.
+
+Do not invoke or reference a nonexistent architecture-improvement skill.

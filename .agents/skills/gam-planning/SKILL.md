@@ -1,48 +1,91 @@
 ---
 name: gam-planning
-description: Coordinate Agent P planning for GAM features and refactors before tests or implementation. Use when starting a fresh feature/refactor planning session, evaluating requirements, grilling the developer, modeling the domain, and producing Requirement Specifications, ADRs, diagrams, and open questions.
+description: Coordinate Agent P planning for GAM features and refactors before tests or implementation. Use only while acting as Agent P to evaluate intent, grill the developer, model the domain, and produce Requirement Specifications, ADRs, diagrams, and explicit open questions.
 ---
 
 # GAM Planning
 
+## Role gate
+
+This skill is authoritative only when the active session role is Agent P.
+
+Other roles may read it for context, but they must not execute Agent P work.
+
+Use `$gam-agent-workflow` to establish the active role and understand the legal transition from planning to test design.
+
 ## Overview
 
-Use this skill for Agent P: the planning agent responsible for turning an initial feature or refactor request into shared understanding and durable documentation. Stop before writing tests or implementation code.
+Agent P turns an initial feature or refactor request into shared understanding and durable project documentation.
+
+Agent P stops before tests and production implementation.
 
 ## Workflow
 
-1. Establish planning scope.
-   - Read the developer's feature or refactor request.
-   - Read relevant context docs such as `docs/about-gam/` when the request depends on GAM domain knowledge.
-   - Read `docs/ubiquitous-language.md` when the request uses GAM-wide domain terms.
-   - Read `docs/documentation-guidelines/README.md` and the focused guideline files for the documentation artifacts that planning may produce, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, `docs/documentation-guidelines/diagrams.md`, or `docs/documentation-guidelines/agent-workflow.md`.
-   - Locate existing related requirements, ADRs, and diagrams.
-2. Grill and model the domain until shared understanding is reached.
-   - Use `$gam-grill` to coordinate the grilling interview, domain modeling, and requirements capture.
-   - Do not proceed to final planning documentation until major ambiguities, tradeoffs, and boundaries are explicit.
-3. Consolidate planning documentation.
-   - Use `$gam-requirements` to create or update Requirement Specifications with stable IDs.
-   - Capture problem statement, solution intent, in-scope behavior, and out-of-scope boundaries inside the relevant Requirement Specification sections instead of creating a separate PRD.
-   - Create or update ADRs only for decisions with meaningful consequences, tradeoffs, or future maintenance impact.
-   - Add Mermaid diagrams when they clarify flow, state, architecture, or decisions.
-4. End with a handoff.
-   - Summarize the problem being solved and the intended User or domain outcome.
-   - Summarize produced or updated docs.
-   - List in-scope behavior and explicit out-of-scope boundaries.
-   - List open questions and decisions still pending.
-   - When useful, propose internal implementation slices for Agent T and Agent D:
-     - Use thin, independently verifiable vertical slices through the relevant backend layers when the feature can be built incrementally.
-     - Use an expand-contract sequence for wide refactors that cannot stay green as ordinary vertical slices.
-     - For each slice, include a title, requirement IDs covered, expected behavior, acceptance signal, and blockers.
-   - State that the next step is a fresh Agent T session using `$gam-test-design` to write functional tests from the accepted requirements.
+### 1. Establish planning scope
+
+- Read the developer's feature or refactor request.
+- Read `AGENTS.md`.
+- Read relevant context under `docs/about-gam/` when the request depends on GAM domain knowledge.
+- Read `docs/ubiquitous-language.md` when GAM-wide domain terms are involved.
+- Read `docs/documentation-guidelines/README.md` and the focused guideline files for every documentation artifact that planning may change.
+- Locate related Requirement Specifications, ADRs, diagrams, and known open questions.
+- Separate confirmed behavior from assumptions, implementation ideas, and unresolved decisions.
+
+### 2. Grill and model the domain
+
+Use `$gam-grill` to coordinate the grilling interview, domain modeling, and requirements capture.
+
+Do not proceed to completed planning while relevant behavior, boundaries, tradeoffs, or dependencies remain implicit.
+
+### 3. Consolidate durable planning artifacts
+
+Use `$gam-requirements` to create or update Requirement Specifications with stable IDs.
+
+Capture:
+
+- context and intended outcome;
+- in-scope behavior;
+- explicit out-of-scope boundaries;
+- business rules;
+- valid and invalid examples when useful;
+- acceptance scenarios;
+- local ubiquitous-language terms;
+- related ADRs and diagrams;
+- unresolved questions.
+
+Use `$gam-domain-modeling` for domain terminology, edge cases, relationship modeling, and ADR-worthiness analysis.
+
+Create or update ADRs only for decisions with meaningful consequences, real alternatives, or future maintenance impact.
+
+Add Mermaid diagrams when they materially clarify flow, state, architecture, or decision structure.
+
+### 4. Evaluate readiness for test design
+
+Planning is ready to transition only when:
+
+- Agent T can derive tests without inventing business rules;
+- blocking questions are resolved;
+- accepted or draft status is represented accurately;
+- in-scope and out-of-scope boundaries are explicit enough to prevent accidental expansion;
+- any required ADR or diagram exists or is clearly identified as pending.
+
+Non-blocking open questions may remain when they do not affect the next test-design action.
+
+If a blocking ambiguity remains, planning is not complete.
+
+### 5. End with the required handoff
+
+When planning is complete and ready for test design, automatically use `$gam-handoff` to produce a Fresh Agent T handoff.
+
+After writing the handoff, stop. Agent P does not become Agent T.
 
 ## Boundaries
 
 - Do not write tests.
 - Do not implement production code.
-- Do not create PRDs or publish issue-tracker items unless the developer explicitly asks for that external workflow.
-- Do not treat implementation slices as replacement requirements; they are planning handoff notes derived from Requirement Specifications.
-- Treat handoffs produced by `$gam-handoff` as ephemeral context-transfer aids, not project documentation or source-of-truth artifacts.
+- Do not perform Agent R's independent review.
 - Do not infer business rules from existing implementation.
-- Do not mark Draft requirements as Accepted unless the developer explicitly approves.
-- Do not hide unresolved ambiguity; preserve it as open questions.
+- Do not mark Draft requirements as Accepted without explicit developer approval.
+- Do not hide unresolved ambiguity.
+- Do not duplicate `$gam-handoff` instructions.
+- Reading Agent T, Agent D, or Agent R skills for downstream context does not authorize Agent P to perform those roles.

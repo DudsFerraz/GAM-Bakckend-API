@@ -1,69 +1,137 @@
 ---
 name: gam-domain-modeling
-description: Build and sharpen the GAM domain model using project documentation standards. Use when clarifying domain terminology, creating or updating Requirement Specifications, deciding whether an ADR is warranted, resolving ubiquitous language or requirement ambiguity, or when another skill needs project-specific domain modeling before implementation.
+description: Build and sharpen the GAM domain model using project documentation standards. Use when clarifying terminology, boundaries, scenarios, relationships, ADR-worthiness, or requirement ambiguity before durable documentation is written.
 ---
 
 # GAM Domain Modeling
 
 ## Overview
 
-Actively sharpen the project's domain language as requirements and designs evolve. Challenge vague terms, force concrete scenarios, and record durable decisions when they crystallize.
+Actively sharpen the project's domain language as requirements and designs evolve.
 
-Project documentation is the source of truth. Read `docs/documentation-guidelines/README.md` and the relevant focused file under `docs/documentation-guidelines/` before creating or changing Requirement Specifications, ADRs, diagrams, or ubiquitous language material.
+Challenge vague terms, force concrete scenarios, expose invalid states and record durable decisions when they crystallize.
+
+This is a supporting capability. It does not establish or change the active GAM workflow role.
+
+## Artifact ownership
+
+This skill owns domain-modeling analysis.
+
+It may directly create or update:
+
+- `docs/ubiquitous-language.md` for GAM-wide canonical terms and aliases;
+- ADRs under `docs/decisions/` when a durable architecture or design decision meets the ADR threshold;
+- diagrams under `docs/diagrams/` when they clarify the model.
+
+`$gam-requirements` owns creating and updating Requirement Specifications.
+
+When domain modeling produces requirement rules, examples, acceptance scenarios, local terms, or open questions, pass those resolved outcomes to `$gam-requirements` instead of independently editing the Requirement Specification.
 
 ## Workflow
 
-1. Identify the domain area and existing documentation.
-   - Read `docs/ubiquitous-language.md` when the task involves GAM-wide terminology or any term that may cross feature boundaries.
-   - Read relevant files under `docs/requirements/`.
-   - Read related ADRs under `docs/decisions/` when architecture or design choices are involved.
-   - Read `docs/documentation-guidelines/README.md` before writing project documentation.
-   - Read the focused documentation guideline for the artifact being changed, such as `docs/documentation-guidelines/requirements.md`, `docs/documentation-guidelines/adrs.md`, or `docs/documentation-guidelines/diagrams.md`.
-2. Challenge fuzzy or overloaded language.
-   - Ask whether a term means one domain concept or another when ambiguity matters.
-   - Propose one canonical term and list discouraged alternatives when useful.
-   - Record aliases to avoid when multiple words, translations, or legacy names compete for the same concept.
-   - Describe relationships between terms when ownership, lifecycle, role, or cardinality matters.
-3. Stress-test the model with concrete scenarios.
-   - Invent edge cases that expose unclear boundaries, lifecycle rules, permissions, ownership, or invalid states.
-   - Prefer scenarios that can become acceptance scenarios or examples in a Requirement Specification.
-4. Separate domain truth from implementation facts.
-   - Use code to detect contradictions or hidden behavior.
-   - Do not treat existing implementation as the source of truth for business rules unless project documentation explicitly says so.
-5. Capture durable outcomes in the correct project artifact.
-   - Use Requirement Specifications for business behavior, rules, examples, and acceptance scenarios.
-   - Use ADRs for architecture or design decisions with meaningful tradeoffs or future maintenance impact.
-   - Use `docs/ubiquitous-language.md` for GAM-wide canonical terms, aliases to avoid, and term relationships.
-   - Use a Requirement Specification `Ubiquitous Language` section for feature-specific terms that are not already defined in `docs/ubiquitous-language.md`.
-   - Use short example dialogue only when it clarifies boundaries between easily confused terms.
+### 1. Identify the domain area and existing documentation
 
-## Requirement Specifications
+- Read `docs/documentation-guidelines/README.md`.
+- Read the focused documentation guideline for every artifact that may change.
+- Read `docs/ubiquitous-language.md` when the task involves GAM-wide terminology or a term that may cross feature boundaries.
+- Read relevant Requirement Specifications under `docs/requirements/`.
+- Read related ADRs under `docs/decisions/`.
+- Read related diagrams under `docs/diagrams/`.
+- Inspect code only to discover contradictions, hidden behavior, or existing terminology.
 
-When a domain rule, term, valid example, invalid example, or acceptance scenario becomes clear, offer to update the relevant Requirement Specification under `docs/requirements/`.
+### 2. Challenge fuzzy or overloaded language
 
-Follow the structure and wording rules in `docs/documentation-guidelines/requirements.md`:
+- Ask whether a term means one domain concept or another when ambiguity matters.
+- Propose one canonical term and list discouraged alternatives when useful.
+- Record aliases to avoid when translations, legacy names, or competing words refer to the same concept.
+- Describe relationships between terms when ownership, lifecycle, role, or cardinality matters.
+- Separate entities, value objects, capabilities, events, policies, and implementation components when conflation causes ambiguity.
 
-- Use stable requirement IDs.
-- Prefer clear, testable statements.
-- Include valid and invalid examples when applicable.
-- Keep test implementation details out of Requirement Specifications.
-- Preserve open questions instead of guessing.
+### 3. Stress-test the model
 
-## ADRs
+Create concrete scenarios and edge cases that expose unclear:
 
-Offer an ADR only when all are true:
+- boundaries;
+- lifecycle transitions;
+- permissions;
+- ownership;
+- cardinality;
+- ordering;
+- concurrency;
+- invalid states;
+- cross-feature interactions.
+
+Prefer scenarios that `$gam-requirements` can later turn into valid examples, invalid examples, or acceptance scenarios.
+
+### 4. Separate domain truth from implementation facts
+
+Use code to detect contradictions or hidden current behavior.
+
+Do not treat existing implementation as the source of business truth unless accepted project documentation explicitly makes it authoritative for that concern.
+
+Label findings as one of:
+
+- documented domain rule;
+- accepted architecture decision;
+- current implementation behavior;
+- inferred possibility;
+- unresolved question.
+
+### 5. Evaluate durable outcomes
+
+#### Ubiquitous language
+
+Use `docs/ubiquitous-language.md` for GAM-wide:
+
+- canonical terms;
+- aliases to avoid;
+- translations or legacy names that compete with the canonical term;
+- relationships between global concepts.
+
+Feature-local terms belong in the relevant Requirement Specification and must be passed to `$gam-requirements`.
+
+#### Requirement content
+
+When a rule, example, acceptance scenario, local term, scope boundary, or open question becomes clear:
+
+1. State the resolved modeling outcome.
+2. Identify the relevant Requirement Specification.
+3. Use or return the outcome to `$gam-requirements` for the actual file change.
+
+Do not independently create competing Requirement Specification edits.
+
+#### ADRs
+
+Create or propose an ADR only when all are true:
 
 1. The decision has meaningful consequences or future maintenance impact.
-2. A future maintainer would need to know why the choice was made.
-3. There were real alternatives or tradeoffs.
+2. A future maintainer needs to understand why the choice was made.
+3. Real alternatives or tradeoffs existed.
 
-When creating an ADR, use `docs/decisions/` and the ADR template from `docs/documentation-guidelines/adrs.md`.
+Follow `docs/documentation-guidelines/adrs.md`.
 
-## Conflict Handling
+#### Diagrams
 
-If this skill, another skill, existing code, or external community guidance conflicts with project documentation:
+Use diagrams when they clarify state, flow, ownership, relationships, or architecture more effectively than prose.
+
+Follow `docs/documentation-guidelines/diagrams.md`.
+
+## Conflict handling
+
+When this skill, another skill, existing code, external guidance, or project documentation conflicts:
 
 1. Report the conflicting sources.
-2. State which source should currently win.
-3. Explain the rationale.
-4. Ask whether to update the relevant Requirement Specification, ADR, guideline, or skill when the conflict should be resolved durably.
+2. Identify the source of truth for the affected concern.
+3. Explain the impact.
+4. Identify the durable artifact that should be updated.
+
+Do not silently overwrite accepted project documentation with community convention or current code behavior.
+
+## Boundaries
+
+- Do not implement production code.
+- Do not write tests.
+- Do not independently own Requirement Specification editing.
+- Do not redefine a global term inside a feature-local ubiquitous-language section.
+- Do not create ADRs for trivial, reversible, or implementation-local choices.
+- Do not hide uncertainty behind a polished model.
