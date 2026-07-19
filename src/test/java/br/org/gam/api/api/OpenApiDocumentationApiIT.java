@@ -4,8 +4,6 @@ import br.org.gam.api.testing.annotation.ApiTest;
 import br.org.gam.api.testing.annotation.FunctionalTest;
 import br.org.gam.api.testing.annotation.IntegrationTest;
 import br.org.gam.api.testing.annotation.SecurityTest;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,17 +22,13 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
     @Test
     @DisplayName("REQ-OPENAPI-002 - anonymous developer -> Swagger UI is available at the public documentation route")
     void swaggerUiShouldBeAvailableWithoutAuthentication() {
-        jsonRequest()
-                .get("/api/docs")
-                .then()
-                .statusCode(200)
-                .contentType("text/html");
+        assertHtmlEndpointAvailable("/api/docs");
     }
 
     @Test
     @DisplayName("REQ-OPENAPI-001 and REQ-WEB-004 - generated contract -> OpenAPI 3.1 with /api public server base")
     void generatedContractShouldDeclareOpenApi31AndThePublicApiServerBase() {
-        Map<String, Object> contract = openApiContract().jsonPath().getMap("$");
+        Map<String, Object> contract = openApiContract().body();
 
         assertThat(contract).containsEntry("openapi", "3.1.0");
         assertThat(objects(contract, "servers"))
@@ -45,8 +39,7 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
     @Test
     @DisplayName("REQ-OPENAPI-002 and REQ-OPENAPI-005 - generated contract -> GAM routes, bearer default, and public authentication overrides")
     void generatedContractShouldIncludeApplicationRoutesAndTheirSecurityBoundary() {
-        ExtractableResponse<Response> response = openApiContract();
-        Map<String, Object> contract = response.jsonPath().getMap("$");
+        Map<String, Object> contract = openApiContract().body();
         Map<String, Object> paths = object(contract, "paths");
         Map<String, Object> components = object(contract, "components");
         Map<String, Object> securitySchemes = object(components, "securitySchemes");
@@ -74,7 +67,7 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
     @DisplayName("REQ-OPENAPI-005 and REQ-BROWSER-AUTH-003/004 - authentication contract -> CSRF bootstrap and browser proof inputs are documented")
     @SuppressWarnings("unchecked")
     void authenticationContractShouldDocumentCsrfBootstrapAndBrowserProof() {
-        Map<String, Object> contract = openApiContract().jsonPath().getMap("$");
+        Map<String, Object> contract = openApiContract().body();
         Map<String, Object> paths = object(contract, "paths");
         Map<String, Object> components = object(contract, "components");
         assertThat(paths).containsKey("/auth/csrf");
@@ -103,7 +96,7 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
     @Test
     @DisplayName("REQ-OPENAPI-005 and REQ-BROWSER-AUTH-002 - authentication responses -> refresh cookie lifecycle is documented")
     void authenticationResponsesShouldDocumentRefreshCookieLifecycle() {
-        Map<String, Object> contract = openApiContract().jsonPath().getMap("$");
+        Map<String, Object> contract = openApiContract().body();
         Map<String, Object> paths = object(contract, "paths");
 
         assertSetCookieEffect(
@@ -126,7 +119,7 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
     @Test
     @DisplayName("REQ-ACCOUNT-008 and REQ-OPENAPI-003/005 - current Account context -> API-relative protected operation and exact schema")
     void currentAccountContextShouldBeDocumentedAsAnApiRelativeBearerOperation() {
-        Map<String, Object> contract = openApiContract().jsonPath().getMap("$");
+        Map<String, Object> contract = openApiContract().body();
         Map<String, Object> paths = object(contract, "paths");
 
         assertThat(paths)

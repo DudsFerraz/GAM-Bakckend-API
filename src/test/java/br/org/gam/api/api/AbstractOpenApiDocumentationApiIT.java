@@ -1,29 +1,203 @@
 package br.org.gam.api.api;
 
-import br.org.gam.api.testing.integration.BaseApiIntegrationTest;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import br.org.gam.api.account.application.useCases.GetAccount;
+import br.org.gam.api.account.application.useCases.SearchAccounts;
+import br.org.gam.api.account.application.useCases.getCurrentAccountContext.GetCurrentAccountContext;
+import br.org.gam.api.account.application.useCases.loginAccount.LoginAccount;
+import br.org.gam.api.account.application.useCases.registerAccount.RegisterAccount;
+import br.org.gam.api.account.web.AccountController;
+import br.org.gam.api.event.application.useCases.GetEvent;
+import br.org.gam.api.event.application.useCases.SearchEvents;
+import br.org.gam.api.event.application.useCases.createEvent.CreateEvent;
+import br.org.gam.api.event.web.EventController;
+import br.org.gam.api.gamLocation.application.useCases.CreateGamLocation;
+import br.org.gam.api.gamLocation.application.useCases.GetGamLocations;
+import br.org.gam.api.gamLocation.application.useCases.RemoveGamLocation;
+import br.org.gam.api.gamLocation.application.useCases.UpdateGamLocation;
+import br.org.gam.api.gamLocation.web.GamLocationController;
+import br.org.gam.api.member.application.useCases.Activation;
+import br.org.gam.api.member.application.useCases.GetMember;
+import br.org.gam.api.member.application.useCases.SearchMembers;
+import br.org.gam.api.member.application.useCases.registerMember.RegisterMemberWorkflow;
+import br.org.gam.api.member.solicitation.application.useCases.GetMembershipSolicitation;
+import br.org.gam.api.member.solicitation.application.useCases.ReviewMembershipSolicitation;
+import br.org.gam.api.member.solicitation.application.useCases.SearchMembershipSolicitations;
+import br.org.gam.api.member.solicitation.application.useCases.SubmitMembershipSolicitation;
+import br.org.gam.api.member.solicitation.web.MembershipSolicitationController;
+import br.org.gam.api.member.web.MemberController;
+import br.org.gam.api.presence.application.useCases.GetPresence;
+import br.org.gam.api.rbac.accountRole.application.useCases.AddAccountRole;
+import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRole;
+import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoleAssignment;
+import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoles;
+import br.org.gam.api.rbac.accountRole.web.AccountRoleController;
+import br.org.gam.api.rbac.permission.application.useCases.GetPermission;
+import br.org.gam.api.rbac.permission.web.PermissionController;
+import br.org.gam.api.rbac.role.application.RoleEntityLoader;
+import br.org.gam.api.rbac.role.application.useCases.GetRole;
+import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissions;
+import br.org.gam.api.rbac.role.web.RoleController;
+import br.org.gam.api.security.jwt.JwtAuthFilter;
+import br.org.gam.api.security.refreshtoken.application.RefreshTokenService;
+import br.org.gam.api.security.web.AuthController;
+import br.org.gam.api.shared.openapi.OpenApiConfig;
+import br.org.gam.api.shared.web.PaginationWebConfiguration;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import org.springdoc.core.configuration.SpringDocConfiguration;
+import org.springdoc.core.configuration.SpringDocPageableConfiguration;
+import org.springdoc.core.configuration.SpringDocSecurityConfiguration;
+import org.springdoc.core.configuration.SpringDocSortConfiguration;
+import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springdoc.core.properties.SwaggerUiConfigProperties;
+import org.springdoc.core.properties.SwaggerUiOAuthProperties;
+import org.springdoc.webmvc.core.configuration.SpringDocWebMvcConfiguration;
+import org.springdoc.webmvc.ui.SwaggerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-abstract class AbstractOpenApiDocumentationApiIT extends BaseApiIntegrationTest {
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-    protected Map<String, Object> swaggerUiConfiguration() {
-        return jsonRequest()
-                .get("/api/openapi.json/swagger-config")
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getMap("$");
+@ActiveProfiles("test")
+@ContextConfiguration(classes = AbstractOpenApiDocumentationApiIT.OpenApiWebTestConfiguration.class)
+@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(
+        controllers = {
+                AccountController.class,
+                EventController.class,
+                GamLocationController.class,
+                MemberController.class,
+                MembershipSolicitationController.class,
+                AccountRoleController.class,
+                PermissionController.class,
+                RoleController.class,
+                AuthController.class
+        },
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+                SecurityFilterAutoConfiguration.class,
+                UserDetailsServiceAutoConfiguration.class
+        },
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthFilter.class)
+)
+@Import({
+        OpenApiConfig.class,
+        PaginationWebConfiguration.class,
+        AccountController.class,
+        EventController.class,
+        GamLocationController.class,
+        MemberController.class,
+        MembershipSolicitationController.class,
+        AccountRoleController.class,
+        PermissionController.class,
+        RoleController.class,
+        AuthController.class
+})
+@ImportAutoConfiguration({
+        SpringDocConfiguration.class,
+        SpringDocPageableConfiguration.class,
+        SpringDocSecurityConfiguration.class,
+        SpringDocSortConfiguration.class,
+        SpringDocConfigProperties.class,
+        SpringDocWebMvcConfiguration.class,
+        SwaggerConfig.class,
+        SwaggerUiConfigProperties.class,
+        SwaggerUiOAuthProperties.class
+})
+@MockitoBean(types = {
+        GetAccount.class,
+        GetCurrentAccountContext.class,
+        SearchAccounts.class,
+        CreateEvent.class,
+        GetEvent.class,
+        SearchEvents.class,
+        GetPresence.class,
+        CreateGamLocation.class,
+        GetGamLocations.class,
+        UpdateGamLocation.class,
+        RemoveGamLocation.class,
+        RegisterMemberWorkflow.class,
+        GetMember.class,
+        SearchMembers.class,
+        Activation.class,
+        SubmitMembershipSolicitation.class,
+        GetMembershipSolicitation.class,
+        SearchMembershipSolicitations.class,
+        ReviewMembershipSolicitation.class,
+        GetAccountRoles.class,
+        AddAccountRole.class,
+        DropAccountRole.class,
+        GetAccountRoleAssignment.class,
+        GetPermission.class,
+        GetRole.class,
+        GetRolePermissions.class,
+        RoleEntityLoader.class,
+        RegisterAccount.class,
+        LoginAccount.class,
+        RefreshTokenService.class
+})
+abstract class AbstractOpenApiDocumentationApiIT {
+
+    private static final TypeReference<Map<String, Object>> JSON_OBJECT = new TypeReference<>() {
+    };
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    protected void assertHtmlEndpointAvailable(String path) {
+        try {
+            MvcResult result = mockMvc.perform(get(path).accept(MediaType.TEXT_HTML)).andReturn();
+            if (result.getResponse().getStatus() / 100 == 3) {
+                String redirect = result.getResponse().getRedirectedUrl();
+                result = mockMvc.perform(get(redirect).accept(MediaType.TEXT_HTML)).andReturn();
+            }
+            status().isOk().match(result);
+            content().contentTypeCompatibleWith(MediaType.TEXT_HTML).match(result);
+        } catch (Exception exception) {
+            throw new AssertionError("Expected an available HTML endpoint at " + path, exception);
+        }
     }
 
-    protected ExtractableResponse<Response> openApiContract() {
-        return jsonRequest()
-                .get("/api/openapi.json")
-                .then()
-                .statusCode(200)
-                .extract();
+    protected Map<String, Object> swaggerUiConfiguration() {
+        return getJson("/api/openapi.json/swagger-config");
+    }
+
+    protected OpenApiResponse openApiContract() {
+        return new OpenApiResponse(getJson("/api/openapi.json"));
+    }
+
+    private Map<String, Object> getJson(String path) {
+        try {
+            MvcResult result = mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                    .andReturn();
+            return objectMapper.readValue(result.getResponse().getContentAsByteArray(), JSON_OBJECT);
+        } catch (Exception exception) {
+            throw new AssertionError("Expected an available JSON endpoint at " + path, exception);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -39,5 +213,26 @@ abstract class AbstractOpenApiDocumentationApiIT extends BaseApiIntegrationTest 
     @SuppressWarnings("unchecked")
     protected List<String> strings(Map<String, Object> source, String property) {
         return (List<String>) source.get(property);
+    }
+
+    protected record OpenApiResponse(Map<String, Object> body) {
+
+        OpenApiJsonPath jsonPath() {
+            return new OpenApiJsonPath(body);
+        }
+    }
+
+    protected record OpenApiJsonPath(Map<String, Object> body) {
+
+        Map<String, Object> getMap(String path) {
+            if (!"$".equals(path)) {
+                throw new IllegalArgumentException("Only the OpenAPI document root is supported");
+            }
+            return body;
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class OpenApiWebTestConfiguration {
     }
 }
