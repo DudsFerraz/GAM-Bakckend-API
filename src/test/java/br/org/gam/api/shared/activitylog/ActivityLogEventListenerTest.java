@@ -99,7 +99,7 @@ class ActivityLogEventListenerTest {
     @DisplayName("create activities -> create activity logs")
     void createActivitiesShouldMapToCreateActivityLogs() {
         UUID eventId = UUID.randomUUID();
-        UUID locationId = UUID.randomUUID();
+        UUID gamLocationId = UUID.randomUUID();
         UUID requiredPermissionId = UUID.randomUUID();
 
         listener.handle(new EventCreatedActivity(
@@ -107,7 +107,7 @@ class ActivityLogEventListenerTest {
                 "Sunday Mass",
                 EventType.MISSA,
                 EventStatus.SCHEDULED,
-                locationId,
+                gamLocationId,
                 requiredPermissionId
         ));
         listener.handle(new MissaCreatedActivity(eventId, eventId));
@@ -123,7 +123,7 @@ class ActivityLogEventListenerTest {
                         "eventId", eventId,
                         "eventType", EventType.MISSA.name(),
                         "status", EventStatus.SCHEDULED.name(),
-                        "locationId", locationId,
+                        "gamLocationId", gamLocationId,
                         "requiredPermissionId", requiredPermissionId
                 )
         );

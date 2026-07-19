@@ -6,8 +6,8 @@ import br.org.gam.api.event.domain.EventStatus;
 import br.org.gam.api.event.domain.EventType;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.event.persistence.EventRepository;
-import br.org.gam.api.location.application.LocationEntityLoader;
-import br.org.gam.api.location.persistence.LocationEntity;
+import br.org.gam.api.gamLocation.application.GamLocationEntityLoader;
+import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
 import br.org.gam.api.rbac.permission.application.PermissionEntityLoader;
 import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
@@ -38,7 +38,7 @@ class CreateEventTest {
     private EventRepository eventRepository;
 
     @Mock
-    private LocationEntityLoader getLocationInstanceService;
+    private GamLocationEntityLoader gamLocationEntityLoader;
 
     @Mock
     private EventMapper eventMapper;
@@ -65,14 +65,14 @@ class CreateEventTest {
             Instant beginDate = Instant.now().plusSeconds(3600);
             Instant endDate = beginDate.plusSeconds(3600);
             CreateEventDTO dto = new CreateEventDTO("  Sunday Mass  ", null, locationId, permissionId, beginDate, endDate, EventType.MISSA);
-            LocationEntity location = new LocationEntity();
+            GamLocationEntity location = new GamLocationEntity();
             PermissionEntity permission = new PermissionEntity();
             EventEntity mappedEntity = new EventEntity();
             EventEntity savedEntity = new EventEntity();
             savedEntity.setTitle("Sunday Mass");
             CreateEventRDTO expectedResponse = new CreateEventRDTO(UUID.randomUUID());
 
-            when(getLocationInstanceService.requiredById(locationId)).thenReturn(location);
+            when(gamLocationEntityLoader.requiredByIdForUpdate(locationId)).thenReturn(location);
             when(getPermissionInstance.requiredById(permissionId)).thenReturn(permission);
             when(eventMapper.domainToEntity(any(Event.class))).thenReturn(mappedEntity);
             when(eventRepository.save(mappedEntity)).thenReturn(savedEntity);

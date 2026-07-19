@@ -54,6 +54,9 @@ class RbacCatalogPersistenceIT extends PostgreSQLIntegrationTest {
             "EVENT_GET_MEMBER",
             "EVENT_GET_COORD",
             "EVENT_MANAGE",
+            "GAM_LOCATION_GET",
+            "GAM_LOCATION_CREATE",
+            "GAM_LOCATION_MANAGE",
             "PRESENCES_SEARCH",
             "ROLE_GET",
             "PERMISSION_GET"
@@ -64,7 +67,8 @@ class RbacCatalogPersistenceIT extends PostgreSQLIntegrationTest {
             "ACCOUNT_GET",
             "EVENT_SEARCH",
             "EVENT_GET_PRESENCES",
-            "EVENT_GET_MEMBER"
+            "EVENT_GET_MEMBER",
+            "GAM_LOCATION_GET"
     );
 
     @Autowired

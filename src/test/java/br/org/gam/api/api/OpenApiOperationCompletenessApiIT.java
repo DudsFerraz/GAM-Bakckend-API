@@ -20,7 +20,7 @@ class OpenApiOperationCompletenessApiIT extends AbstractOpenApiDocumentationApiI
 
     private static final Set<String> HTTP_METHODS = Set.of("get", "post", "put", "patch", "delete");
     private static final Set<String> CONSUMER_TAGS = Set.of(
-            "Authentication", "Accounts", "Members", "Membership Solicitations", "Events", "Locations", "Presences", "RBAC"
+            "Authentication", "Accounts", "Members", "Membership Solicitations", "Events", "GamLocations", "Presences", "RBAC"
     );
 
     @Test

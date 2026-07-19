@@ -1,6 +1,5 @@
 package br.org.gam.api.api;
 
-import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.testing.annotation.ApiTest;
 import br.org.gam.api.testing.annotation.IntegrationTest;
 import br.org.gam.api.testing.annotation.SecurityTest;
@@ -11,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -22,6 +23,9 @@ import static org.hamcrest.Matchers.notNullValue;
 @SecurityTest
 @DisplayName("API - Resource Security")
 class ResourceSecurityApiIT extends BaseApiIntegrationTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("protected endpoint without token -> HTTP 401")
@@ -64,12 +68,13 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     @Test
     @DisplayName("missing permission -> HTTP 403")
     void missingPermissionShouldReturnForbidden() {
+        AuthSession coord = registerAndLogin("COORD");
+        UUID gamLocationId = createGamLocationForResourceSecurity(coord, "Forbidden Event Location");
         AuthSession member = registerAndLogin("MEMBER");
-        UUID locationId = createLocation(member, "Forbidden Event Location");
         UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
 
         authenticatedJsonRequest(member)
-                .body(eventPayload("Forbidden Event", locationId, requiredPermissionId))
+                .body(eventPayload("Forbidden Event", gamLocationId, requiredPermissionId))
                 .post("/events")
                 .then()
                 .statusCode(403)
@@ -91,33 +96,33 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("valid location request -> HTTP 201, Location header, and persisted row")
-    void validLocationRequestShouldReturnCreatedPayloadAndPersistRow() {
-        AuthSession member = registerAndLogin("MEMBER");
+    @DisplayName("valid GamLocation request -> HTTP 201, Location header, and persisted row")
+    void validGamLocationRequestShouldReturnCreatedPayloadAndPersistRow() {
+        AuthSession coord = registerAndLogin("COORD");
 
-        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(member))
-                .body(locationPayload("API Location"))
-                .post("/locations")
+        ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(coord))
+                .body(gamLocationPayload("API GamLocation"))
+                .post("/gam-locations")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())
                 .extract();
 
-        UUID locationId = UUID.fromString(response.path("id"));
-        assertPublicApiLocation(response, "/locations/" + locationId);
-        trackLocation(locationId);
-        assertThat(locationExists(locationId)).isTrue();
+        UUID gamLocationId = UUID.fromString(response.path("id"));
+        assertPublicApiLocation(response, "/gam-locations/" + gamLocationId);
+        trackGamLocation(gamLocationId);
+        assertThat(gamLocationExists(gamLocationId)).isTrue();
     }
 
     @Test
     @DisplayName("valid event request with permission -> HTTP 201 and persisted row")
     void validEventRequestWithPermissionShouldReturnCreatedPayloadAndPersistRow() {
         AuthSession coord = registerAndLogin("COORD");
-        UUID locationId = createLocation(coord, "API Event Location");
+        UUID gamLocationId = createGamLocationForResourceSecurity(coord, "API Event Location");
         UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
 
         ExtractableResponse<Response> response = withUntrustedForwardingHeaders(authenticatedJsonRequest(coord))
-                .body(eventPayload("API Event", locationId, requiredPermissionId))
+                .body(eventPayload("API Event", gamLocationId, requiredPermissionId))
                 .post("/events")
                 .then()
                 .statusCode(201)
@@ -128,15 +133,28 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
         assertPublicApiLocation(response, "/events/" + eventId);
         trackEvent(eventId);
         assertThat(eventExists(eventId)).isTrue();
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT metadata ->> 'gamLocationId' FROM activity_logs "
+                        + "WHERE action = 'EVENT_CREATED' AND target_id = ?",
+                String.class,
+                eventId
+        )).isEqualTo(gamLocationId.toString());
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM activity_logs "
+                        + "WHERE action = 'EVENT_CREATED' AND target_id = ? "
+                        + "AND jsonb_exists(metadata, 'locationId')",
+                Long.class,
+                eventId
+        )).isZero();
     }
 
     @Test
     @DisplayName("invalid event payload -> HTTP 400")
     void invalidEventPayloadShouldReturnBadRequest() {
         AuthSession coord = registerAndLogin("COORD");
-        UUID locationId = createLocation(coord, "Invalid Event Location");
+        UUID gamLocationId = createGamLocationForResourceSecurity(coord, "Invalid Event Location");
         UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
-        Map<String, Object> payload = eventPayload("Invalid Event", locationId, requiredPermissionId);
+        Map<String, Object> payload = eventPayload("Invalid Event", gamLocationId, requiredPermissionId);
         payload = new java.util.HashMap<>(payload);
         payload.put("title", "");
 
@@ -147,5 +165,24 @@ class ResourceSecurityApiIT extends BaseApiIntegrationTest {
                 .statusCode(400)
                 .body("status", equalTo(400))
                 .body("message", containsString("Validation error"));
+    }
+
+    @Test
+    @DisplayName("client-supplied Event type -> HTTP 400")
+    void clientSuppliedEventTypeShouldReturnBadRequest() {
+        AuthSession coord = registerAndLogin("COORD");
+        UUID gamLocationId = createGamLocationForResourceSecurity(coord, "Client Type Location");
+        UUID requiredPermissionId = permissionId("EVENT_GET_COORD");
+        Map<String, Object> payload = new java.util.HashMap<>(
+                eventPayload("Client Type Event", gamLocationId, requiredPermissionId)
+        );
+        payload.put("type", "MISSA");
+
+        authenticatedJsonRequest(coord)
+                .body(payload)
+                .post("/events")
+                .then()
+                .statusCode(400)
+                .body("status", equalTo(400));
     }
 }

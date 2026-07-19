@@ -321,6 +321,7 @@
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
 						<configuration>
+							<maxAttempts>360</maxAttempts>
 							<jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
 							<arguments>
 								<argument>--server.port=8085</argument>

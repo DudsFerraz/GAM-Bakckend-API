@@ -13,6 +13,8 @@ import br.org.gam.api.event.domain.EventType;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.event.persistence.EventRepository;
 import br.org.gam.api.event.persistence.EventSecuritySpecification;
+import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
+import br.org.gam.api.gamLocation.persistence.GamLocationRepository;
 import br.org.gam.api.member.application.search.MemberSearchFilterConverter;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.domain.MemberStatus;
@@ -63,6 +65,9 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
     private EventRepository eventRepository;
 
     @Autowired
+    private GamLocationRepository gamLocationRepository;
+
+    @Autowired
     private PermissionRepository permissionRepository;
 
     @Autowired
@@ -87,6 +92,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     private final List<UUID> specificationEventIds = new ArrayList<>();
+    private final List<UUID> specificationGamLocationIds = new ArrayList<>();
     private final List<UUID> specificationPermissionIds = new ArrayList<>();
 
     @AfterEach
@@ -94,10 +100,14 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         for (UUID eventId : specificationEventIds) {
             jdbcTemplate.update("DELETE FROM events WHERE id = ?", eventId);
         }
+        for (UUID gamLocationId : specificationGamLocationIds) {
+            jdbcTemplate.update("DELETE FROM gam_locations WHERE id = ?", gamLocationId);
+        }
         for (UUID permissionId : specificationPermissionIds) {
             jdbcTemplate.update("DELETE FROM permissions WHERE id = ?", permissionId);
         }
         specificationEventIds.clear();
+        specificationGamLocationIds.clear();
         specificationPermissionIds.clear();
     }
 
@@ -266,8 +276,10 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         @Test
         @DisplayName("event filter converter and specification builder -> id filter matches persisted row")
         void eventFilterConverterAndSpecificationBuilderShouldQueryById() {
-            EventEntity target = inTransaction(() -> eventRepository.saveAndFlush(event("Target Without Location", null)));
-            EventEntity other = inTransaction(() -> eventRepository.saveAndFlush(event("Other Without Location", null)));
+            EventEntity target = inTransaction(() -> eventRepository.saveAndFlush(event("Target Event", null)));
+            specificationEventIds.add(target.getId());
+            EventEntity other = inTransaction(() -> eventRepository.saveAndFlush(event("Other Event", null)));
+            specificationEventIds.add(other.getId());
 
             Specification<EventEntity> specification = eventSearchFilterConverter.convert(new SearchDTO(
                     List.of(new SpecificationFilterDTO("id", target.getId().toString(), ComparationMethods.EQUALS))
@@ -318,11 +330,28 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
 
     private EventEntity event(String title, PermissionEntity requiredPermission) {
         Instant begin = Instant.now().plusSeconds(7200);
+        UUID gamLocationId = UUIDGenerator.generateUUIDV7();
+        String locationName = "Specification location " + gamLocationId;
+        GamLocationEntity gamLocation = new GamLocationEntity();
+        gamLocation.setId(gamLocationId);
+        gamLocation.setName(locationName);
+        gamLocation.setCity("Campinas");
+        gamLocation.setState("SP");
+        gamLocation.setCountryCode("BR");
+        gamLocation.setIdentityName(locationName.toLowerCase(java.util.Locale.ROOT));
+        gamLocation.setIdentityStreet("");
+        gamLocation.setIdentityCity("campinas");
+        gamLocation.setIdentityState("sp");
+        gamLocation.setIdentityPostalCode("");
+        gamLocation.setIdentityCountryCode("br");
+        gamLocationRepository.saveAndFlush(gamLocation);
+        specificationGamLocationIds.add(gamLocationId);
 
         EventEntity event = new EventEntity();
         event.setId(UUIDGenerator.generateUUIDV7());
         event.setTitle(title + " " + UUID.randomUUID());
         event.setDescription("Specification persistence event");
+        event.setLocation(gamLocation);
         event.setRequiredPermission(requiredPermission);
         event.setType(EventType.GENERIC);
         event.setStatus(EventStatus.SCHEDULED);

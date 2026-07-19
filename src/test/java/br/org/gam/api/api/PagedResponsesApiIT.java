@@ -24,7 +24,7 @@ class PagedResponsesApiIT extends BaseApiIntegrationTest {
         AuthSession session = registerAndLogin("MEMBER");
 
         ExtractableResponse<Response> response = authenticatedJsonRequest(session)
-                .get("/locations?page=0")
+                .get("/gam-locations?page=0")
                 .then()
                 .statusCode(200)
                 .extract();
@@ -45,7 +45,7 @@ class PagedResponsesApiIT extends BaseApiIntegrationTest {
         AuthSession session = registerAndLogin("MEMBER");
 
         authenticatedJsonRequest(session)
-                .get("/locations?page=0&size=101")
+                .get("/gam-locations?page=0&size=101")
                 .then()
                 .statusCode(400);
     }
@@ -56,7 +56,7 @@ class PagedResponsesApiIT extends BaseApiIntegrationTest {
         AuthSession session = registerAndLogin("MEMBER");
 
         authenticatedJsonRequest(session)
-                .get("/locations?page=0&size=20&sort=internalPersistenceField,asc")
+                .get("/gam-locations?page=0&size=20&sort=internalPersistenceField,asc")
                 .then()
                 .statusCode(400);
     }

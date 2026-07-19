@@ -10,9 +10,9 @@ import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.domain.EventType;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.event.web.EventController;
-import br.org.gam.api.location.application.LocationRDTO;
-import br.org.gam.api.location.persistence.LocationEntity;
-import br.org.gam.api.location.web.LocationController;
+import br.org.gam.api.gamLocation.application.GamLocationRDTO;
+import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
+import br.org.gam.api.gamLocation.web.GamLocationController;
 import br.org.gam.api.member.application.MemberRDTO;
 import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.persistence.MemberEntity;
@@ -109,7 +109,7 @@ class UUIDIdentityTest {
                 AccountEntity.class,
                 Event.class,
                 EventEntity.class,
-                LocationEntity.class,
+                GamLocationEntity.class,
                 Member.class,
                 MemberEntity.class,
                 Oratoriano.class,
@@ -121,7 +121,7 @@ class UUIDIdentityTest {
         return Stream.of(
                 AccountRDTO.class,
                 EventRDTO.class,
-                LocationRDTO.class,
+                GamLocationRDTO.class,
                 MemberRDTO.class
         );
     }
@@ -130,7 +130,7 @@ class UUIDIdentityTest {
         return Stream.of(
                 Arguments.of(AccountController.class, "getAccountById"),
                 Arguments.of(EventController.class, "getEventById"),
-                Arguments.of(LocationController.class, "getLocationById"),
+                Arguments.of(GamLocationController.class, "getById"),
                 Arguments.of(MemberController.class, "getMemberById")
         );
     }

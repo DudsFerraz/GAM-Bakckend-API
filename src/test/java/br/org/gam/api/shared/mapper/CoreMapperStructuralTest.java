@@ -1,8 +1,8 @@
 package br.org.gam.api.shared.mapper;
 
-import br.org.gam.api.location.application.LocationMapper;
-import br.org.gam.api.location.application.LocationRDTO;
-import br.org.gam.api.location.persistence.LocationEntity;
+import br.org.gam.api.gamLocation.application.GamLocationMapper;
+import br.org.gam.api.gamLocation.application.GamLocationRDTO;
+import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
 import br.org.gam.api.rbac.permission.application.PermissionMapper;
 import br.org.gam.api.rbac.permission.application.PermissionRDTO;
 import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
@@ -25,7 +25,7 @@ class CoreMapperStructuralTest {
 
     private final PermissionMapper permissionMapper = Mappers.getMapper(PermissionMapper.class);
     private final RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
-    private final LocationMapper locationMapper = Mappers.getMapper(LocationMapper.class);
+    private final GamLocationMapper gamLocationMapper = Mappers.getMapper(GamLocationMapper.class);
 
     @Nested
     @StructuralTest
@@ -63,20 +63,20 @@ class CoreMapperStructuralTest {
         }
 
         @Test
-        @DisplayName("location entity -> response DTO")
-        void locationEntityShouldMapToResponseDto() {
-            LocationEntity entity = new LocationEntity();
+        @DisplayName("GamLocation entity -> response DTO")
+        void gamLocationEntityShouldMapToResponseDto() {
+            GamLocationEntity entity = new GamLocationEntity();
             entity.setId(UUID.randomUUID());
             entity.setName("Parish Hall");
             entity.setStreet("Street");
             entity.setCity("Campinas");
             entity.setState("SP");
             entity.setPostalCode("13000-000");
-            entity.setCountryCode("BRA");
+            entity.setCountryCode("BR");
             entity.setLatitude(new java.math.BigDecimal("-22.90684670"));
             entity.setLongitude(new java.math.BigDecimal("-47.06158810"));
 
-            LocationRDTO dto = locationMapper.entityToRDTO(entity);
+            GamLocationRDTO dto = gamLocationMapper.entityToRDTO(entity);
 
             assertThat(dto.id()).isEqualTo(entity.getId());
             assertThat(dto.name()).isEqualTo("Parish Hall");
@@ -84,7 +84,7 @@ class CoreMapperStructuralTest {
             assertThat(dto.city()).isEqualTo("Campinas");
             assertThat(dto.state()).isEqualTo("SP");
             assertThat(dto.postalCode()).isEqualTo("13000-000");
-            assertThat(dto.countryCode()).isEqualTo("BRA");
+            assertThat(dto.countryCode()).isEqualTo("BR");
             assertThat(dto.latitude()).isEqualTo(entity.getLatitude());
             assertThat(dto.longitude()).isEqualTo(entity.getLongitude());
         }

@@ -450,15 +450,17 @@ class RbacCatalogApiIT extends BaseApiIntegrationTest {
 
     private UUID insertEvent(UUID requiredPermissionId) {
         UUID eventId = UUID.randomUUID();
+        UUID gamLocationId = insertGamLocation();
         Instant begin = Instant.now().plusSeconds(3600);
         jdbcTemplate.update(
                 "INSERT INTO events "
-                        + "(id, title, description, location_id, required_permission_id, type, status, "
+                        + "(id, title, description, gam_location_id, required_permission_id, type, status, "
                         + "begin_date, end_date, created_at, updated_at) "
-                        + "VALUES (?, ?, ?, NULL, ?, CAST(? AS event_type_enum), CAST(? AS event_status_enum), ?, ?, ?, ?)",
+                        + "VALUES (?, ?, ?, ?, ?, CAST(? AS event_type_enum), CAST(? AS event_status_enum), ?, ?, ?, ?)",
                 eventId,
                 "RBAC catalog event " + eventId,
                 "RBAC catalog visibility fixture",
+                gamLocationId,
                 requiredPermissionId,
                 "GENERIC",
                 "SCHEDULED",
@@ -469,6 +471,34 @@ class RbacCatalogApiIT extends BaseApiIntegrationTest {
         );
         trackEvent(eventId);
         return eventId;
+    }
+
+    private UUID insertGamLocation() {
+        UUID id = UUID.randomUUID();
+        String name = "RBAC catalog location " + id;
+        String identityName = "rbac catalog location " + id;
+        Timestamp now = Timestamp.from(Instant.now());
+
+        jdbcTemplate.update(
+                "INSERT INTO gam_locations "
+                        + "(id, name, street, city, state, postal_code, country_code, "
+                        + "identity_name, identity_street, identity_city, identity_state, "
+                        + "identity_postal_code, identity_country_code, created_at, updated_at) "
+                        + "VALUES (?, ?, NULL, ?, ?, NULL, ?, ?, '', ?, ?, '', ?, ?, ?)",
+                id,
+                name,
+                "Campinas",
+                "SP",
+                "BR",
+                identityName,
+                "campinas",
+                "sp",
+                "br",
+                now,
+                now
+        );
+        trackGamLocation(id);
+        return id;
     }
 
     private void assertRoleRecord(Map<String, Object> role, UUID id, String name, boolean systemManaged) {

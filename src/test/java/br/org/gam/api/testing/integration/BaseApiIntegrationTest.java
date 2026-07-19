@@ -4,7 +4,7 @@ import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.event.persistence.EventRepository;
-import br.org.gam.api.location.persistence.LocationRepository;
+import br.org.gam.api.gamLocation.persistence.GamLocationRepository;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
@@ -54,7 +54,7 @@ public abstract class BaseApiIntegrationTest {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(POSTGRES_IMAGE);
 
     private final Set<UUID> createdAccountIds = new LinkedHashSet<>();
-    private final List<UUID> createdLocationIds = new ArrayList<>();
+    private final List<UUID> createdGamLocationIds = new ArrayList<>();
     private final List<UUID> createdEventIds = new ArrayList<>();
 
     @LocalServerPort
@@ -73,7 +73,7 @@ public abstract class BaseApiIntegrationTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    private LocationRepository locationRepository;
+    private GamLocationRepository gamLocationRepository;
 
     @Autowired
     private EventRepository eventRepository;
@@ -111,8 +111,8 @@ public abstract class BaseApiIntegrationTest {
             jdbcTemplate.update("DELETE FROM events WHERE id = ?", createdEventIds.get(i));
         }
 
-        for (int i = createdLocationIds.size() - 1; i >= 0; i--) {
-            jdbcTemplate.update("DELETE FROM locations WHERE id = ?", createdLocationIds.get(i));
+        for (int i = createdGamLocationIds.size() - 1; i >= 0; i--) {
+            jdbcTemplate.update("DELETE FROM gam_locations WHERE id = ?", createdGamLocationIds.get(i));
         }
 
         for (UUID accountId : createdAccountIds) {
@@ -122,7 +122,7 @@ public abstract class BaseApiIntegrationTest {
         }
 
         createdEventIds.clear();
-        createdLocationIds.clear();
+        createdGamLocationIds.clear();
         createdAccountIds.clear();
         RestAssured.reset();
     }
@@ -267,7 +267,7 @@ public abstract class BaseApiIntegrationTest {
         );
     }
 
-    protected Map<String, Object> locationPayload(String name) {
+    protected Map<String, Object> gamLocationPayload(String name) {
         return Map.of(
                 "name", name,
                 "street", "Rua API, 123",
@@ -278,37 +278,36 @@ public abstract class BaseApiIntegrationTest {
         );
     }
 
-    protected Map<String, Object> eventPayload(String title, UUID locationId, UUID permissionId) {
+    protected Map<String, Object> eventPayload(String title, UUID gamLocationId, UUID permissionId) {
         return Map.of(
                 "title", title,
                 "description", "API integration event",
-                "locationId", locationId.toString(),
+                "gamLocationId", gamLocationId.toString(),
                 "requiredPermissionId", permissionId.toString(),
                 "beginDate", Instant.now().plusSeconds(3600).toString(),
-                "endDate", Instant.now().plusSeconds(7200).toString(),
-                "type", "GENERIC"
+                "endDate", Instant.now().plusSeconds(7200).toString()
         );
     }
 
-    protected UUID createLocation(AuthSession session, String name) {
+    protected UUID createGamLocationForResourceSecurity(AuthSession session, String name) {
         ExtractableResponse<Response> response = authenticatedJsonRequest(session)
-                .body(locationPayload(name))
-                .post("/locations")
+                .body(gamLocationPayload(name))
+                .post("/gam-locations")
                 .then()
                 .statusCode(201)
                 .extract();
 
-        UUID locationId = UUID.fromString(response.path("id"));
-        createdLocationIds.add(locationId);
-        return locationId;
+        UUID gamLocationId = UUID.fromString(response.path("id"));
+        createdGamLocationIds.add(gamLocationId);
+        return gamLocationId;
     }
 
     protected void trackEvent(UUID eventId) {
         createdEventIds.add(eventId);
     }
 
-    protected void trackLocation(UUID locationId) {
-        createdLocationIds.add(locationId);
+    protected void trackGamLocation(UUID gamLocationId) {
+        createdGamLocationIds.add(gamLocationId);
     }
 
     protected void trackAccount(UUID accountId) {
@@ -340,8 +339,8 @@ public abstract class BaseApiIntegrationTest {
         return eventRepository.findById(eventId).isPresent();
     }
 
-    protected boolean locationExists(UUID locationId) {
-        return locationRepository.findById(locationId).isPresent();
+    protected boolean gamLocationExists(UUID gamLocationId) {
+        return gamLocationRepository.findById(gamLocationId).isPresent();
     }
 
     public record AuthSession(

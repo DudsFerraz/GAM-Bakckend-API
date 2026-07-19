@@ -10,6 +10,8 @@ import br.org.gam.api.event.domain.EventStatus;
 import br.org.gam.api.event.domain.EventType;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.event.persistence.EventRepository;
+import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
+import br.org.gam.api.gamLocation.persistence.GamLocationRepository;
 import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.member.persistence.MemberRepository;
@@ -49,6 +51,9 @@ class PersistenceRepositoryIT extends PostgreSQLIntegrationTest {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private GamLocationRepository gamLocationRepository;
 
     @Autowired
     private PresenceRepository presenceRepository;
@@ -177,11 +182,27 @@ class PersistenceRepositoryIT extends PostgreSQLIntegrationTest {
 
     private EventEntity event(String title) {
         Instant begin = Instant.now().plusSeconds(3600);
+        UUID gamLocationId = UUIDGenerator.generateUUIDV7();
+        String locationName = "Repository location " + gamLocationId;
+        GamLocationEntity gamLocation = new GamLocationEntity();
+        gamLocation.setId(gamLocationId);
+        gamLocation.setName(locationName);
+        gamLocation.setCity("Campinas");
+        gamLocation.setState("SP");
+        gamLocation.setCountryCode("BR");
+        gamLocation.setIdentityName(locationName.toLowerCase(java.util.Locale.ROOT));
+        gamLocation.setIdentityStreet("");
+        gamLocation.setIdentityCity("campinas");
+        gamLocation.setIdentityState("sp");
+        gamLocation.setIdentityPostalCode("");
+        gamLocation.setIdentityCountryCode("br");
+        gamLocationRepository.saveAndFlush(gamLocation);
 
         EventEntity event = new EventEntity();
         event.setId(UUIDGenerator.generateUUIDV7());
         event.setTitle(title + " " + UUID.randomUUID());
         event.setDescription("Persistence integration event");
+        event.setLocation(gamLocation);
         event.setType(EventType.GENERIC);
         event.setStatus(EventStatus.SCHEDULED);
         event.setBeginDate(begin);
