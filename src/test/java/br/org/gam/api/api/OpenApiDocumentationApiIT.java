@@ -7,6 +7,7 @@ import br.org.gam.api.testing.annotation.SecurityTest;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,131 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SecurityTest
 @DisplayName("API - OpenAPI documentation contract")
 class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
+
+    @Test
+    @DisplayName("REQ-EVENT-007, REQ-EVENT-012, REQ-EVENT-019 and REQ-PRESENCE-006 - Event mutation operations -> exact success statuses and Location headers")
+    void eventMutationOperationsShouldDocumentExactSuccessContracts() {
+        Map<String, Object> contract = openApiContract().body();
+        Map<String, Object> paths = object(contract, "paths");
+        Map<String, Object> createResponses = object(object(object(paths, "/events"), "post"), "responses");
+        Map<String, Object> deleteResponses = object(object(object(paths, "/events/{id}"), "delete"), "responses");
+        Map<String, Object> registrationResponses = object(
+                object(object(paths, "/events/{eventId}/presences"), "post"), "responses"
+        );
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createResponses).as("create Event responses").containsKey("201");
+        assertLocationHeader(softly, createResponses, "201", "create Event");
+
+        softly.assertThat(deleteResponses).as("delete Event responses").containsKey("204");
+        Map<String, Object> deleted = object(deleteResponses, "204");
+        if (deleted != null) {
+            softly.assertThat(deleted).as("delete Event 204 response").doesNotContainKey("content");
+        }
+
+        softly.assertThat(registrationResponses).as("register Presence responses").containsKey("201");
+        assertLocationHeader(softly, registrationResponses, "201", "register Presence");
+        softly.assertAll();
+    }
+
+    @Test
+    @DisplayName("REQ-PRESENCE-006 and REQ-PRESENCE-007 - registration success schema -> complete compact Presence")
+    void presenceRegistrationShouldDocumentCompleteResponseSchema() {
+        Map<String, Object> contract = openApiContract().body();
+        Map<String, Object> paths = object(contract, "paths");
+        Map<String, Object> registration = object(
+                object(paths, "/events/{eventId}/presences"), "post"
+        );
+        Map<String, Object> created = object(object(registration, "responses"), "201");
+        Map<String, Object> content = object(created, "content");
+        assertThat(content).as("Presence registration 201 content").isNotNull();
+        Map<String, Object> json = content.containsKey("application/json")
+                ? object(content, "application/json")
+                : object(content, "*/*");
+        assertThat(json).as("Presence registration 201 response schema").isNotNull();
+        Map<String, Object> presenceSchema = resolveSchema(contract, object(json, "schema"));
+        Map<String, Object> presenceProperties = object(presenceSchema, "properties");
+
+        assertThat(strings(presenceSchema, "required"))
+                .containsExactlyInAnyOrder("id", "member", "event", "observations", "registeredAt");
+        assertThat(presenceProperties)
+                .containsOnlyKeys("id", "member", "event", "observations", "registeredAt");
+        Map<String, Object> memberSchema = resolveSchema(contract, object(presenceProperties, "member"));
+        Map<String, Object> eventSchema = resolveSchema(contract, object(presenceProperties, "event"));
+        assertThat(object(memberSchema, "properties"))
+                .containsOnlyKeys("id", "firstName", "surname", "status");
+        assertThat(object(eventSchema, "properties"))
+                .containsOnlyKeys("id", "title", "beginDate", "endDate", "type", "status");
+        assertThat(object(presenceProperties, "registeredAt"))
+                .containsEntry("type", "string")
+                .containsEntry("format", "date-time");
+    }
+
+    @Test
+    @DisplayName("REQ-EVENT-010 - Event search OpenAPI contract -> effective-status sort and beginDate/id default")
+    void eventSearchShouldDocumentExactSortingContract() {
+        Map<String, Object> contract = openApiContract().body();
+        Map<String, Object> paths = object(contract, "paths");
+        Map<String, Object> searchEvents = object(object(paths, "/events/search"), "post");
+        Map<String, Object> sort = objects(searchEvents, "parameters").stream()
+                .filter(parameter -> "sort".equals(parameter.get("name")))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(object(sort, "schema").get("default"))
+                .isEqualTo(List.of("beginDate,asc", "id,asc"));
+        assertThat(sort.get("description").toString())
+                .contains("title", "beginDate", "endDate", "type", "status")
+                .containsIgnoringCase("effective status")
+                .containsIgnoringCase("default")
+                .contains("beginDate", "id");
+    }
+
+    @Test
+    @DisplayName("REQ-EVENT-011/012/017/019 and REQ-PRESENCE-003/005 - conflict responses -> operation-specific codes and details")
+    void eventAndPresenceConflictsShouldBeDocumentedPerOperation() {
+        Map<String, Object> contract = openApiContract().body();
+        Map<String, Object> paths = object(contract, "paths");
+        Map<String, Object> lockConflict = object(
+                object(object(object(paths, "/events/{id}/lock"), "patch"), "responses"), "409"
+        );
+        Map<String, Object> deletionConflict = object(
+                object(object(object(paths, "/events/{id}"), "delete"), "responses"), "409"
+        );
+        Map<String, Object> registrationConflict = object(
+                object(object(object(paths, "/events/{eventId}/presences"), "post"), "responses"), "409"
+        );
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(lockConflict.toString()).as("lock Event 409 documentation")
+                .contains(
+                        "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
+                        "EVENT_TYPE_NOT_MANAGEABLE",
+                        "eventId",
+                        "currentStatus",
+                        "requestedStatus"
+                );
+        softly.assertThat(deletionConflict.toString()).as("delete Event 409 documentation")
+                .contains(
+                        "EVENT_HAS_PRESENCES",
+                        "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
+                        "EVENT_TYPE_NOT_MANAGEABLE",
+                        "eventId",
+                        "activePresenceCount"
+                );
+        softly.assertThat(registrationConflict.toString()).as("register Presence 409 documentation")
+                .contains(
+                        "PRESENCE_ALREADY_REGISTERED",
+                        "PRESENCE_REGISTRATION_NOT_ALLOWED",
+                        "eventId",
+                        "memberId",
+                        "presenceId",
+                        "status",
+                        "beginDate",
+                        "evaluationInstant"
+                );
+        softly.assertAll();
+    }
 
     @Test
     @DisplayName("REQ-OPENAPI-002 - anonymous developer -> Swagger UI is available at the public documentation route")
@@ -341,5 +467,22 @@ class OpenApiDocumentationApiIT extends AbstractOpenApiDocumentationApiIT {
         return object(object(contract, "components"), "headers").get(headerName) instanceof Map<?, ?> resolved
                 ? (Map<String, Object>) resolved
                 : Map.of();
+    }
+
+    private void assertLocationHeader(
+            SoftAssertions softly,
+            Map<String, Object> responses,
+            String status,
+            String operation
+    ) {
+        Map<String, Object> response = object(responses, status);
+        if (response == null) {
+            return;
+        }
+        Map<String, Object> headers = object(response, "headers");
+        softly.assertThat(headers).as("%s %s response headers", operation, status).isNotNull();
+        if (headers != null) {
+            softly.assertThat(headers).as("%s %s response headers", operation, status).containsKey("Location");
+        }
     }
 }
