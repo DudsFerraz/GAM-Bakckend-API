@@ -1,6 +1,5 @@
 package br.org.gam.api.account.application.useCases.loginAccount;
 
-import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.security.application.TokensDTO;
 import br.org.gam.api.security.jwt.JwtService;

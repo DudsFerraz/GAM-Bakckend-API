@@ -1,6 +1,5 @@
 package br.org.gam.api.event.application;
 
-import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.rbac.permission.persistence.PermissionEntity;

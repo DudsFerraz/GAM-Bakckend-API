@@ -2,7 +2,6 @@ package br.org.gam.api.member.persistence;
 
 import br.org.gam.api.shared.persistence.BaseRepository;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;

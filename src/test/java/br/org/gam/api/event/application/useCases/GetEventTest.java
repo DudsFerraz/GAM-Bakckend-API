@@ -4,7 +4,6 @@ import br.org.gam.api.event.application.EventMapper;
 import br.org.gam.api.event.application.EventRDTO;
 import br.org.gam.api.event.application.EventSecurity;
 import br.org.gam.api.event.application.EventEntityLoader;
-import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.domain.EventStatus;
 import br.org.gam.api.event.domain.EventType;
 import br.org.gam.api.event.persistence.EventEntity;

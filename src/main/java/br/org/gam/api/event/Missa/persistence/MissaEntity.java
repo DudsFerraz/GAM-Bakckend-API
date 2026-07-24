@@ -1,6 +1,5 @@
 package br.org.gam.api.event.missa.persistence;
 
-import br.org.gam.api.event.missa.domain.Missa;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.shared.auditing.FullAuditableEntity;

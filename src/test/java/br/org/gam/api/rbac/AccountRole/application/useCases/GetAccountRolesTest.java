@@ -1,6 +1,5 @@
 package br.org.gam.api.rbac.accountRole.application.useCases;
 
-import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.rbac.accountRole.application.AccountRolesRDTO;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleEntity;
 import br.org.gam.api.rbac.accountRole.persistence.AccountRoleRepository;

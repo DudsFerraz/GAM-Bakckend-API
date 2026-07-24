@@ -1,10 +1,7 @@
 package br.org.gam.api.member.application;
 
-import br.org.gam.api.account.domain.Account;
 import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
-import br.org.gam.api.member.application.MemberEntityLoader;
-import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;

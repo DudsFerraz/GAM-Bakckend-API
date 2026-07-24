@@ -1,6 +1,5 @@
 package br.org.gam.api.event.oratorio.persistence;
 
-import br.org.gam.api.event.oratorio.domain.Oratorio;
 import br.org.gam.api.event.persistence.EventEntity;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.oratoriano.persistence.OratorianoEntity;

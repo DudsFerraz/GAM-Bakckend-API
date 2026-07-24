@@ -4,7 +4,6 @@ import br.org.gam.api.member.application.MemberMapper;
 import br.org.gam.api.member.application.MemberRDTO;
 import br.org.gam.api.member.application.MemberSecurity;
 import br.org.gam.api.member.application.MemberEntityLoader;
-import br.org.gam.api.member.domain.Member;
 import br.org.gam.api.member.domain.MemberStatus;
 import br.org.gam.api.member.persistence.MemberEntity;
 import br.org.gam.api.shared.exception.NotFoundException;

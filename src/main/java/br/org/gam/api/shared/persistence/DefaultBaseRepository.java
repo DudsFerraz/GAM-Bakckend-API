@@ -11,7 +11,6 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 public class DefaultBaseRepository<T extends SoftDeletable, ID> extends SimpleJpaRepository<T, ID>

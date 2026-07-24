@@ -8,7 +8,6 @@ import br.org.gam.api.gamLocation.application.GamLocationRDTO;
 import br.org.gam.api.gamLocation.persistence.GamLocationRepository;
 import br.org.gam.api.gamLocation.persistence.GamLocationEntity;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
-import br.org.gam.api.shared.exception.ConflictException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

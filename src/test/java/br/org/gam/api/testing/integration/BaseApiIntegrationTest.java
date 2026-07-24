@@ -1,6 +1,5 @@
 package br.org.gam.api.testing.integration;
 
-import br.org.gam.api.shared.domain.GamEmail;
 import br.org.gam.api.account.persistence.AccountEntity;
 import br.org.gam.api.account.persistence.AccountRepository;
 import br.org.gam.api.event.persistence.EventRepository;
@@ -14,7 +13,6 @@ import br.org.gam.api.rbac.role.persistence.RoleEntity;
 import br.org.gam.api.rbac.role.persistence.RoleRepository;
 import br.org.gam.api.security.refreshtoken.persistence.RefreshTokenRepository;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
-import br.org.gam.api.testing.annotation.ApiTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
