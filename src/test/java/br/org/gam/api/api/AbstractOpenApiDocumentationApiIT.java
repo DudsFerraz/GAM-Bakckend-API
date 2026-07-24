@@ -35,7 +35,7 @@ import br.org.gam.api.rbac.permission.application.useCases.GetPermission;
 import br.org.gam.api.rbac.permission.web.PermissionController;
 import br.org.gam.api.rbac.role.application.RoleEntityLoader;
 import br.org.gam.api.rbac.role.application.useCases.GetRole;
-import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissions;
+import br.org.gam.api.rbac.role.application.useCases.getRolePermissions.GetRolePermissions;
 import br.org.gam.api.rbac.role.web.RoleController;
 import br.org.gam.api.security.jwt.JwtAuthFilter;
 import br.org.gam.api.security.refreshtoken.application.RefreshTokenService;

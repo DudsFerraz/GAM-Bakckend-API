@@ -1,7 +1,7 @@
 package br.org.gam.api.rbac.role.web;
 
-import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissions;
-import br.org.gam.api.rbac.role.application.useCases.getrolePermissions.GetRolePermissionsRDTO;
+import br.org.gam.api.rbac.role.application.useCases.getRolePermissions.GetRolePermissions;
+import br.org.gam.api.rbac.role.application.useCases.getRolePermissions.GetRolePermissionsRDTO;
 import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.rbac.role.application.RoleEntityLoader;
 import br.org.gam.api.rbac.role.application.RoleRDTO;

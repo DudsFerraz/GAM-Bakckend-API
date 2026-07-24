@@ -1,4 +1,4 @@
-package br.org.gam.api.rbac.role.application.useCases.getrolePermissions;
+package br.org.gam.api.rbac.role.application.useCases.getRolePermissions;
 
 import br.org.gam.api.rbac.permission.application.PermissionRDTO;
 import java.util.List;
