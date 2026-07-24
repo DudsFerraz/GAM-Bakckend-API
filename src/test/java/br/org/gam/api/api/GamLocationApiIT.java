@@ -145,7 +145,7 @@ class GamLocationApiIT extends MemberApiTestSupport {
         assertPublicApiLocation(response, GAM_LOCATION_PATH + "/" + id);
         assertUuidV7(id);
         assertThat(response.jsonPath().getMap("$"))
-                .containsOnlyKeys(GAM_LOCATION_FIELDS.toArray(String[]::new));
+                .containsOnlyKeys(GAM_LOCATION_FIELDS.toArray());
         assertThat(response.jsonPath().getMap("$")).containsEntry("id", id.toString());
         assertThat(response.<String>path("name")).isEqualTo("Colégio Dom Bosco — Quadra");
         assertThat(response.<String>path("street")).isEqualTo("Rua São José, 123");
@@ -390,7 +390,7 @@ class GamLocationApiIT extends MemberApiTestSupport {
                 .then()
                 .extract();
         assertThat(getResponse.statusCode()).isEqualTo(200);
-        assertThat(getResponse.jsonPath().getMap("$")).containsOnlyKeys(GAM_LOCATION_FIELDS.toArray(String[]::new));
+        assertThat(getResponse.jsonPath().getMap("$")).containsOnlyKeys(GAM_LOCATION_FIELDS.toArray());
 
         ExtractableResponse<Response> deletedGet = authenticatedJsonRequest(caller)
                 .get(GAM_LOCATION_PATH + "/{id}", removedId)
@@ -453,7 +453,7 @@ class GamLocationApiIT extends MemberApiTestSupport {
         assertThat(response.<Object>path("postalCode")).isNull();
         assertThat(response.<Object>path("latitude")).isNull();
         assertThat(response.<Object>path("longitude")).isNull();
-        assertThat(response.jsonPath().getMap("$")).containsOnlyKeys(GAM_LOCATION_FIELDS.toArray(String[]::new));
+        assertThat(response.jsonPath().getMap("$")).containsOnlyKeys(GAM_LOCATION_FIELDS.toArray());
 
         assertThat(activityCount("GAM_LOCATION_UPDATED")).isEqualTo(1);
         Map<String, Object> activity = activity("GAM_LOCATION_UPDATED");
@@ -1001,10 +1001,6 @@ class GamLocationApiIT extends MemberApiTestSupport {
     }
 
     private static void assertStatus(Response response, int expectedStatus) {
-        assertThat(response.statusCode()).isEqualTo(expectedStatus);
-    }
-
-    private static void assertStatus(ExtractableResponse<Response> response, int expectedStatus) {
         assertThat(response.statusCode()).isEqualTo(expectedStatus);
     }
 

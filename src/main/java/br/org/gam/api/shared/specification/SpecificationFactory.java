@@ -1,5 +1,6 @@
 package br.org.gam.api.shared.specification;
 
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
@@ -55,15 +56,26 @@ public final class SpecificationFactory {
     public static <T, C extends Comparable<? super C>> Specification<T> isGreaterThanOrEqual(String field, C value) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.greaterThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+            return cb.greaterThanOrEqualTo(comparablePath(root, field, value), value);
         };
     }
 
     public static <T, C extends Comparable<? super C>> Specification<T> isLessThanOrEqual(String field, C value) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.lessThanOrEqualTo(getPath(root, field).as((Class<C>) value.getClass()), value);
+            return cb.lessThanOrEqualTo(comparablePath(root, field, value), value);
         };
+    }
+
+    private static <C extends Comparable<? super C>> Expression<C> comparablePath(Root<?> root, String field, C value) {
+        Path<Object> path = getPath(root, field);
+        if (!path.getJavaType().isInstance(value)) {
+            throw new IllegalArgumentException("Comparison value type does not match the target field type.");
+        }
+
+        @SuppressWarnings("unchecked")
+        Expression<C> typedPath = (Expression<C>) path;
+        return typedPath;
     }
 
     public static <T> Specification<T> in(String field, Collection<?> values) {

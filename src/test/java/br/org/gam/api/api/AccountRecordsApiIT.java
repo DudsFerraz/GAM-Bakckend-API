@@ -657,8 +657,12 @@ class AccountRecordsApiIT extends BaseApiIntegrationTest {
         return "account-records-" + UUID.randomUUID() + "@example.com";
     }
 
-    private static Map<String, Object> searchPayload(Map<String, Object>... filters) {
-        return Map.of("filters", List.of(filters));
+    private static Map<String, Object> searchPayload() {
+        return Map.of("filters", List.of());
+    }
+
+    private static Map<String, Object> searchPayload(Map<String, Object> filter) {
+        return Map.of("filters", List.of(filter));
     }
 
     private static Map<String, Object> filter(String field, Object value, String comparisonMethod) {
@@ -776,7 +780,6 @@ class AccountRecordsApiIT extends BaseApiIntegrationTest {
                 .toList();
     }
 
-    @SuppressWarnings("unchecked")
     private static org.assertj.core.api.ListAssert<String> assertPermissions(Map<String, Object> currentContext) {
         return assertThat(permissions(currentContext));
     }

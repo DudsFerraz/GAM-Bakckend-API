@@ -162,8 +162,12 @@ abstract class MemberApiTestSupport extends BaseApiIntegrationTest {
         return payload;
     }
 
-    protected static Map<String, Object> searchPayload(Map<String, Object>... filters) {
-        return Map.of("filters", List.of(filters));
+    protected static Map<String, Object> searchPayload() {
+        return Map.of("filters", List.of());
+    }
+
+    protected static Map<String, Object> searchPayload(Map<String, Object> filter) {
+        return Map.of("filters", List.of(filter));
     }
 
     protected static Map<String, Object> filter(String field, Object value, String comparisonMethod) {

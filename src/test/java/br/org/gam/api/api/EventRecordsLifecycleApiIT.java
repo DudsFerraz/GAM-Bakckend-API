@@ -83,7 +83,7 @@ class EventRecordsLifecycleApiIT extends MemberApiTestSupport {
         trackEvent(eventId);
         assertPublicApiLocation(response, EVENTS + "/" + eventId);
         assertUuidV7(eventId);
-        assertThat(response.jsonPath().getMap("$")).containsOnlyKeys(EVENT_FIELDS.toArray(String[]::new));
+        assertThat(response.jsonPath().getMap("$")).containsOnlyKeys(EVENT_FIELDS.toArray());
         assertThat(response.<String>path("title")).isEqualTo("Encontro de Oração");
         assertThat(response.<String>path("description")).isEqualTo("Texto com espaços internos");
         assertThat(response.<String>path("type")).isEqualTo("GENERIC");

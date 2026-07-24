@@ -229,9 +229,12 @@ class PersistenceRepositoryIT extends PostgreSQLIntegrationTest {
     }
 
     private List<AccountEntity> deletedAccountIds() {
-        return entityManager
+        List<?> rows = entityManager
                 .createNativeQuery("SELECT * FROM accounts WHERE deleted_at IS NOT NULL", AccountEntity.class)
                 .getResultList();
+        return rows.stream()
+                .map(AccountEntity.class::cast)
+                .toList();
     }
 
     private <T> T inTransaction(TransactionCallback<T> callback) {

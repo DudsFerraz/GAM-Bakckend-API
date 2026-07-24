@@ -72,11 +72,14 @@ class OpenApiSharedSchemasApiIT extends AbstractOpenApiDocumentationApiIT {
             String reference = eventType.get("$ref").toString();
             eventTypeValues = object(schemas, reference.substring(reference.lastIndexOf('/') + 1)).get("enum");
         }
-        assertThat(eventTypeValues)
-                .isInstanceOf(List.class)
-                .asList()
+        assertThat(eventTypeValues).isInstanceOf(List.class);
+        assertThat((List<?>) eventTypeValues)
                 .allSatisfy(value -> assertThat(value.toString()).matches("[A-Z][A-Z0-9_]*"));
-        assertThat((List<String>) gamLocation.get("required"))
+        Object requiredValue = gamLocation.get("required");
+        assertThat(requiredValue).isInstanceOf(List.class);
+        List<?> required = (List<?>) requiredValue;
+        assertThat(required).allSatisfy(value -> assertThat(value).isInstanceOf(String.class));
+        assertThat(required.stream().map(String.class::cast).toList())
                 .containsExactlyInAnyOrder(
                         "id", "name", "street", "city", "state", "postalCode",
                         "countryCode", "latitude", "longitude"

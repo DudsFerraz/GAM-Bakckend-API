@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -29,7 +30,13 @@ public class DefaultBaseRepository<T extends SoftDeletable, ID> extends SimpleJp
 
     private AuditorAware<UUID> getAuditorAware() {
         try {
-            return this.applicationContext.getBean(AuditorAware.class);
+            Object auditorAware = this.applicationContext
+                    .getBeanProvider(ResolvableType.forClassWithGenerics(AuditorAware.class, UUID.class))
+                    .getIfAvailable();
+            if (auditorAware instanceof AuditorAware<?> typedAuditorAware) {
+                return () -> typedAuditorAware.getCurrentAuditor().map(UUID.class::cast);
+            }
+            return () -> Optional.empty();
         } catch (Exception e) {
             return () -> Optional.empty();
         }
