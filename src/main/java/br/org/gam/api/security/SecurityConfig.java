@@ -69,8 +69,9 @@ public class SecurityConfig {
         csrfTokenRepository.setCookieName("XSRF-TOKEN");
         csrfTokenRepository.setHeaderName("X-XSRF-TOKEN");
         csrfTokenRepository.setCookiePath("/api/auth");
-        csrfTokenRepository.setSecure(cookieSecure);
-        csrfTokenRepository.setCookieCustomizer(cookie -> cookie.sameSite("Lax"));
+        csrfTokenRepository.setCookieCustomizer(cookie -> cookie
+                .secure(cookieSecure)
+                .sameSite("Lax"));
 
         http
                 .csrf(csrf -> csrf
