@@ -73,12 +73,12 @@ class SearchEventsTest {
             EventRDTO firstResponse = response(UUID.randomUUID(), EventType.MISSA);
             EventRDTO secondResponse = response(UUID.randomUUID(), EventType.ORATORIO);
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENTS_SEARCH"));
-            when(searchFilterConverter.convert(searchDTO)).thenReturn(searchSpecification);
-            when(eventRepo.findAll(any(Specification.class), eq(pageable)))
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_SEARCH"));
+            when(searchFilterConverter.convert(eq(searchDTO), any(Instant.class))).thenReturn(searchSpecification);
+            when(eventRepo.findAll(any(Specification.class), any(Pageable.class)))
                     .thenReturn(new PageImpl<>(List.of(firstEntity, secondEntity), pageable, 2));
-            when(eventMapper.entityToRDTO(firstEntity)).thenReturn(firstResponse);
-            when(eventMapper.entityToRDTO(secondEntity)).thenReturn(secondResponse);
+            when(eventMapper.entityToRDTO(eq(firstEntity), any(Instant.class))).thenReturn(firstResponse);
+            when(eventMapper.entityToRDTO(eq(secondEntity), any(Instant.class))).thenReturn(secondResponse);
 
             Page<EventRDTO> response = searchEvents.search(searchDTO, pageable);
 
@@ -86,12 +86,12 @@ class SearchEventsTest {
             assertThat(response.getTotalElements()).isEqualTo(2);
 
             ArgumentCaptor<Specification<EventEntity>> specificationCaptor = ArgumentCaptor.forClass(Specification.class);
-            verify(eventRepo).findAll(specificationCaptor.capture(), eq(pageable));
+            verify(eventRepo).findAll(specificationCaptor.capture(), any(Pageable.class));
             assertThat(specificationCaptor.getValue()).isNotNull();
             verify(securityUtils).getLoggedUserAuthorities();
-            verify(searchFilterConverter).convert(searchDTO);
-            verify(eventMapper).entityToRDTO(firstEntity);
-            verify(eventMapper).entityToRDTO(secondEntity);
+            verify(searchFilterConverter).convert(eq(searchDTO), any(Instant.class));
+            verify(eventMapper).entityToRDTO(eq(firstEntity), any(Instant.class));
+            verify(eventMapper).entityToRDTO(eq(secondEntity), any(Instant.class));
         }
 
         @Test
@@ -103,19 +103,19 @@ class SearchEventsTest {
             EventEntity entity = new EventEntity();
             EventRDTO expectedResponse = response(UUID.randomUUID(), EventType.MISSA);
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENTS_SEARCH"));
-            when(searchFilterConverter.convert(searchDTO)).thenReturn(searchSpecification);
-            when(eventRepo.findAll(any(Specification.class), eq(pageable)))
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_SEARCH"));
+            when(searchFilterConverter.convert(eq(searchDTO), any(Instant.class))).thenReturn(searchSpecification);
+            when(eventRepo.findAll(any(Specification.class), any(Pageable.class)))
                     .thenReturn(new PageImpl<>(List.of(entity), pageable, 1));
-            when(eventMapper.entityToRDTO(entity)).thenReturn(expectedResponse);
+            when(eventMapper.entityToRDTO(eq(entity), any(Instant.class))).thenReturn(expectedResponse);
 
             Page<EventRDTO> response = searchEvents.search(searchDTO, pageable);
 
             assertThat(response.getContent()).containsExactly(expectedResponse);
             verify(securityUtils).getLoggedUserAuthorities();
-            verify(searchFilterConverter).convert(searchDTO);
-            verify(eventRepo).findAll(any(Specification.class), eq(pageable));
-            verify(eventMapper).entityToRDTO(entity);
+            verify(searchFilterConverter).convert(eq(searchDTO), any(Instant.class));
+            verify(eventRepo).findAll(any(Specification.class), any(Pageable.class));
+            verify(eventMapper).entityToRDTO(eq(entity), any(Instant.class));
         }
 
         @Test
@@ -125,17 +125,17 @@ class SearchEventsTest {
             Specification<EventEntity> searchSpecification = Specification.allOf(List.of());
             Pageable pageable = PageRequest.of(0, 10);
 
-            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENTS_SEARCH"));
-            when(searchFilterConverter.convert(searchDTO)).thenReturn(searchSpecification);
-            when(eventRepo.findAll(any(Specification.class), eq(pageable)))
+            when(securityUtils.getLoggedUserAuthorities()).thenReturn(Set.of("EVENT_SEARCH"));
+            when(searchFilterConverter.convert(eq(searchDTO), any(Instant.class))).thenReturn(searchSpecification);
+            when(eventRepo.findAll(any(Specification.class), any(Pageable.class)))
                     .thenReturn(Page.empty(pageable));
 
             Page<EventRDTO> response = searchEvents.search(searchDTO, pageable);
 
             assertThat(response.getContent()).isEmpty();
             verify(securityUtils).getLoggedUserAuthorities();
-            verify(searchFilterConverter).convert(searchDTO);
-            verify(eventRepo).findAll(any(Specification.class), eq(pageable));
+            verify(searchFilterConverter).convert(eq(searchDTO), any(Instant.class));
+            verify(eventRepo).findAll(any(Specification.class), any(Pageable.class));
             verifyNoInteractions(eventMapper);
         }
     }

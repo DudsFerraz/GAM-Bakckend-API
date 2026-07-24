@@ -13,4 +13,8 @@ public class InvalidCommandException extends ApplicationException {
     public static InvalidCommandException reason(String message) {
         return new InvalidCommandException("INVALID_COMMAND", message, null, null);
     }
+
+    public static InvalidCommandException reason(String code, String message) {
+        return new InvalidCommandException(code, message, null, null);
+    }
 }

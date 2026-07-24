@@ -121,6 +121,8 @@ class ActivityLogEventListenerTest {
                 "Event created: Sunday Mass",
                 Map.of(
                         "eventId", eventId,
+                        "title", "Sunday Mass",
+                        "type", EventType.MISSA.name(),
                         "eventType", EventType.MISSA.name(),
                         "status", EventStatus.SCHEDULED.name(),
                         "gamLocationId", gamLocationId,

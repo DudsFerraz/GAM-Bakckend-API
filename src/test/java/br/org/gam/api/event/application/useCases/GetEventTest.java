@@ -26,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -58,14 +60,14 @@ class GetEventTest {
 
             when(getEventInstance.requiredById(id)).thenReturn(entity);
             when(eventSecurity.canGetEvent(entity)).thenReturn(true);
-            when(eventMapper.entityToRDTO(entity)).thenReturn(expectedResponse);
+            when(eventMapper.entityToRDTO(eq(entity), any(Instant.class))).thenReturn(expectedResponse);
 
             EventRDTO response = getEvent.byId(id);
 
             assertThat(response).isSameAs(expectedResponse);
             verify(getEventInstance).requiredById(id);
             verify(eventSecurity).canGetEvent(entity);
-            verify(eventMapper).entityToRDTO(entity);
+            verify(eventMapper).entityToRDTO(eq(entity), any(Instant.class));
         }
 
         @Test

@@ -9,6 +9,7 @@ import br.org.gam.api.account.web.AccountController;
 import br.org.gam.api.event.application.useCases.GetEvent;
 import br.org.gam.api.event.application.useCases.SearchEvents;
 import br.org.gam.api.event.application.useCases.createEvent.CreateEvent;
+import br.org.gam.api.event.application.useCases.manageEvent.ManageGenericEvent;
 import br.org.gam.api.event.web.EventController;
 import br.org.gam.api.gamLocation.application.useCases.CreateGamLocation;
 import br.org.gam.api.gamLocation.application.useCases.GetGamLocations;
@@ -26,6 +27,7 @@ import br.org.gam.api.member.solicitation.application.useCases.SubmitMembershipS
 import br.org.gam.api.member.solicitation.web.MembershipSolicitationController;
 import br.org.gam.api.member.web.MemberController;
 import br.org.gam.api.presence.application.useCases.GetPresence;
+import br.org.gam.api.presence.application.useCases.registerPresence.RegisterPresence;
 import br.org.gam.api.rbac.accountRole.application.useCases.AddAccountRole;
 import br.org.gam.api.rbac.accountRole.application.useCases.DropAccountRole;
 import br.org.gam.api.rbac.accountRole.application.useCases.GetAccountRoleAssignment;
@@ -131,6 +133,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         GetEvent.class,
         SearchEvents.class,
         GetPresence.class,
+        ManageGenericEvent.class,
+        RegisterPresence.class,
         CreateGamLocation.class,
         GetGamLocations.class,
         UpdateGamLocation.class,

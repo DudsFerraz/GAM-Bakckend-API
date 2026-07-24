@@ -13,7 +13,29 @@ public interface PresenceMapper {
     // Persistence -> RDTO
     // =====================================================================================
 
-    RegisterPresenceRDTO entityToRegisterPresenceRDTO(PresenceEntity presenceEntity);
+    default RegisterPresenceRDTO entityToRegisterPresenceRDTO(PresenceEntity presenceEntity) {
+        var member = presenceEntity.getMember();
+        var event = presenceEntity.getEvent();
+        return new RegisterPresenceRDTO(
+                presenceEntity.getId(),
+                new PresenceMemberRDTO(
+                        member.getId(),
+                        member.getName().firstName(),
+                        member.getName().surname(),
+                        member.getStatus()
+                ),
+                new PresenceEventRDTO(
+                        event.getId(),
+                        event.getTitle(),
+                        event.getBeginDate(),
+                        event.getEndDate(),
+                        event.getType(),
+                        event.getStatus()
+                ),
+                presenceEntity.getObservations(),
+                presenceEntity.getCreatedAt()
+        );
+    }
 
     PresenceRDTO entityToRDTO(PresenceEntity presenceEntity);
 }

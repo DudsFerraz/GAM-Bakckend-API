@@ -10,6 +10,9 @@ import br.org.gam.api.shared.specification.SearchFilterConverter;
 import br.org.gam.api.shared.specification.SearchFilterDefinition;
 import br.org.gam.api.shared.specification.SearchValueParsers;
 import java.util.Map;
+import java.util.HashMap;
+import java.time.Instant;
+import java.util.Collection;
 import java.util.Set;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -54,8 +57,11 @@ public class EventSearchFilterConverter implements SearchFilterConverter<EventEn
             Map.entry("requiredPermissionId", SearchFilterDefinition.path(
                     "requiredPermissionId",
                     "requiredPermission.id",
-                    Set.of(ComparationMethods.EQUALS),
-                    Map.of(ComparationMethods.EQUALS, SearchValueParsers::uuid)
+                    Set.of(ComparationMethods.EQUALS, ComparationMethods.IN),
+                    Map.of(
+                            ComparationMethods.EQUALS, SearchValueParsers::uuid,
+                            ComparationMethods.IN, SearchValueParsers.in(SearchValueParsers::uuid)
+                    )
             )),
             Map.entry("requiredPermissionCode", SearchFilterDefinition.path(
                     "requiredPermissionCode",
@@ -101,29 +107,49 @@ public class EventSearchFilterConverter implements SearchFilterConverter<EventEn
                             ComparationMethods.GREATER_THAN_OR_EQUAL, SearchValueParsers::instant,
                             ComparationMethods.LESS_THAN_OR_EQUAL, SearchValueParsers::instant
                     )
-            )),
-            Map.entry("createdAt", SearchFilterDefinition.path(
-                    "createdAt",
-                    "createdAt",
-                    Set.of(ComparationMethods.GREATER_THAN_OR_EQUAL, ComparationMethods.LESS_THAN_OR_EQUAL),
-                    Map.of(
-                            ComparationMethods.GREATER_THAN_OR_EQUAL, SearchValueParsers::instant,
-                            ComparationMethods.LESS_THAN_OR_EQUAL, SearchValueParsers::instant
-                    )
-            )),
-            Map.entry("updatedAt", SearchFilterDefinition.path(
-                    "updatedAt",
-                    "updatedAt",
-                    Set.of(ComparationMethods.GREATER_THAN_OR_EQUAL, ComparationMethods.LESS_THAN_OR_EQUAL),
-                    Map.of(
-                            ComparationMethods.GREATER_THAN_OR_EQUAL, SearchValueParsers::instant,
-                            ComparationMethods.LESS_THAN_OR_EQUAL, SearchValueParsers::instant
-                    )
             ))
     );
 
     @Override
     public Specification<EventEntity> convert(SearchDTO searchDTO) {
         return ResourceSearchFilterConverter.convert(searchDTO, DEFINITIONS);
+    }
+
+    public Specification<EventEntity> convert(SearchDTO searchDTO, Instant evaluationInstant) {
+        Map<String, SearchFilterDefinition<EventEntity>> definitions = new HashMap<>(DEFINITIONS);
+        definitions.put("status", new SearchFilterDefinition<>(
+                "status",
+                Set.of(ComparationMethods.EQUALS, ComparationMethods.IN),
+                Map.of(
+                        ComparationMethods.EQUALS, SearchValueParsers.enumValue(EventStatus.class),
+                        ComparationMethods.IN, SearchValueParsers.in(SearchValueParsers.enumValue(EventStatus.class))
+                ),
+                (method, value) -> effectiveStatusSpecification(value, evaluationInstant)
+        ));
+        return ResourceSearchFilterConverter.convert(searchDTO, definitions);
+    }
+
+    private Specification<EventEntity> effectiveStatusSpecification(Object value, Instant evaluationInstant) {
+        Collection<?> values = value instanceof Collection<?> collection ? collection : java.util.List.of(value);
+        return (root, query, cb) -> {
+            var temporalState = root.get("status").in(EventStatus.SCHEDULED, EventStatus.COMPLETED);
+            var result = cb.disjunction();
+            for (Object item : values) {
+                EventStatus status = (EventStatus) item;
+                var predicate = switch (status) {
+                    case SCHEDULED -> cb.and(
+                            temporalState,
+                            cb.greaterThan(root.get("endDate"), evaluationInstant)
+                    );
+                    case COMPLETED -> cb.and(
+                            temporalState,
+                            cb.lessThanOrEqualTo(root.get("endDate"), evaluationInstant)
+                    );
+                    case LOCKED, FINALIZED, CANCELLED -> cb.equal(root.get("status"), status);
+                };
+                result = cb.or(result, predicate);
+            }
+            return result;
+        };
     }
 }

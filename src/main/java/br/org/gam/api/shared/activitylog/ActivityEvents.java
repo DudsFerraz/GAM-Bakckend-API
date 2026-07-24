@@ -6,6 +6,7 @@ import br.org.gam.api.shared.activitylog.events.AccountRoleAddedActivity;
 import br.org.gam.api.shared.activitylog.events.AccountRoleRemovedActivity;
 import br.org.gam.api.shared.activitylog.events.DeveloperMaintenanceActivity;
 import br.org.gam.api.shared.activitylog.events.EventCreatedActivity;
+import br.org.gam.api.shared.activitylog.events.EventChangedActivity;
 import br.org.gam.api.shared.activitylog.events.MemberStatusChangedActivity;
 import br.org.gam.api.shared.activitylog.events.CoordinatorChangedActivity;
 import br.org.gam.api.shared.activitylog.events.MemberRegisteredActivity;
@@ -128,6 +129,13 @@ public class ActivityEvents {
                 eventId, title, eventType, status, gamLocationId, requiredPermissionId));
     }
 
+    public void eventChanged(ActivityAction action, UUID eventId, String reason, String summary,
+                             Map<String, Object> metadata) {
+        applicationEventPublisher.publishEvent(
+                new EventChangedActivity(action, eventId, reason, summary, Map.copyOf(metadata))
+        );
+    }
+
     public void missaCreated(UUID missaId, UUID eventId) {
         applicationEventPublisher.publishEvent(new MissaCreatedActivity(missaId, eventId));
     }
@@ -136,8 +144,10 @@ public class ActivityEvents {
         applicationEventPublisher.publishEvent(new OratorioCreatedActivity(oratorioId, eventId));
     }
 
-    public void presenceRegistered(UUID presenceId, UUID memberId, UUID eventId) {
-        applicationEventPublisher.publishEvent(new PresenceRegisteredActivity(presenceId, memberId, eventId));
+    public void presenceRegistered(UUID presenceId, UUID memberId, UUID eventId, String observations) {
+        applicationEventPublisher.publishEvent(
+                new PresenceRegisteredActivity(presenceId, memberId, eventId, observations)
+        );
     }
 
     public void gamLocationCreated(UUID locationId) {

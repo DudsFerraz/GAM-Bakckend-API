@@ -2,6 +2,7 @@ package br.org.gam.api.event.application;
 
 import br.org.gam.api.event.domain.Event;
 import br.org.gam.api.event.persistence.EventEntity;
+import br.org.gam.api.rbac.permission.domain.PermissionEnum;
 import br.org.gam.api.rbac.permission.persistence.PermissionEntity;
 import br.org.gam.api.security.SecurityUtils;
 import br.org.gam.api.testing.annotation.StructuralTest;
@@ -65,8 +66,12 @@ class EventSecurityTest {
     }
 
     private static EventEntity eventWithRequiredPermission(String permissionCode) {
+        PermissionEnum registryPermission = PermissionEnum.fromCode(permissionCode).orElseThrow();
         PermissionEntity permission = new PermissionEntity();
-        permission.setCode(permissionCode);
+        permission.setCode(registryPermission.getCode());
+        permission.setLabel(registryPermission.getLabel());
+        permission.setDescription(registryPermission.getDescription());
+        permission.setSystemManaged(true);
         EventEntity event = new EventEntity();
         event.setRequiredPermission(permission);
         return event;

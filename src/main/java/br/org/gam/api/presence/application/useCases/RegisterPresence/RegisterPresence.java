@@ -2,14 +2,23 @@ package br.org.gam.api.presence.application.useCases.registerPresence;
 
 import br.org.gam.api.event.application.EventEntityLoader;
 import br.org.gam.api.event.persistence.EventEntity;
+import br.org.gam.api.event.application.EventSecurity;
+import br.org.gam.api.event.domain.Event;
+import br.org.gam.api.event.domain.EventStatus;
 import br.org.gam.api.member.application.MemberEntityLoader;
 import br.org.gam.api.member.persistence.MemberEntity;
+import br.org.gam.api.presence.application.PresenceEventRDTO;
 import br.org.gam.api.presence.application.PresenceMapper;
 import br.org.gam.api.presence.persistence.PresenceEntity;
 import br.org.gam.api.presence.persistence.PresenceRepository;
 import br.org.gam.api.shared.activitylog.ActivityEvents;
 import br.org.gam.api.shared.exception.ConflictException;
+import br.org.gam.api.shared.exception.InvalidCommandException;
+import br.org.gam.api.shared.exception.NotFoundException;
 import br.org.gam.api.shared.persistence.UUIDGenerator;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,29 +30,58 @@ public class RegisterPresence {
     private final MemberEntityLoader getMemberInstance;
     private final EventEntityLoader getEventInstance;
     private final ActivityEvents activityEvents;
+    private final EventSecurity eventSecurity;
 
     public RegisterPresence(PresenceRepository presenceRepo, PresenceMapper presenceMapper,
                             MemberEntityLoader getMemberInstance, EventEntityLoader getEventInstance,
-                            ActivityEvents activityEvents) {
+                            ActivityEvents activityEvents, EventSecurity eventSecurity) {
         this.presenceRepo = presenceRepo;
         this.presenceMapper = presenceMapper;
         this.getMemberInstance = getMemberInstance;
         this.getEventInstance = getEventInstance;
         this.activityEvents = activityEvents;
+        this.eventSecurity = eventSecurity;
     }
 
     @Transactional
     public RegisterPresenceRDTO register(RegisterPresenceDTO dto) {
-        if(presenceRepo.existsByMember_IdAndEvent_Id(dto.memberId(), dto.eventId())){
+        EventEntity relatedEvent = getEventInstance.requiredByIdForUpdate(dto.eventId());
+        if (!eventSecurity.canGetEvent(relatedEvent)) {
+            throw NotFoundException.resource("Event", dto.eventId());
+        }
+        Instant evaluationInstant = Instant.now();
+        EventStatus status = Event.effectiveStatus(
+                relatedEvent.getStatus(), relatedEvent.getEndDate(), evaluationInstant
+        );
+        if (evaluationInstant.isBefore(relatedEvent.getBeginDate())
+                || (status != EventStatus.SCHEDULED && status != EventStatus.COMPLETED)) {
             throw ConflictException.resource(
-                    "Presence",
+                    "PRESENCE_REGISTRATION_NOT_ALLOWED", "Event", dto.eventId(),
+                    "Presence registration is not allowed for the Event in its current state.",
+                    Map.of(
+                            "eventId", dto.eventId(),
+                            "status", status.name(),
+                            "beginDate", relatedEvent.getBeginDate(),
+                            "evaluationInstant", evaluationInstant
+                    )
+            );
+        }
+
+        if(presenceRepo.existsByMember_IdAndEvent_Id(dto.memberId(), dto.eventId())){
+            var existingPresence = presenceRepo.findByMember_IdAndEvent_Id(dto.memberId(), dto.eventId());
+            Map<String, Object> details = new LinkedHashMap<>();
+            details.put("eventId", dto.eventId());
+            details.put("memberId", dto.memberId());
+            existingPresence.map(PresenceEntity::getId).ifPresent(id -> details.put("presenceId", id));
+            throw ConflictException.resource(
+                    "PRESENCE_ALREADY_REGISTERED", "Presence",
                     "%s:%s".formatted(dto.memberId(), dto.eventId()),
-                    "Presence already registered"
+                    "Presence already registered",
+                    details
             );
         }
 
         MemberEntity presentMember = getMemberInstance.requiredById(dto.memberId());
-        EventEntity relatedEvent = getEventInstance.requiredById(dto.eventId());
 
         Objects.requireNonNull(presentMember, "Present member must not be null");
         Objects.requireNonNull(relatedEvent, "Presence event must not be null");
@@ -52,16 +90,58 @@ public class RegisterPresence {
         newPresenceEntity.setId(UUIDGenerator.generateUUIDV7());
         newPresenceEntity.setMember(presentMember);
         newPresenceEntity.setEvent(relatedEvent);
-        newPresenceEntity.setObservations(dto.observations() == null ? "" : dto.observations().trim());
+        String observations = normalizeObservations(dto.observations());
+        newPresenceEntity.setObservations(observations);
 
         PresenceEntity savedPresenceEntity = presenceRepo.save(newPresenceEntity);
 
         activityEvents.presenceRegistered(
                 newPresenceEntity.getId(),
                 dto.memberId(),
-                dto.eventId()
+                dto.eventId(),
+                observations
         );
 
-        return presenceMapper.entityToRegisterPresenceRDTO(savedPresenceEntity);
+        return withEffectiveStatus(
+                presenceMapper.entityToRegisterPresenceRDTO(savedPresenceEntity),
+                status
+        );
+    }
+
+    private RegisterPresenceRDTO withEffectiveStatus(RegisterPresenceRDTO response, EventStatus status) {
+        if (response == null || response.event() == null) {
+            return response;
+        }
+        PresenceEventRDTO event = response.event();
+        return new RegisterPresenceRDTO(
+                response.id(),
+                response.member(),
+                new PresenceEventRDTO(
+                        event.id(),
+                        event.title(),
+                        event.beginDate(),
+                        event.endDate(),
+                        event.type(),
+                        status
+                ),
+                response.observations(),
+                response.registeredAt()
+        );
+    }
+
+    private String normalizeObservations(String observations) {
+        if (observations == null) {
+            return null;
+        }
+        String normalized = observations.strip();
+        if (normalized.isEmpty()) {
+            return null;
+        }
+        if (normalized.codePointCount(0, normalized.length()) > 2_000) {
+            throw InvalidCommandException.reason(
+                    "Presence observations must contain at most 2000 characters."
+            );
+        }
+        return normalized;
     }
 }

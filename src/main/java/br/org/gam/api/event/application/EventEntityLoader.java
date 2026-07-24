@@ -19,4 +19,9 @@ public class EventEntityLoader {
         return eventRepo.findById(id)
                 .orElseThrow(() -> NotFoundException.resource("Event", id));
     }
+
+    public EventEntity requiredByIdForUpdate(UUID id) {
+        return eventRepo.findActiveByIdForUpdate(id)
+                .orElseThrow(() -> NotFoundException.resource("Event", id));
+    }
 }

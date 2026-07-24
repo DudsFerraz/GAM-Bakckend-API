@@ -10,6 +10,9 @@ import br.org.gam.api.event.persistence.EventSpecifications;
 import br.org.gam.api.security.SecurityUtils;
 import br.org.gam.api.shared.specification.SearchDTO;
 import java.util.Set;
+import java.time.Instant;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,15 +34,30 @@ public class SearchEvents {
     }
 
     public Page<EventRDTO> search(SearchDTO searchDTO, Pageable pageable) {
+        Instant evaluationInstant = Instant.now();
         Set<String> authorities = securityUtils.getLoggedUserAuthorities();
         Specification<EventEntity> securityFilter = EventSecuritySpecification.canGetEvent(authorities);
 
-        Specification<EventEntity> searchFilters = searchFilterConverter.convert(searchDTO);
+        Specification<EventEntity> searchFilters = searchFilterConverter.convert(searchDTO, evaluationInstant);
 
-        Specification<EventEntity> spec = securityFilter.and(searchFilters).and(EventSpecifications.fetchLocation());
+        Sort sort = pageable.getSort();
+        if (sort.isUnsorted()) {
+            sort = Sort.by(Sort.Order.asc("beginDate"), Sort.Order.asc("id"));
+        } else if (sort.getOrderFor("id") == null) {
+            sort = sort.and(Sort.by(Sort.Order.asc("id")));
+        }
+        Pageable effectivePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        Page<EventEntity> entitiesPage = eventRepo.findAll(spec, pageable);
+        Specification<EventEntity> spec = securityFilter.and(searchFilters);
+        if (sort.getOrderFor("status") != null) {
+            spec = spec.and(EventSpecifications.orderByEffectiveStatus(sort, evaluationInstant));
+            effectivePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        } else {
+            spec = spec.and(EventSpecifications.fetchLocation());
+        }
 
-        return entitiesPage.map(eventMapper::entityToRDTO);
+        Page<EventEntity> entitiesPage = eventRepo.findAll(spec, effectivePageable);
+
+        return entitiesPage.map(entity -> eventMapper.entityToRDTO(entity, evaluationInstant));
     }
 }

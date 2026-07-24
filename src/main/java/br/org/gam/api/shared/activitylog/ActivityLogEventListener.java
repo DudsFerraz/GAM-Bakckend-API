@@ -4,6 +4,7 @@ import br.org.gam.api.shared.activitylog.events.AccountRoleAddedActivity;
 import br.org.gam.api.shared.activitylog.events.AccountRoleRemovedActivity;
 import br.org.gam.api.shared.activitylog.events.DeveloperMaintenanceActivity;
 import br.org.gam.api.shared.activitylog.events.EventCreatedActivity;
+import br.org.gam.api.shared.activitylog.events.EventChangedActivity;
 import br.org.gam.api.shared.activitylog.events.MemberStatusChangedActivity;
 import br.org.gam.api.shared.activitylog.events.CoordinatorChangedActivity;
 import br.org.gam.api.shared.activitylog.events.MemberRegisteredActivity;
@@ -148,6 +149,8 @@ public class ActivityLogEventListener {
     public void handle(EventCreatedActivity activity) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("eventId", activity.eventId());
+        metadata.put("title", activity.title());
+        metadata.put("type", activity.eventType().name());
         metadata.put("eventType", activity.eventType().name());
         metadata.put("status", activity.status().name());
         metadata.put("gamLocationId", activity.gamLocationId());
@@ -161,6 +164,14 @@ public class ActivityLogEventListener {
                 null,
                 "Event created: " + activity.title(),
                 metadata
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handle(EventChangedActivity activity) {
+        activityLogger.log(
+                activity.action(), ActivityTargetType.EVENT, activity.eventId(), activity.reason(),
+                activity.summary(), activity.metadata()
         );
     }
 
@@ -196,17 +207,20 @@ public class ActivityLogEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(PresenceRegisteredActivity activity) {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("presenceId", activity.presenceId());
+        metadata.put("memberId", activity.memberId());
+        metadata.put("eventId", activity.eventId());
+        if (activity.observationsIncluded()) {
+            metadata.put("observations", activity.observations());
+        }
         activityLogger.log(
                 ActivityAction.PRESENCE_REGISTERED,
                 ActivityTargetType.PRESENCE,
                 activity.presenceId(),
                 null,
                 "Presence registered for member " + activity.memberId() + " and event " + activity.eventId(),
-                Map.of(
-                        "presenceId", activity.presenceId(),
-                        "memberId", activity.memberId(),
-                        "eventId", activity.eventId()
-                )
+                metadata
         );
     }
 

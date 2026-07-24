@@ -12,4 +12,5 @@ public interface PresenceRepository extends BaseRepository<PresenceEntity, UUID>
                                              JpaSpecificationExecutor<PresenceEntity> {
     Optional<PresenceEntity> findByMember_IdAndEvent_Id(UUID memberId, UUID eventId);
     boolean existsByMember_IdAndEvent_Id(UUID memberId, UUID eventId);
+    long countByEvent_Id(UUID eventId);
 }

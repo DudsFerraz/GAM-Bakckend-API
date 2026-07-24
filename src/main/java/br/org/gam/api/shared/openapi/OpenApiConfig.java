@@ -320,12 +320,19 @@ public class OpenApiConfig {
     private Parameter sortParameter(String operationId) {
         ArraySchema schema = new ArraySchema();
         schema.setItems(new StringSchema());
-        schema.setDefault(List.of("name,asc"));
+        schema.setDefault("searchEvents".equals(operationId)
+                ? List.of("beginDate,asc", "id,asc")
+                : List.of("name,asc"));
+        String description = "Repeat this parameter as field,direction. Allowed fields: "
+                + String.join(", ", allowedSortFields(operationId)) + ". Directions: asc, desc.";
+        if ("searchEvents".equals(operationId)) {
+            description += " Status ordering uses effective status at the request evaluation instant. "
+                    + "The default is beginDate ascending, then id ascending.";
+        }
         return new Parameter()
                 .in("query")
                 .name("sort")
-                .description("Repeat this parameter as field,direction. Allowed fields: "
-                        + String.join(", ", allowedSortFields(operationId)) + ". Directions: asc, desc.")
+                .description(description)
                 .style(Parameter.StyleEnum.FORM)
                 .explode(true)
                 .schema(schema);
@@ -348,31 +355,89 @@ public class OpenApiConfig {
         operation.getResponses().putIfAbsent("401", errorResponse(401, "UNAUTHORIZED", "Authentication is required."));
         operation.getResponses().putIfAbsent("403", errorResponse(403, "FORBIDDEN", "The authenticated account is not allowed to perform this operation."));
         operation.getResponses().putIfAbsent("404", errorResponse(404, "NOT_FOUND", "The requested resource was not found."));
-        String conflictCode = switch (operation.getOperationId()) {
-            case "createGamLocation", "updateGamLocation" -> "GAM_LOCATION_ALREADY_EXISTS";
-            case "removeGamLocation" -> "GAM_LOCATION_IN_USE";
-            default -> "CONFLICT";
-        };
-        Map<String, Object> conflictDetails = "removeGamLocation".equals(operation.getOperationId())
-                ? Map.of(
-                        "resource", "GamLocation",
-                        "identifier", "019f6343-321a-7c90-a096-a551e8f88eb4",
-                        "eventReferenceCount", 2
-                )
-                : Map.of();
+        ConflictDocumentation conflict = conflictDocumentation(operation.getOperationId());
         operation.getResponses().putIfAbsent(
                 "409",
                 errorResponse(
                         409,
-                        conflictCode,
-                        "The request conflicts with the current resource state.",
-                        conflictDetails
+                        conflict.exampleCode(),
+                        conflict.description(),
+                        conflict.exampleDetails()
                 )
         );
         if ("listRoles".equals(operation.getOperationId())) {
             operation.getResponses().remove("404");
             operation.getResponses().remove("409");
         }
+    }
+
+    private ConflictDocumentation conflictDocumentation(String operationId) {
+        if (Set.of(
+                "replaceGenericEvent",
+                "lockGenericEvent",
+                "finalizeGenericEvent",
+                "reopenGenericEvent",
+                "cancelGenericEvent"
+        ).contains(operationId)) {
+            return new ConflictDocumentation(
+                    "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
+                    "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. "
+                            + "Transition details include eventId, currentStatus, and requestedStatus.",
+                    Map.of(
+                            "eventId", "019f6343-321a-7c90-a096-a551e8f88eb4",
+                            "currentStatus", "SCHEDULED",
+                            "requestedStatus", "LOCKED"
+                    )
+            );
+        }
+        if ("deleteGenericEvent".equals(operationId)) {
+            return new ConflictDocumentation(
+                    "EVENT_HAS_PRESENCES",
+                    "Possible codes: EVENT_HAS_PRESENCES, EVENT_STATUS_TRANSITION_NOT_ALLOWED, "
+                            + "EVENT_TYPE_NOT_MANAGEABLE. Details include eventId, activePresenceCount, "
+                            + "currentStatus, and requestedStatus as applicable.",
+                    Map.of(
+                            "eventId", "019f6343-321a-7c90-a096-a551e8f88eb4",
+                            "activePresenceCount", 2
+                    )
+            );
+        }
+        if ("registerEventPresence".equals(operationId)) {
+            return new ConflictDocumentation(
+                    "PRESENCE_ALREADY_REGISTERED",
+                    "Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. "
+                            + "Duplicate details include eventId, memberId, and presenceId. Eligibility details "
+                            + "include eventId, status, beginDate, and evaluationInstant.",
+                    Map.of(
+                            "eventId", "019f6343-321a-7c90-a096-a551e8f88eb4",
+                            "memberId", "019f6343-321a-7c90-a096-a551e8f88eb5",
+                            "presenceId", "019f6343-321a-7c90-a096-a551e8f88eb6"
+                    )
+            );
+        }
+        if ("createGamLocation".equals(operationId) || "updateGamLocation".equals(operationId)) {
+            return new ConflictDocumentation(
+                    "GAM_LOCATION_ALREADY_EXISTS",
+                    "The request conflicts with an existing GamLocation.",
+                    Map.of()
+            );
+        }
+        if ("removeGamLocation".equals(operationId)) {
+            return new ConflictDocumentation(
+                    "GAM_LOCATION_IN_USE",
+                    "The GamLocation has historical Event references.",
+                    Map.of(
+                            "resource", "GamLocation",
+                            "identifier", "019f6343-321a-7c90-a096-a551e8f88eb4",
+                            "eventReferenceCount", 2
+                    )
+            );
+        }
+        return new ConflictDocumentation(
+                "CONFLICT",
+                "The request conflicts with the current resource state.",
+                Map.of()
+        );
     }
 
     private void documentCurrentAccountContext(io.swagger.v3.oas.models.Operation operation) {
@@ -509,5 +574,12 @@ public class OpenApiConfig {
             return "Synthetic-password-123";
         }
         return "Synthetic GAM value";
+    }
+
+    private record ConflictDocumentation(
+            String exampleCode,
+            String description,
+            Map<String, Object> exampleDetails
+    ) {
     }
 }

@@ -232,8 +232,7 @@ class SpecificationPersistenceIT extends PostgreSQLIntegrationTest {
         @Test
         @DisplayName("event security specification -> public and authorized events visible")
         void eventSecuritySpecificationShouldHideAndShowRecordsByRequiredPermission() {
-            PermissionEntity permission = inTransaction(() -> permissionRepository.saveAndFlush(permission("EVENT_PRIVATE_" + UUID.randomUUID())));
-            specificationPermissionIds.add(permission.getId());
+            PermissionEntity permission = inTransaction(() -> permissionRepository.findByCode("EVENT_GET_MEMBER").orElseThrow());
             EventEntity publicEvent = inTransaction(() -> eventRepository.saveAndFlush(event("Public Event", null)));
             specificationEventIds.add(publicEvent.getId());
             EventEntity privateEvent = inTransaction(() -> eventRepository.saveAndFlush(event("Private Event", permission)));
