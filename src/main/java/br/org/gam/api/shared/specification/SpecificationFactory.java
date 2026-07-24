@@ -73,8 +73,9 @@ public final class SpecificationFactory {
             throw new IllegalArgumentException("Comparison value type does not match the target field type.");
         }
 
+        Expression<?> expression = path;
         @SuppressWarnings("unchecked")
-        Expression<C> typedPath = (Expression<C>) path;
+        Expression<C> typedPath = (Expression<C>) expression;
         return typedPath;
     }
 
