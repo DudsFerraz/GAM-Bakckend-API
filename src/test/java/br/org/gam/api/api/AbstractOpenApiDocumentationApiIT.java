@@ -48,6 +48,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springdoc.core.configuration.SpringDocPageableConfiguration;
 import org.springdoc.core.configuration.SpringDocSecurityConfiguration;
@@ -174,7 +175,10 @@ abstract class AbstractOpenApiDocumentationApiIT {
         try {
             MvcResult result = mockMvc.perform(get(path).accept(MediaType.TEXT_HTML)).andReturn();
             if (result.getResponse().getStatus() / 100 == 3) {
-                String redirect = result.getResponse().getRedirectedUrl();
+                String redirect = Objects.requireNonNull(
+                        result.getResponse().getRedirectedUrl(),
+                        "Expected a redirect URL for a redirect response"
+                );
                 result = mockMvc.perform(get(redirect).accept(MediaType.TEXT_HTML)).andReturn();
             }
             status().isOk().match(result);

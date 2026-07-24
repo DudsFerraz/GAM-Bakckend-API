@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -24,13 +25,17 @@ public class PaginationWebConfiguration implements WebMvcConfigurer {
     );
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(new PaginationRequestValidator());
     }
 
     private static class PaginationRequestValidator implements HandlerInterceptor {
         @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        public boolean preHandle(
+                @NonNull HttpServletRequest request,
+                @NonNull HttpServletResponse response,
+                @NonNull Object handler
+        ) {
             validatePageSize(request);
             validateSort(request);
             return true;

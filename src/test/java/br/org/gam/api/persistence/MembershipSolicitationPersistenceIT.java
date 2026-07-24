@@ -17,6 +17,7 @@ import br.org.gam.api.testing.integration.PostgreSQLIntegrationTest;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -124,20 +125,20 @@ class MembershipSolicitationPersistenceIT extends PostgreSQLIntegrationTest {
     }
 
     private long solicitationCount(UUID accountId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM membership_solicitations WHERE account_id = ?",
                 Long.class,
                 accountId
-        );
+        ), "Expected solicitation count");
     }
 
     private long pendingSolicitationCount(UUID accountId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM membership_solicitations "
                         + "WHERE account_id = ? AND status::text = 'PENDING' AND deleted_at IS NULL",
                 Long.class,
                 accountId
-        );
+        ), "Expected pending solicitation count");
     }
 
     private String solicitationStatus(UUID solicitationId) {

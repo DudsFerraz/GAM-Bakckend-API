@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -334,10 +335,10 @@ class RbacCatalogPersistenceIT extends PostgreSQLIntegrationTest {
     }
 
     private long activeRolePermissionCount() {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM role_permissions WHERE deleted_at IS NULL",
                 Long.class
-        );
+        ), "Expected active role-permission count");
     }
 
     private UUID activeRolePermissionId(UUID roleId, UUID permissionId) {

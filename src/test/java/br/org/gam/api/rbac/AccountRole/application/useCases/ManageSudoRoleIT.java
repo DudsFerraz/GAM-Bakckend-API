@@ -292,26 +292,26 @@ class ManageSudoRoleIT extends PostgreSQLIntegrationTest {
     }
 
     private long activeAssignmentCount(UUID accountId, UUID roleId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM account_roles "
                         + "WHERE account_id = ? AND role_id = ? AND deleted_at IS NULL",
                 Long.class,
                 accountId,
                 roleId
-        );
+        ), "Expected active account-role count");
     }
 
     private long totalAssignmentCount(UUID accountId, UUID roleId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM account_roles WHERE account_id = ? AND role_id = ?",
                 Long.class,
                 accountId,
                 roleId
-        );
+        ), "Expected account-role count");
     }
 
     private long activeSudoCount() {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM account_roles account_role "
                         + "JOIN accounts account ON account.id = account_role.account_id "
                         + "JOIN roles role ON role.id = account_role.role_id "
@@ -321,32 +321,32 @@ class ManageSudoRoleIT extends PostgreSQLIntegrationTest {
                         + "AND role.name = ?",
                 Long.class,
                 SystemRole.SUDO.getCode()
-        );
+        ), "Expected active sudo count");
     }
 
     private boolean assignmentIsDeleted(UUID assignmentId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT deleted_at IS NOT NULL FROM account_roles WHERE id = ?",
                 Boolean.class,
                 assignmentId
-        );
+        ), "Expected account-role deletion state");
     }
 
     private long accountRoleActivityCount() {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE target_type = 'ACCOUNT_ROLE'",
                 Long.class
-        );
+        ), "Expected account-role activity count");
     }
 
     private long accountRoleActivityCount(UUID assignmentId, String action) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs "
                         + "WHERE target_type = 'ACCOUNT_ROLE' AND action = ? AND target_id = ?",
                 Long.class,
                 action,
                 assignmentId
-        );
+        ), "Expected account-role activity count");
     }
 
     private void assertAccountRoleActivity(

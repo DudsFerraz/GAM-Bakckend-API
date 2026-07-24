@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -1081,9 +1082,9 @@ class EventRecordsLifecycleApiIT extends MemberApiTestSupport {
     }
 
     private long activityCountFor(String action, UUID targetId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE action = ? AND target_id = ?", Long.class, action, targetId
-        );
+        ), "Expected activity count");
     }
 
     private void trackUnexpectedlyCreatedEvent(ExtractableResponse<Response> response) {
@@ -1093,9 +1094,9 @@ class EventRecordsLifecycleApiIT extends MemberApiTestSupport {
     }
 
     private long activityCountForTarget(UUID targetId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE target_id = ?", Long.class, targetId
-        );
+        ), "Expected target activity count");
     }
 
     private Map<String, Object> eventActivity(String action, UUID targetId) {
@@ -1126,11 +1127,11 @@ class EventRecordsLifecycleApiIT extends MemberApiTestSupport {
     }
 
     private long activePresenceOnDeletedEventCount(UUID eventId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM presences p JOIN events e ON e.id = p.event_id "
                         + "WHERE p.event_id = ? AND p.deleted_at IS NULL AND e.deleted_at IS NOT NULL",
                 Long.class, eventId
-        );
+        ), "Expected deleted-event presence count");
     }
 
     private void assertResourceNotFound(ExtractableResponse<Response> response, String resource) {

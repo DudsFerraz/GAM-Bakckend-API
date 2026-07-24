@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -238,14 +239,14 @@ abstract class MemberApiTestSupport extends BaseApiIntegrationTest {
     }
 
     protected long activeRoleAssignmentCount(UUID accountId, String roleName) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM account_roles ar JOIN roles r ON r.id = ar.role_id "
                         + "WHERE ar.account_id = ? AND r.name = ? "
                         + "AND ar.deleted_at IS NULL AND r.deleted_at IS NULL",
                 Long.class,
                 accountId,
                 roleName
-        );
+        ), "Expected active role-assignment count");
     }
 
     protected void clearActivities() {
@@ -294,11 +295,11 @@ abstract class MemberApiTestSupport extends BaseApiIntegrationTest {
     }
 
     protected long memberCount(UUID accountId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM members WHERE account_id = ? AND deleted_at IS NULL",
                 Long.class,
                 accountId
-        );
+        ), "Expected member count");
     }
 
     protected String memberStatus(UUID memberId) {
@@ -327,22 +328,22 @@ abstract class MemberApiTestSupport extends BaseApiIntegrationTest {
     }
 
     protected long activityCount(String action) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE action = ?",
                 Long.class,
                 action
-        );
+        ), "Expected activity count");
     }
 
     protected long allLifecycleActivityCount() {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE action IN ("
                         + "'MEMBER_REGISTERED', 'MEMBER_ACTIVATED', 'MEMBER_DEACTIVATED', "
                         + "'COORDINATOR_GRANTED', 'COORDINATOR_REVOKED', "
                         + "'MEMBERSHIP_SOLICITATION_SUBMITTED', 'MEMBERSHIP_SOLICITATION_APPROVED', "
                         + "'MEMBERSHIP_SOLICITATION_REJECTED', 'ACCOUNT_ROLE_ADDED', 'ACCOUNT_ROLE_REMOVED')",
                 Long.class
-        );
+        ), "Expected member lifecycle activity count");
     }
 
     protected Map<String, Object> activity(String action) {
@@ -354,20 +355,20 @@ abstract class MemberApiTestSupport extends BaseApiIntegrationTest {
     }
 
     protected long solicitationCount(UUID accountId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM membership_solicitations WHERE account_id = ?",
                 Long.class,
                 accountId
-        );
+        ), "Expected solicitation count");
     }
 
     protected long pendingSolicitationCount(UUID accountId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM membership_solicitations "
                         + "WHERE account_id = ? AND status::text = 'PENDING' AND deleted_at IS NULL",
                 Long.class,
                 accountId
-        );
+        ), "Expected pending solicitation count");
     }
 
     protected String solicitationStatus(UUID solicitationId) {

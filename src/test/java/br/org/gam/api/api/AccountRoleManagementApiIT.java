@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
@@ -678,29 +679,29 @@ class AccountRoleManagementApiIT extends BaseApiIntegrationTest {
     }
 
     private long activeAssignmentCount(UUID accountId, UUID roleId) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM account_roles WHERE account_id = ? AND role_id = ? AND deleted_at IS NULL",
                 Long.class,
                 accountId,
                 roleId
-        );
+        ), "Expected active account-role count");
     }
 
     private long accountRoleActivityCount() {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs WHERE target_type = 'ACCOUNT_ROLE'",
                 Long.class
-        );
+        ), "Expected account-role activity count");
     }
 
     private long accountRoleActivityCount(UUID assignmentId, String action) {
-        return jdbcTemplate.queryForObject(
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM activity_logs "
                         + "WHERE target_type = 'ACCOUNT_ROLE' AND action = ? AND target_id = ?",
                 Long.class,
                 action,
                 assignmentId
-        );
+        ), "Expected account-role activity count");
     }
 
     private Map<String, Object> accountRoleActivity(UUID assignmentId, String action) {
